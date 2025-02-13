@@ -1,7 +1,11 @@
-import type { NextConfig } from "next";
-
-const nextConfig: NextConfig = {
-  /* config options here */
+/**
+ * @type {import('next').NextConfig}
+ */
+const nextConfig = {
+  pageExtensions: ["tsx", "ts", "jsx", "js"],
+  experimental: {
+    // Remove appDir option
+  },
 };
 
 export default nextConfig;

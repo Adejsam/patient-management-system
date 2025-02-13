@@ -1,101 +1,166 @@
+"use client";
+import { useEffect, useState } from "react";
+import LandingHeader from "@/components/headers/landingHeader";
 import Image from "next/image";
+import HeroImage from "../../public/assets/images/hero-image.png";
+import Link from "next/link";
+import {
+  CalendarIcon,
+  ClipboardIcon,
+  UserGroupIcon,
+  ShieldCheckIcon,
+} from "@heroicons/react/24/outline";
+import { useTheme } from "next-themes";
+import LandingFooter from "@/components/footers/LandingFooter";
+import { Button } from "@/components/ui/button";
 
-export default function Home() {
+const features = [
+  {
+    name: "Appointment Scheduling",
+    description:
+      "Easily schedule and manage patient appointments with our intuitive calendar interface. Set reminders, manage cancellations, and reschedule effortlessly.",
+    icon: CalendarIcon,
+  },
+  {
+    name: "Patient Records",
+    description:
+      "Securely store and access patient records, including medical history and treatments. Ensure all patient information is easily retrievable and up-to-date.",
+    icon: ClipboardIcon,
+  },
+  {
+    name: "Patient Communication",
+    description:
+      "Enhance communication with patients through secure messaging and notifications. Send appointment reminders, follow-up messages, and important health updates.",
+    icon: UserGroupIcon,
+  },
+  {
+    name: "Data Security",
+    description:
+      "Ensure the safety and privacy of patient data with advanced security measures. Comply with industry standards and regulations to protect against unauthorized access.",
+    icon: ShieldCheckIcon,
+  },
+];
+
+export default function Page() {
+  const { resolvedTheme } = useTheme();
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isMounted) {
+    return null;
+  }
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <main>
+        <LandingHeader />
+      <section className="flex gap-5 md:flex-col w-full h-screen mt-[-20px]">
+        <div className="flex flex-col justify-center items-center w-1/2 pl-10 ">
+          <h1 className={`text-5xl font-bold mb-4 ${resolvedTheme === "dark" ? "text-white" : "text-black"}`}>
+            Welcome 👋 to <span className="text-primary">Your Patient Management System</span>
+          </h1>
+          <p className={`text-lg mb-2 ${resolvedTheme === "dark" ? "text-white" : "text-black"}`}>
+            Our patient management system is designed to streamline your healthcare operations,
+            making it easier to manage patient records, appointments, bills and communication.
+          </p>
+          <p className={`text-lg mb-2 ${resolvedTheme === "dark" ? "text-white" : "text-black"}`}>
+            Join us today and experience the future of healthcare management.
+          </p>
+          <button className="mr-auto px-4 py-2 bg-primary text-white hover:bg-primary/80 rounded-md ">
+            <Link href="/patient/login" className="flex">
+              Join us today
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="lucide lucide-chevrons-right">
+                <path d="m6 17 5-5-5-5" />
+                <path d="m13 17 5-5-5-5" />
+              </svg>
+            </Link>
+          </button>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
+        <div className="w-1/2 h-full pr-12 sm:hidden">
           <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
+            src={HeroImage}
+            alt="Hero Image"
+            width={1000}
+            height={1000}
+            priority={true}
+            className="object-cover h-full"
           />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+        </div>
+      </section>
+      <section className={`${resolvedTheme === "dark"? "bg-background": "bg-white"}`}>
+        <div className="py-10 sm:py-32">
+          <div className="mx-auto max-w-7xl pb-6 lg:px-8">
+            <div className={`mx-auto max-w-[70%] lg:text-center ${resolvedTheme === "dark" ? "text-white" : "text-black"}`}>
+              <p className="mt-2 text-4xl font-semibold tracking-tight text-pretty text-primary sm:text-5xl lg:text-balance">
+                Everything you need to manage your patients
+              </p>
+              <p className={`mt-6 text-lg/8 ${resolvedTheme === "dark" ? "text-gray-300" : "text-gray-600"}`}>
+                Our system provides all the tools you need to efficiently manage patient care, from scheduling appointments to maintaining secure patient records.
+              </p>
+            </div>
+            <div className="mx-auto mt-14 max-w-[100%] sm:mt-20 ">
+              <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-10 lg:max-w-none lg:grid-cols-2 lg:gap-y-16">
+                {features.map((feature) => (
+                  <div key={feature.name} className="relative pl-16">
+                    <dt className={`text-lg/6 font-semibold ${resolvedTheme === "dark" ? "text-white" : "text-gray-900"}`}>
+                      <div className="absolute top-0 left-0 flex size-10 items-center justify-center rounded-lg bg-primary">
+                        <feature.icon aria-hidden="true" className="size-6 text-white" />
+                      </div>
+                      {feature.name}
+                    </dt>
+                    <dd className={`mt-2 text-base/7 ${resolvedTheme === "dark" ? "text-gray-300" : "text-gray-600"}`}>{feature.description}</dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section className="my-[50px] px-10">
+        <div className="mb-[50px] flex gap-5 w-full">
+                <div className="w-1/2">
+                    <h2></h2>
+                    <p></p>
+                    <Button></Button>
+                </div>
+                <div className="w-1/2">
+                    <Image  src="" alt="" width={500} height={500}/>
+                </div>
+        </div>
+        <div className="mb-[50px] flex gap-5 w-full">
+                <div className="w-1/2">
+                    <Image  src="" alt="" width={500} height={500}/>
+                </div>
+                <div className="w-1/2">
+                    <h2></h2>
+                    <p></p>
+                    <Button></Button>
+                </div>
+        </div>
+        <div className="flex gap-5 w-full">
+                <div className="w-1/2">
+                    <h1></h1>
+                    <p></p>
+                    <Button></Button>
+                </div>
+                <div className="w-1/2">
+                <Image  src="" alt="" width={500} height={500}/>
+                </div>
+        </div>
+      </section>
+      <LandingFooter/>
+    </main>
   );
 }
