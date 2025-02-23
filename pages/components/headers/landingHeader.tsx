@@ -65,8 +65,8 @@ export default function LandingHeader() {
           <Link href="/" className="text-sm/6 hover:text-green-500">
             Home
           </Link>
-          <Link href="#" className="text-sm/6 hover:text-green-500">
-            Features
+          <Link href="/contact-us" className="text-sm/6 hover:text-green-500">
+            Contact us
           </Link>
           <Link href="/data-usage" className="text-sm/6 hover:text-green-500">
             Data Usage
@@ -123,9 +123,9 @@ export default function LandingHeader() {
                   Home
                 </Link>
                 <Link
-                  href="#"
+                  href="/conatact-us"
                   className="-mx-3 block rounded-lg px-3 py-2 text-base/7 hover:bg-green-500">
-                  Features
+                  Contact Us
                 </Link>
                 <Link
                   href="/data-usage"

@@ -55,7 +55,7 @@ const LoginPage = () => {
             <p className="text-dark-600 justify-items-end xl:text-left">
               © 2025 CarePluse
             </p>
-            <Link href="/admin/login" className="text-green-500 hover:text-green-600">
+            <Link href="/admin/Login" className="text-green-500 hover:text-green-600">
               Admin
             </Link>
           </div>

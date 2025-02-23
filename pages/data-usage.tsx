@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useTheme } from "next-themes";
 import LandingLayout from "../shared/layout/LandingLayout";
+import Seo from "../shared/seo/seo";
 
 const DataUsagePage = () => {
   const { resolvedTheme } = useTheme();
@@ -20,6 +21,7 @@ const DataUsagePage = () => {
       className={`${
         resolvedTheme === "dark" ? "bg-background text-white" : "bg-white text-black"
       }`}>
+        <Seo title="Data Usage Page"></Seo>
       <div className="container mx-auto px-12 pt-[100px]">
         <h1 className="text-4xl font-bold mt-10 mb-14 text-center text-primary">Data Usage</h1>
         <section className="mb-8">

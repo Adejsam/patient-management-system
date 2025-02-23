@@ -52,7 +52,7 @@ const ForgotPassPage = () => {
               <ForgotPasswordForm />
               <div className="text-center mt-4">
                 <p className="text-[0.75rem] text-[#8c9097] dark:text-white/50">
-                  <Link href="/" className="text-primary hover:text-primary/80">
+                  <Link href="/patient/login" className="text-primary hover:text-primary/80">
                     Back to Login
                   </Link>
                 </p>

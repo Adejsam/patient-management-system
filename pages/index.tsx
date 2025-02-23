@@ -16,6 +16,7 @@ import AppointmentImage from "../public/assets/images/Appointment image.png";
 import BillImage from "../public/assets/images/bill handling image.png";
 import RecordsImage from "../public/assets/images/patient record image.png";
 import LandingLayout from "../shared/layout/LandingLayout";
+import Seo from "../shared/seo/seo";
 
 const features = [
   {
@@ -58,6 +59,7 @@ export default function HomePage() {
 
   return (
     <main>
+      <Seo title="Patient Management System"></Seo>
       <section className="flex gap-2 md:flex-col w-full h-screen">
         <div className="flex flex-col justify-center items-left sm:items-center mt-7 h-full w-1/2 pl-10 md:px-10 md:w-full sm:pt-[100px]">
           <h1

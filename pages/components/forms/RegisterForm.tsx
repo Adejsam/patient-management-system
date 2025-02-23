@@ -492,7 +492,18 @@ const RegisterForm = () => {
             <FormItem className="flex-1 min-w-[250px]">
               <FormLabel>Blood Group</FormLabel>
               <FormControl>
-                <Input {...field} placeholder="A"/>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Blood Group" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Single">A</SelectItem>
+                      <SelectItem value="Married">B</SelectItem>
+                      <SelectItem value="Divorced">AB</SelectItem>
+                      <SelectItem value="Widowed">O</SelectItem>
+                      <SelectItem value="Widowed">None</SelectItem>
+                    </SelectContent>
+                  </Select>
               </FormControl>
               <FormMessage />
             </FormItem>
