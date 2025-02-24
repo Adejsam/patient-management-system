@@ -45,20 +45,8 @@ const data = {
       icon: CalendarDays,
       items: [
         {
-          title: "View Appoointment",
+          title: "Manage Appoointment",
           url: "/admin/appointment",
-        },
-        {
-          title: "Cancel Appointments",
-          url: "#",
-        },
-        {
-          title: "Reschedule Appointments",
-          url: "#",
-        },
-        {
-          title: "Schedule Appointments",
-          url: "#",
         },
       ],
     },

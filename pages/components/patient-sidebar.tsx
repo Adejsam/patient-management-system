@@ -43,7 +43,7 @@ const data = {
         },
         {
           title: "Appointment History",
-          url: "#",
+          url: "/patient/appointment-history",
         },
       ],
     },

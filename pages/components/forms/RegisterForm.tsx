@@ -39,10 +39,10 @@ const formSchema = z
     primaryPhoneNumber: z
       .string()
       .min(1, "Primary phone number is required")
-      .regex(/^\+?[1-9]\d{1,14}$/, "Invalid phone number format"),
+      .regex(/^(0|\+234)[789]\d{9}$/, "Invalid Nigerian phone number format"),
     alternatePhoneNumber: z
       .string()
-      .regex(/^\+?[1-9]\d{1,14}$/, "Invalid phone number format")
+      .regex(/^(0|\+234)[789]\d{9}$/, "Invalid Nigerian phone number format")
       .optional(),
     email: z.string().email("Invalid email address"),
     residentialAddress: z.object({
@@ -162,7 +162,7 @@ const RegisterForm = () => {
               <FormItem className="min-w-[250px] flex-1">
                 <FormLabel>First Name</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="John"/>
+                  <Input {...field} placeholder="John" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -175,7 +175,7 @@ const RegisterForm = () => {
               <FormItem className="min-w-[250px] flex-1">
                 <FormLabel>Middle Name</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="William"/>
+                  <Input {...field} placeholder="William" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -191,7 +191,7 @@ const RegisterForm = () => {
               <FormItem className="min-w-[250px] flex-1">
                 <FormLabel>Last Name</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="Frank"/>
+                  <Input {...field} placeholder="Frank" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -199,40 +199,40 @@ const RegisterForm = () => {
           />
 
           <div className="mt-2">
-          <FormField
-            control={form.control}
-            name="dateOfBirth"
-            render={({ field }) => (
-              <FormItem className="flex flex-col min-w-[250px] flex-1">
-                <FormLabel>Date of birth</FormLabel>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <FormControl>
-                      <Button
-                        variant={"outline"}
-                        className={cn(
-                          "w-[100%] pl-3 text-left font-normal border data-[state=open]:border-primary ",
-                          !field.value && "text-muted-foreground"
-                        )}>
-                        {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
-                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                      </Button>
-                    </FormControl>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={field.value ? new Date(field.value) : undefined}
-                      onSelect={field.onChange}
-                      disabled={(date) => date > new Date() || date < new Date("1900-01-01")}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+            <FormField
+              control={form.control}
+              name="dateOfBirth"
+              render={({ field }) => (
+                <FormItem className="flex flex-col min-w-[250px] flex-1">
+                  <FormLabel>Date of birth</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant={"outline"}
+                          className={cn(
+                            "w-[250px] pl-3 text-left font-normal",
+                            !field.value && "text-muted-foreground"
+                          )}>
+                          {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
+                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={field.value}
+                        onSelect={field.onChange}
+                        disabled={(date) => date > new Date() || date < new Date("1900-01-01")}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </div>
         </div>
 
@@ -293,7 +293,7 @@ const RegisterForm = () => {
               <FormItem className="min-w-[250px] flex-1">
                 <FormLabel>Occupation</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="Business Man"/>
+                  <Input {...field} placeholder="Business Man" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -331,7 +331,7 @@ const RegisterForm = () => {
               <FormItem className="min-w-[250px] flex-1">
                 <FormLabel>Primary Phone Number</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="08028382***"/>
+                  <Input {...field} placeholder="08028382***" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -344,7 +344,7 @@ const RegisterForm = () => {
               <FormItem className="min-w-[250px] flex-1">
                 <FormLabel>Alternate Phone Number</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="081827458**"/>
+                  <Input {...field} placeholder="081827458**" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -359,7 +359,7 @@ const RegisterForm = () => {
             <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input type="email" {...field} placeholder="example@gmail.com"/>
+                <Input type="email" {...field} placeholder="example@gmail.com" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -374,7 +374,7 @@ const RegisterForm = () => {
               <FormItem className="flex-1 min-w-[250px]">
                 <FormLabel>Street</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="20, herbert Maclean Way"/>
+                  <Input {...field} placeholder="20, herbert Maclean Way" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -387,7 +387,7 @@ const RegisterForm = () => {
               <FormItem className="flex-1 min-w-[250px]">
                 <FormLabel>City</FormLabel>
                 <FormControl>
-                  <Input {...field}placeholder="Lekki" />
+                  <Input {...field} placeholder="Lekki" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -403,7 +403,7 @@ const RegisterForm = () => {
               <FormItem className="flex-1 min-w-[250px]">
                 <FormLabel>State/Province</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="Lagos"/>
+                  <Input {...field} placeholder="Lagos" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -416,7 +416,7 @@ const RegisterForm = () => {
               <FormItem className="flex-1 min-w-[250px]">
                 <FormLabel>Country</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="Nigeria"/>
+                  <Input {...field} placeholder="Nigeria" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -440,39 +440,39 @@ const RegisterForm = () => {
             <FormItem>
               <FormLabel>Emergency Contact Name</FormLabel>
               <FormControl>
-                <Input {...field} placeholder="Sandra William"/>
+                <Input {...field} placeholder="Sandra William" />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
         <div className="flex flex-wrap gap-5">
-        <FormField
-          control={form.control}
-          name="emergencyContact.relationship"
-          render={({ field }) => (
-            <FormItem className="flex-1 min-w-[250px]">
-              <FormLabel>Relationship to Patient</FormLabel>
-              <FormControl>
-                <Input {...field} placeholder="Spouse"/>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="emergencyContact.phoneNumber"
-          render={({ field }) => (
-            <FormItem className="flex-1 min-w-[250px]">
-              <FormLabel>Emergency Contact Phone Number</FormLabel>
-              <FormControl>
-                <Input {...field} placeholder="090235837**"/>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+          <FormField
+            control={form.control}
+            name="emergencyContact.relationship"
+            render={({ field }) => (
+              <FormItem className="flex-1 min-w-[250px]">
+                <FormLabel>Relationship to Patient</FormLabel>
+                <FormControl>
+                  <Input {...field} placeholder="Spouse" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="emergencyContact.phoneNumber"
+            render={({ field }) => (
+              <FormItem className="flex-1 min-w-[250px]">
+                <FormLabel>Emergency Contact Phone Number</FormLabel>
+                <FormControl>
+                  <Input {...field} placeholder="090235837**" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
         </div>
 
         <section className="">
@@ -485,44 +485,48 @@ const RegisterForm = () => {
         </section>
 
         <div className="flex flex-wrap gap-5">
-        <FormField
-          control={form.control}
-          name="bloodGroup"
-          render={({ field }) => (
-            <FormItem className="flex-1 min-w-[250px]">
-              <FormLabel>Blood Group</FormLabel>
-              <FormControl>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+          <FormField
+            control={form.control}
+            name="bloodGroup"
+            render={({ field }) => (
+              <FormItem className="flex-1 min-w-[250px]">
+                <FormLabel>Blood Group</FormLabel>
+                <FormControl>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select Blood Group" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Single">A</SelectItem>
-                      <SelectItem value="Married">B</SelectItem>
-                      <SelectItem value="Divorced">AB</SelectItem>
-                      <SelectItem value="Widowed">O</SelectItem>
+                      <SelectItem value="A+">A+</SelectItem>
+                      <SelectItem value="A-">A-</SelectItem>
+                      <SelectItem value="B+">B+</SelectItem>
+                      <SelectItem value="B-">B-</SelectItem>
+                      <SelectItem value="AB+">AB+</SelectItem>
+                      <SelectItem value="AB-">AB-</SelectItem>
+                      <SelectItem value="O+">O+</SelectItem>
+                      <SelectItem value="O-">O-</SelectItem>
                       <SelectItem value="Widowed">None</SelectItem>
                     </SelectContent>
                   </Select>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="knownAllergies"
-          render={({ field }) => (
-            <FormItem className="flex-1 min-w-[250px]">
-              <FormLabel>Known Allergies</FormLabel>
-              <FormControl>
-                <Input {...field} placeholder="Lactose Intolerant"/>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-      </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="knownAllergies"
+            render={({ field }) => (
+              <FormItem className="flex-1 min-w-[250px]">
+                <FormLabel>Known Allergies</FormLabel>
+                <FormControl>
+                  <Input {...field} placeholder="Lactose Intolerant" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
 
         <FormField
           control={form.control}
@@ -531,7 +535,7 @@ const RegisterForm = () => {
             <FormItem>
               <FormLabel>Pre-existing Medical Conditions</FormLabel>
               <FormControl>
-                <Input {...field} placeholder="Asthmatic"/>
+                <Input {...field} placeholder="Asthmatic" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -539,32 +543,32 @@ const RegisterForm = () => {
         />
 
         <div className="flex flex-wrap gap-5">
-        <FormField
-          control={form.control}
-          name="healthInsurance.insuranceNumber"
-          render={({ field }) => (
-            <FormItem className="flex-1 min-w-[250px]">
-              <FormLabel>Insurance Number</FormLabel>
-              <FormControl>
-                <Input {...field} placeholder="1023473834"/>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="healthInsurance.provider"
-          render={({ field }) => (
-            <FormItem className="flex-1 min-w-[250px]">
-              <FormLabel>Provider</FormLabel>
-              <FormControl>
-                <Input {...field} placeholder="AXA Mansard"/>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+          <FormField
+            control={form.control}
+            name="healthInsurance.insuranceNumber"
+            render={({ field }) => (
+              <FormItem className="flex-1 min-w-[250px]">
+                <FormLabel>Insurance Number</FormLabel>
+                <FormControl>
+                  <Input {...field} placeholder="1023473834" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="healthInsurance.provider"
+            render={({ field }) => (
+              <FormItem className="flex-1 min-w-[250px]">
+                <FormLabel>Provider</FormLabel>
+                <FormControl>
+                  <Input {...field} placeholder="AXA Mansard" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
         </div>
 
         <section className="">
@@ -583,26 +587,26 @@ const RegisterForm = () => {
             <FormItem className="flex-1 min-w-[250px]">
               <FormLabel>Password</FormLabel>
               <FormControl>
-                <Input type="password" {...field} placeholder="********"/>
+                <Input type="password" {...field} placeholder="********" />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
         <div className="flex flex-wrap gap-5">
-        <FormField
-          control={form.control}
-          name="confirmPassword"
-          render={({ field }) => (
-            <FormItem className="flex-1 min-w-[250px]">
-              <FormLabel>Confirm Password</FormLabel>
-              <FormControl>
-                <Input type="password" {...field} placeholder="*********"/>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+          <FormField
+            control={form.control}
+            name="confirmPassword"
+            render={({ field }) => (
+              <FormItem className="flex-1 min-w-[250px]">
+                <FormLabel>Confirm Password</FormLabel>
+                <FormControl>
+                  <Input type="password" {...field} placeholder="*********" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
         </div>
 
         <div className="pt-5 pb-3">
@@ -621,7 +625,6 @@ const RegisterForm = () => {
             )}
           />
         </div>
-      
 
         <Button type="submit">Submit</Button>
 

@@ -1,5 +1,20 @@
+"use client";
+
 import React from "react";
 import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { Button } from "../../components/ui/button";
+import { CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
+import { cn } from "../../../lib/utils";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../../components/ui/select";
 import {
   Form,
   FormControl,
@@ -8,23 +23,11 @@ import {
   FormLabel,
   FormMessage,
 } from "../../components/ui/form";
-import { Input } from "../../components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../../components/ui/select";
-import { Calendar } from "../ui/calendar";
-import { Button } from "../../components/ui/button";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { Popover, PopoverContent, PopoverTrigger } from "../../components/ui/popover";
-import { CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
-import { cn } from "../../../lib/utils";
+import { Input } from "../../components/ui/input";
+import { Calendar } from "../../components/ui/calendar";
 import Textarea from "../../components/ui/Textarea";
+import { useRouter } from "next/router";
 
 const formSchema = z.object({
   patientName: z.string().min(1, "Patient name is required"),
@@ -35,7 +38,7 @@ const formSchema = z.object({
   contactNumber: z
     .string()
     .min(1, "Contact number is required")
-    .regex(/^\+?[1-9]\d{1,14}$/, "Invalid phone number format"),
+    .regex(/^(0|\+234)[789]\d{9}$/, "Invalid Nigerian phone number format"),
 });
 
 type FormData = {
@@ -52,13 +55,20 @@ const AppointmentForm = () => {
     resolver: zodResolver(formSchema),
   });
 
+  const router = useRouter();
+
   const onSubmit = (data: FormData) => {
-    console.log(data);
+    const queryString = new URLSearchParams({
+      date: data.appointmentDate.toISOString().split("T")[0],
+      time: data.appointmentTime,
+      doctor: data.doctorName,
+    }).toString();
+    router.push(`/patient/appointment-success?${queryString}`);
   };
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 mx-7 my-7">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 mx-7 my-7 pb-6">
         <div className="flex flex-wrap gap-5">
           <FormField
             name="patientName"
@@ -118,13 +128,14 @@ const AppointmentForm = () => {
                       </Button>
                     </FormControl>
                   </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
+                  <PopoverContent className="w-auto p-0" align="start" autoFocus={false}>
                     <Calendar
                       mode="single"
-                      selected={field.value ? new Date(field.value) : undefined}
-                      onSelect={field.onChange}
-                      disabled={(date) => date > new Date() || date < new Date("1900-01-01")}
-                      initialFocus
+                      selected={field.value}
+                      onSelect={(date) => {
+                        field.onChange(date);
+                      }}
+                      disabled={(date) => date <= new Date()}
                     />
                   </PopoverContent>
                 </Popover>

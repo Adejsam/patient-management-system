@@ -14,6 +14,7 @@ import {
 } from "../../components/ui/dropdown-menu";
 import { useState } from "react";
 import { AppointmentDetailsModal } from "./appointment-details-modal";
+import { RescheduleAppointmentModal } from "./RescheduleAppointmentModal";
 
 export type Appointment = {
   id: string;
@@ -23,10 +24,28 @@ export type Appointment = {
   reasonForVisit: string;
   doctorName?: string;
   doctorContact: string;
+  doctorField: string;
+  status: string;
 };
 
 const ActionsCell = ({ appointment }: { appointment: Appointment }) => {
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
+  const [rescheduleAppointment, setRescheduleAppointment] = useState<Appointment | null>(null);
+
+  const handleApprove = () => {
+    // Implement approve logic here
+    console.log("Approved:", appointment.id);
+  };
+
+  const handleCancel = () => {
+    // Implement cancel logic here
+    console.log("Canceled:", appointment.id);
+  };
+
+  const handleReject = () => {
+    // Implement reject logic here
+    console.log("Rejected:", appointment.id);
+  };
 
   return (
     <>
@@ -42,9 +61,15 @@ const ActionsCell = ({ appointment }: { appointment: Appointment }) => {
           <DropdownMenuItem onClick={() => navigator.clipboard.writeText(appointment.id)}>
             Copy appointment ID
           </DropdownMenuItem>
-          <DropdownMenuSeparator />
           <DropdownMenuItem onClick={() => setSelectedAppointment(appointment)}>
             View appointment details
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={handleApprove}>Approve</DropdownMenuItem>
+          <DropdownMenuItem onClick={handleCancel}>Cancel</DropdownMenuItem>
+          <DropdownMenuItem onClick={handleReject}>Reject</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setRescheduleAppointment(appointment)}>
+            Reschedule
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -52,6 +77,12 @@ const ActionsCell = ({ appointment }: { appointment: Appointment }) => {
         <AppointmentDetailsModal
           appointment={selectedAppointment}
           onClose={() => setSelectedAppointment(null)}
+        />
+      )}
+      {rescheduleAppointment && (
+        <RescheduleAppointmentModal
+          appointment={rescheduleAppointment}
+          onClose={() => setRescheduleAppointment(null)}
         />
       )}
     </>

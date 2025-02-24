@@ -11,7 +11,7 @@ import { Separator } from "../components/ui/separator";
 import { SidebarTrigger } from "../components/ui/sidebar";
 import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/card";
 import Seo from "../../shared/seo/seo";
-import { NotebookTabs, Users, Wallet } from 'lucide-react';
+import { User, Users, Wallet } from 'lucide-react';
 import { ModeToggle } from "../components/ui/modeToggle";
 
 
@@ -57,17 +57,17 @@ export default function Page() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">2350</div>
-                <p className="text-xs text-muted-foreground">+101% from last month</p>
+                <p className="text-xs text-muted-foreground">+11% from last month</p>
               </CardContent>
             </Card>
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total Medical Records</CardTitle>
-                <NotebookTabs className="h-4 w-4 text-muted-foreground"/>
+                <CardTitle className="text-sm font-medium">Total Patient</CardTitle>
+                <User className="h-4 w-4 text-muted-foreground"/>
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">12,234</div>
-                <p className="text-xs text-muted-foreground">+19% from last month</p>
+                <p className="text-xs text-muted-foreground">+10% from last month</p>
               </CardContent>
             </Card>
           </div>

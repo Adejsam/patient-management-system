@@ -13,13 +13,16 @@ export function AppointmentDetailsModal({ appointment, onClose }: AppointmentDet
     <Dialog open={true} onOpenChange={onClose}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Appointment Details</DialogTitle>
+          <DialogTitle className="pb-2">Appointment Details</DialogTitle>
           <DialogDescription>
             <p className="text-base/6"><strong>Patient Name:</strong> {appointment.patientName}</p>
-            <p className="text-base/6"><strong>Appointment Time:</strong> {appointment.appointmentTime}</p>
-            <p className="text-base/6"><strong>Reason for Visit:</strong> {appointment.reasonForVisit}</p>
-            <p className="text-base/6"><strong>Doctor Name:</strong> {appointment.doctorName}</p>
-            <p className="text-base/6"><strong>Doctor Contact:</strong> {appointment.doctorContact}</p>
+            <p className="text-base/6 pb-1"><strong>Appointment Time:</strong> {appointment.appointmentTime}</p>
+            <p className="text-base/6 pb-1"><strong>Doctor Name:</strong> {appointment.appointmentDate}</p>
+            <p className="text-base/6 pb-1"><strong>Reason for Visit:</strong> {appointment.reasonForVisit}</p>
+            <p className="text-base/6 pb-1"><strong>Doctor Name:</strong> {appointment.doctorName}</p>
+            <p className="text-base/6 pb-1"><strong>Doctor Contact:</strong> {appointment.doctorContact}</p>
+            <p className="text-base/6 pb-1"><strong>Doctor Field:</strong> {appointment.doctorField}</p>
+            <p className="text-base/6 "><strong>Status:</strong> {appointment.status}</p>
           </DialogDescription>
         </DialogHeader>
         <DialogClose asChild>

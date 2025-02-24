@@ -27,6 +27,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "../components/ui/sidebar"
+import Link from "next/link"
 
 export function NavUser({
   user,
@@ -81,7 +82,7 @@ export function NavUser({
             <DropdownMenuGroup>
               <DropdownMenuItem>
                 <UserRound />
-                Manage Profile
+                <Link href="/patient/manage-profile">Manage Profile</Link>
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />

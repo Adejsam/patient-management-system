@@ -17,8 +17,8 @@ const LandingFooter = () => {
 
   return (
     <footer
-      className={`${resolvedTheme === "dark" ? "bg-background text-white" : "text-black"} py-3 `}>
-      <div className="container mx-auto text-center">
+      className={`${resolvedTheme === "dark" ? "bg-background text-white" : "text-black"} py-3 footer mt-auto xl:ps-[15rem shadow-[0_0_0.4rem_rgba(0,0,0,0.1)] text-center`}>
+      <div className="container ">
         <p className="text-md">&copy; CarePulse 2025. All rights reserved.</p>
       </div>
     </footer>

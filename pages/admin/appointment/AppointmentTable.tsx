@@ -14,6 +14,8 @@ function getData(): Promise<Appointment[]> {
       reasonForVisit: "Checkup",
       contactNumber: "0802745336",
       doctorContact: "0801234567",
+      doctorField: "Cardiology",
+      status: "Pending",
     },
     {
       id: "2",
@@ -24,6 +26,8 @@ function getData(): Promise<Appointment[]> {
       reasonForVisit: "Consultation",
       contactNumber: "0802745337",
       doctorContact: "0801234568",
+      doctorField: "Cardiology",
+      status: "Pending",
     },
     {
       id: "3",
@@ -33,6 +37,8 @@ function getData(): Promise<Appointment[]> {
       reasonForVisit: "Follow-up",
       contactNumber: "0802745338",
       doctorContact: "0801234569",
+      doctorField: "Cardiology",
+      status: "Pending",
     },
     {
       id: "4",
@@ -42,6 +48,8 @@ function getData(): Promise<Appointment[]> {
       reasonForVisit: "Routine Checkup",
       contactNumber: "0802745339",
       doctorContact: "0801234570",
+      doctorField: "Cardiology",
+      status: "Pending",
     },
     {
       id: "5",
@@ -52,6 +60,8 @@ function getData(): Promise<Appointment[]> {
       reasonForVisit: "Consultation",
       contactNumber: "0802745340",
       doctorContact: "0801234571",
+      doctorField: "Cardiology",
+      status: "Pending",
     },
     {
       id: "6",
@@ -61,6 +71,8 @@ function getData(): Promise<Appointment[]> {
       reasonForVisit: "Follow-up",
       contactNumber: "0802745341",
       doctorContact: "0801234572",
+      doctorField: "Cardiology",
+      status: "Pending",
     },
     {
       id: "7",
@@ -71,6 +83,8 @@ function getData(): Promise<Appointment[]> {
       reasonForVisit: "Routine Checkup",
       contactNumber: "0802745342",
       doctorContact: "0801234573",
+      doctorField: "Cardiology",
+      status: "Pending",
     },
     {
       id: "8",
@@ -81,6 +95,8 @@ function getData(): Promise<Appointment[]> {
       reasonForVisit: "Consultation",
       contactNumber: "0802745343",
       doctorContact: "0801234574",
+      doctorField: "Cardiology",
+      status: "Pending",
     },
     {
       id: "9",
@@ -91,6 +107,8 @@ function getData(): Promise<Appointment[]> {
       reasonForVisit: "Follow-up",
       contactNumber: "0802745344",
       doctorContact: "0801234575",
+      doctorField: "Cardiology",
+      status: "Pending",
     },
   ]);
 }
