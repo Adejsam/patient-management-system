@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { BookOpen, CalendarDays, ReceiptText, LayoutDashboard, MessageCircleQuestion } from "lucide-react";
+import { BookOpen, CalendarDays, ReceiptText, LayoutDashboard, MessageCircleQuestion, BriefcaseMedical } from "lucide-react";
 import { useTheme } from "next-themes";
 import { NavMain } from "./nav-main";
 import { NavUser } from "./nav-user";
@@ -33,6 +33,18 @@ const data = {
       ],
     },
     {
+      title: "Doctors",
+      url: "#",
+      icon: BriefcaseMedical,
+      items: [
+        {
+          title: "View Doctors",
+          url: "/patient/view-doctors",
+        },
+      ],
+    },
+    
+    {
       title: "Appointments",
       url: "#",
       icon: CalendarDays,
@@ -54,11 +66,7 @@ const data = {
       items: [
         {
           title: "View Records",
-          url: "#",
-        },
-        {
-          title: "Doctor Notes",
-          url: "#",
+          url: "/patient/view-record",
         },
       ],
     },
@@ -69,11 +77,11 @@ const data = {
       items: [
         {
           title: "View Bills",
-          url: "#",
+          url: "/patient/view-bills",
         },
         {
           title: "Payment History",
-          url: "#",
+          url: "/patient/payment-history",
         },
       ],
     },

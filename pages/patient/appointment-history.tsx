@@ -46,14 +46,14 @@ const AppointmentHistoryPage = () => {
     <div className={theme === "dark" ? "bg-background text-white" : "bg-background text-black"}>
       <Seo title="Appointment History" />
       <Header title="Appointment History" breadcrumbLinkText="Home" breadcrumbLinkHref="/" />
-      <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min w-[97%] mx-auto">
+      <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 w-[97%] mx-auto">
       <div className="container mx-auto p-4">
       <h1 className="text-3xl/9 font-bold my-2">Hello there 👋</h1>
           <h2 className="text-lg placeholder-opacity-80 tracking-tight mb-4">
             View Your Appointment History
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              <Card>
+          <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-3 gap-4">
+              <Card className="w-full">
                 <CardHeader>
                   <CardTitle>23/02/2025</CardTitle>
                 </CardHeader>

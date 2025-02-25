@@ -1,5 +1,12 @@
 import React from "react";
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "../../components/ui/breadcrumb";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "../../components/ui/breadcrumb";
 import { Separator } from "../../components/ui/separator";
 import { SidebarTrigger } from "../../components/ui/sidebar";
 import { ModeToggle } from "../../components/ui/modeToggle";
@@ -28,7 +35,9 @@ const Header: React.FC<HeaderProps> = ({ title, breadcrumbLinkText, breadcrumbLi
           </BreadcrumbList>
         </Breadcrumb>
       </div>
-      <ModeToggle />
+      <div>
+        <ModeToggle />
+      </div>
     </header>
   );
 };

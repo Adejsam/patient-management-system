@@ -48,14 +48,16 @@ export default function Page() {
         </div>
         <ModeToggle />
       </header>
-      <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min w-[97%] mx-auto">
+      <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min w-[97%] mx-auto sm:h-[100vh] md:h-[100vh] mb-5">
         <div className="py-2 px-7">
           <h1 className="text-3xl/9 font-bold mt-5 mb-2">Hello there 👋</h1>
           <h2 className="text-lg placeholder-opacity-80 tracking-tight ">
             Book An Appointment in 20 Seconds
           </h2>
         </div>
-        <AppointmentForm />
+        <div>
+          <AppointmentForm />
+        </div>
       </div>
     </PatientLayout>
   );

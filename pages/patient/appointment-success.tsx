@@ -31,7 +31,7 @@ const AppointmentSuccessPage = () => {
         breadcrumbLinkText="Appointment"
         breadcrumbLinkHref="/patient/book-appointment"
       />
-      <div className="flex flex-col items-center justify-center min-h-screen p-4 w-[80%] mx-auto">
+      <div className="flex flex-col items-center justify-center p-4 w-[80%] mx-auto">
         <CheckCircleIcon className="w-16 h-16 text-green-600" />
         <h1 className="my-4 text-2xl font-bold w-[80%] text-center">
           Your <span className="text-primary">Appointment Request</span > has been Successfully Booked!
