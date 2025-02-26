@@ -1,144 +1,164 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { useTheme } from "next-themes";
 import PatientLayout from "../../shared/layout/PatientLayout";
 import Seo from "../../shared/seo/seo";
 import Header from "../components/headers/Header";
+import LightLogo from "../../public/assets/icons/logo-full-light.png";
+import DarkLogo from "../../public/assets/icons/logo-full.svg";
+import { Button } from "../components/ui/button";
+import { Card, CardContent } from "../components/ui/card";
+import { Printer, Download } from "lucide-react";
+import { PDFInvoiceGenerator, InvoiceOrReceipt } from "../../services/PDFInvoiceGenerator";
 
-import pdfMakeImport from "pdfmake/build/pdfmake";
-import pdfFontsImport from "pdfmake/build/vfs_fonts";
+const SAMPLE_INVOICES: InvoiceOrReceipt[] = [
+  {
+    receiptNumber: "INV-001",
+    date: "2024-01-15",
+    amount: "$500",
+    status: "Paid",
+    customerInfo: {
+      name: "John Doe",
+      address: "123 Healthcare Ave, Medical City, MC 12345",
+      email: "john.doe@email.com",
+    },
+    services: [
+      { description: "Consultation Fee", amount: "$200", quantity: 1 },
+      { description: "Lab Tests", amount: "$300", quantity: 2 },
+      { description: "Medication", amount: "$150", quantity: 3 },
+    ],
+  },
+];
 
-interface BillItem {
-  description: string;
-  amount: number;
-}
+const SAMPLE_RECEIPTS: InvoiceOrReceipt[] = [
+  {
+    receiptNumber: "REC-001",
+    date: "2024-01-15",
+    amount: "$500",
+    method: "Credit Card",
+    customerInfo: {
+      name: "Jane Smith",
+      address: "456 Patient Street, Care City, CC 67890",
+      email: "jane.smith@email.com",
+    },
+    services: [
+      { description: "Hospital Admission", amount: "$300", quantity: 1 },
+      { description: "Room Charges", amount: "$200", quantity: 2 },
+      { description: "Miscellaneous", amount: "$100", quantity: 1 },
+    ],
+  },
+];
 
-interface Bill {
-  id: number;
-  date: string;
-  items: BillItem[];
-  status: "unpaid" | "partially paid" | "paid";
-}
+export default function BillingPage() {
+  const { resolvedTheme } = useTheme();
 
-const PaymentHistory: React.FC = () => {
-  useTheme();
-  const [bills, setBills] = useState<Bill[]>([]);
-  const pdfMakeRef = useRef<typeof pdfMakeImport | null>(null);
+  const [view, setView] = useState<"invoices" | "receipts">("invoices");
+  const pdfGenerator = new PDFInvoiceGenerator();
+
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    setBills([
-      {
-        id: 1,
-        date: "2025-01-15",
-        items: [
-          { description: "Consultation Fee", amount: 100 },
-          { description: "X-Ray", amount: 50 },
-        ],
-        status: "paid",
-      },
-      {
-        id: 2,
-        date: "2025-01-20",
-        items: [
-          { description: "Lab Test", amount: 200 },
-          { description: "Blood Test", amount: 100 },
-        ],
-        status: "partially paid",
-      },
-      {
-        id: 3,
-        date: "2025-01-25",
-        items: [{ description: "Medication", amount: 150 }],
-        status: "paid",
-      },
-    ]);
+    setIsMounted(true);
   }, []);
 
-  useEffect(() => {
-    if (!pdfMakeRef.current) {
-      const pdfMakeInstance = pdfMakeImport;
-      const pdfFontsModule = pdfFontsImport as unknown as { pdfMake: { vfs: Record<string, string> } };
+  if (!isMounted) {
+    return null;
+  }
 
-      if (pdfMakeInstance && pdfFontsModule.pdfMake) {
-        pdfMakeInstance.vfs = pdfFontsModule.pdfMake.vfs;
-        pdfMakeRef.current = pdfMakeInstance;
-      }
+  const handleGeneratePDF = async (data: InvoiceOrReceipt, type: string) => {
+    const imgSrc = resolvedTheme === "dark" ? DarkLogo.src : LightLogo.src;
+
+    try {
+      const doc = await pdfGenerator.generatePDF(data, type, imgSrc);
+      doc.save(`${data.receiptNumber}.pdf`);
+    } catch (error) {
+      console.error("Error generating PDF:", error);
     }
-  }, []);
-
-  const handlePrint = (bill: Bill) => {
-    if (!pdfMakeRef.current) {
-      console.error("pdfMake is not loaded yet.");
-      return;
-    }
-
-    const totalAmount = bill.items.reduce((sum, item) => sum + item.amount, 0);
-
-    const docDefinition = {
-      content: [
-        { text: "Receipt", style: "header" },
-        { text: `Patient Name: John Doe`, style: "subheader" },
-        { text: `Receipt Number: ${bill.id}`, style: "subheader" },
-        { text: `Date: ${bill.date}`, style: "subheader" },
-        { text: `Hospital Name: XYZ Hospital`, style: "subheader" },
-        { text: `Hospital Address: 123 Main St, City, Country`, style: "subheader" },
-        { text: `Hospital Number: +1234567890`, style: "subheader" },
-        { text: " " },
-        {
-          table: {
-            headerRows: 1,
-            widths: ["*", "auto"],
-            body: [
-              [{ text: "Description", bold: true }, { text: "Amount (₦)", bold: true }],
-              ...bill.items.map((item) => [item.description, `₦${item.amount}`]),
-            ],
-          },
-          layout: "lightHorizontalLines",
-        },
-        { text: `Total Amount: ₦${totalAmount}`, style: "total", margin: [0, 10, 0, 0] },
-      ],
-      styles: {
-        header: { fontSize: 18, bold: true, margin: [0, 0, 0, 10] },
-        subheader: { fontSize: 12, margin: [0, 5, 0, 5] },
-        total: { fontSize: 14, bold: true },
-      },
-    };
-
-    pdfMakeRef.current.createPdf(docDefinition).download(`Receipt_${bill.id}.pdf`);
   };
+
+  const renderBillingItem = (item: InvoiceOrReceipt) => (
+    <div
+      key={item.receiptNumber}
+      className="border p-4 rounded-lg shadow-md flex flex-col space-y-2 mb-10">
+      <div className="flex justify-between">
+        <span className="font-semibold">Receipt Number:</span>
+        <span>{item.receiptNumber}</span>
+      </div>
+      <div className="flex justify-between">
+        <span className="font-semibold">Customer Name:</span>
+        <span>{item.customerInfo.name}</span>
+      </div>
+      <div className="flex justify-between">
+        <span className="font-semibold">Date:</span>
+        <span>{item.date}</span>
+      </div>
+      <div className="flex justify-between">
+        <span className="font-semibold">Amount:</span>
+        <span>{item.amount}</span>
+      </div>
+      {item.status && (
+        <div className="flex justify-between">
+          <span className="font-semibold">Status:</span>
+          <span>{item.status}</span>
+        </div>
+      )}
+      {item.method && (
+        <div className="flex justify-between">
+          <span className="font-semibold">Payment Method:</span>
+          <span>{item.method}</span>
+        </div>
+      )}
+      <div className="flex space-x-2 mt-2">
+        <Button
+          className="flex-1"
+          onClick={() => handleGeneratePDF(item, view === "invoices" ? "Invoice" : "Receipt")}>
+          <Printer className="w-4 h-4 mr-2" /> Print
+        </Button>
+        <Button
+          variant="secondary"
+          className="flex-1"
+          onClick={() => handleGeneratePDF(item, view === "invoices" ? "Invoice" : "Receipt")}>
+          <Download className="w-4 h-4 mr-2" /> Download
+        </Button>
+      </div>
+    </div>
+  );
 
   return (
     <PatientLayout>
-      <Seo title="Payment History" />
-      <Header title="Payment History" breadcrumbLinkText="Home" breadcrumbLinkHref="/" />
-      <div className="min-h-[100vh] rounded-xl bg-muted/50 relative w-[97%] mx-auto mb-5">
+      <Seo title="Billing History" />
+      <Header title="Billing History" breadcrumbLinkText="Home" breadcrumbLinkHref="/" />
+      <div className="h-[100vh] rounded-xl bg-muted/50 relative w-[97%] mx-auto mb-5">
         <h1 className="text-3xl font-bold pt-7 mb-2 pl-4">
-          Your <span className="text-primary">Payment History</span>
+          Your <span className="text-primary">Billing History</span>
         </h1>
-        <h2 className="text-lg placeholder-opacity-80 pl-4 tracking-tight">View Your Paid Bills</h2>
+        <h2 className="text-lg placeholder-opacity-80 pl-4 tracking-tight">
+          View Your Invoices and Receipts
+        </h2>
         <div className="p-4 my-5 w-full">
-          <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-4 pt-4 pb-8">
-            {bills.filter((bill) => bill.status !== "unpaid").map((bill) => (
-              <div key={bill.id} className="border p-4 rounded-lg shadow-md relative">
-                <p className="pb-2">
-                  <strong>Date:</strong> {bill.date}
-                </p>
-                <p className="pb-2">
-                  <strong>Total Amount:</strong> ₦
-                  {bill.items.reduce((sum, item) => sum + item.amount, 0)}
-                </p>
-                <button
-                  onClick={() => handlePrint(bill)}
-                  className="absolute top-2 right-2 p-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                >
-                  Print Receipt
-                </button>
-              </div>
-            ))}
+          <div className="flex space-x-4 mb-4">
+            <Button
+              variant={view === "invoices" ? "default" : "secondary"}
+              onClick={() => setView("invoices")}
+              className="rounded-lg">
+              View Invoices
+            </Button>
+            <Button
+              variant={view === "receipts" ? "default" : "secondary"}
+              onClick={() => setView("receipts")}
+              className="rounded-lg">
+              View Receipts
+            </Button>
           </div>
+
+          <Card>
+            <CardContent className="p-4">
+              <div className="space-y-4">
+                {(view === "invoices" ? SAMPLE_INVOICES : SAMPLE_RECEIPTS).map(renderBillingItem)}
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </PatientLayout>
   );
-};
-
-export default PaymentHistory;
+}

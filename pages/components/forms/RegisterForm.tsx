@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -7,6 +7,7 @@ import { Button } from "../../components/ui/button";
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "../../../lib/utils";
+import { toast } from "sonner";
 import {
   Select,
   SelectContent,
@@ -27,6 +28,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "../../components/ui/pop
 import { Input } from "../../components/ui/input";
 import { Checkbox } from "../../components/ui/checkbox";
 import { Calendar } from "../ui/calendar";
+import { useRouter } from "next/router";
 
 const formSchema = z
   .object({
@@ -92,7 +94,111 @@ const formSchema = z
     path: ["confirmPassword"],
   });
 
+  // Types
+type FormData = z.infer<typeof formSchema>;
+
+interface RegistrationResponse {
+  success: boolean;
+  message: string;
+  data?: {
+    hospitalNumber: string;
+    token: string;
+    user: {
+      id: string;
+      name: string;
+    };
+  };
+  error?: string;
+}
+
+// Custom error class
+class RegistrationError extends Error {
+  constructor(
+    message: string,
+    public code?: string,
+    public details?: Record<string, unknown>
+  ) {
+    super(message);
+    this.name = 'RegistrationError';
+  }
+}
+
+// File upload handler
+const uploadPhoto = async (file: File): Promise<string> => {
+  try {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const response = await fetch('/api/upload', {
+      method: 'POST',
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to upload photo');
+    }
+
+    const data = await response.json();
+    return data.fileUrl;
+  } catch (error) {
+    console.error('Photo upload error:', error);
+    throw new RegistrationError('Failed to upload photo');
+  }
+};
+
+// Main registration function
+const registerPatient = async (
+  formData: FormData
+): Promise<RegistrationResponse> => {
+  try {
+    let photoUrl: string | undefined;
+
+    if (formData.photoUpload instanceof File) {
+      photoUrl = await uploadPhoto(formData.photoUpload);
+    }
+
+    const registrationData = {
+      ...formData,
+      photoUrl,
+      photoUpload: undefined,
+    };
+
+    const response = await fetch('/api/auth/patient/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(registrationData),
+    });
+
+    const responseData = await response.json();
+
+    if (!response.ok) {
+      throw new RegistrationError(
+        responseData.message || 'Registration failed',
+        responseData.code,
+        responseData.details
+      );
+    }
+
+    return responseData;
+  } catch (error) {
+    if (error instanceof RegistrationError) {
+      throw error;
+    }
+
+    if (error instanceof Error) {
+      throw new RegistrationError(error.message);
+    }
+
+    throw new RegistrationError('An unexpected error occurred');
+  }
+};
+
 const RegisterForm = () => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -132,9 +238,31 @@ const RegisterForm = () => {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-  }
+  const onSubmit = async (values: FormData) => {
+    try {
+      setIsSubmitting(true);
+      const response = await registerPatient(values);
+
+      if (response.success && response.data) {
+        // Store authentication data
+        localStorage.setItem('token', response.data.token);
+        localStorage.setItem('hospitalNumber', response.data.hospitalNumber);
+        localStorage.setItem('user', JSON.stringify(response.data.user));
+
+        toast.success('Registration successful! Redirecting...');
+        router.push(`/patient/verify?hospitalNumber=${response.data.hospitalNumber}`);
+      }
+    } catch (error) {
+      if (error instanceof RegistrationError) {
+        toast.error(error.message);
+      } else {
+        toast.error('Registration failed. Please try again.');
+      }
+      console.error('Registration error:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <Form {...form}>
@@ -162,7 +290,7 @@ const RegisterForm = () => {
               <FormItem className="min-w-[250px] flex-1">
                 <FormLabel>First Name</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="John" />
+                  <Input {...field} placeholder="John"  disabled={isSubmitting} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -175,7 +303,7 @@ const RegisterForm = () => {
               <FormItem className="min-w-[250px] flex-1">
                 <FormLabel>Middle Name</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="William" />
+                  <Input {...field} placeholder="William" disabled={isSubmitting} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -191,7 +319,7 @@ const RegisterForm = () => {
               <FormItem className="min-w-[250px] flex-1">
                 <FormLabel>Last Name</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="Frank" />
+                  <Input {...field} placeholder="Frank" disabled={isSubmitting} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -209,6 +337,7 @@ const RegisterForm = () => {
                     <PopoverTrigger asChild>
                       <FormControl>
                         <Button
+                          disabled={isSubmitting} 
                           variant={"outline"}
                           className={cn(
                             "w-[250px] pl-3 text-left font-normal",
@@ -244,7 +373,7 @@ const RegisterForm = () => {
               <FormItem className="min-w-[250px] flex-1">
                 <FormLabel>Gender</FormLabel>
                 <FormControl>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isSubmitting} >
                     <SelectTrigger>
                       <SelectValue placeholder="Select gender" />
                     </SelectTrigger>
@@ -267,7 +396,7 @@ const RegisterForm = () => {
               <FormItem className="min-w-[250px] flex-1">
                 <FormLabel>Marital Status</FormLabel>
                 <FormControl>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isSubmitting} >
                     <SelectTrigger>
                       <SelectValue placeholder="Select marital status" />
                     </SelectTrigger>
@@ -293,7 +422,7 @@ const RegisterForm = () => {
               <FormItem className="min-w-[250px] flex-1">
                 <FormLabel>Occupation</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="Business Man" />
+                  <Input {...field} placeholder="Business Man" disabled={isSubmitting}  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -306,7 +435,7 @@ const RegisterForm = () => {
               <FormItem className="min-w-[250px] flex-1">
                 <FormLabel>Photo Upload</FormLabel>
                 <FormControl>
-                  <Input type="file" onChange={(e) => field.onChange(e.target.files?.[0])} />
+                  <Input type="file" onChange={(e) => field.onChange(e.target.files?.[0])} disabled={isSubmitting} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -331,7 +460,7 @@ const RegisterForm = () => {
               <FormItem className="min-w-[250px] flex-1">
                 <FormLabel>Primary Phone Number</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="08028382***" />
+                  <Input {...field} placeholder="08028382***" disabled={isSubmitting} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -344,7 +473,7 @@ const RegisterForm = () => {
               <FormItem className="min-w-[250px] flex-1">
                 <FormLabel>Alternate Phone Number</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="081827458**" />
+                  <Input {...field} placeholder="081827458**" disabled={isSubmitting} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -359,7 +488,7 @@ const RegisterForm = () => {
             <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input type="email" {...field} placeholder="example@gmail.com" />
+                <Input type="email" {...field} placeholder="example@gmail.com" disabled={isSubmitting} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -374,7 +503,7 @@ const RegisterForm = () => {
               <FormItem className="flex-1 min-w-[250px]">
                 <FormLabel>Street</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="20, herbert Maclean Way" />
+                  <Input {...field} placeholder="20, herbert Maclean Way" disabled={isSubmitting} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -387,7 +516,7 @@ const RegisterForm = () => {
               <FormItem className="flex-1 min-w-[250px]">
                 <FormLabel>City</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="Lekki" />
+                  <Input {...field} placeholder="Lekki" disabled={isSubmitting} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -403,7 +532,7 @@ const RegisterForm = () => {
               <FormItem className="flex-1 min-w-[250px]">
                 <FormLabel>State/Province</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="Lagos" />
+                  <Input {...field} placeholder="Lagos" disabled={isSubmitting} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -416,7 +545,7 @@ const RegisterForm = () => {
               <FormItem className="flex-1 min-w-[250px]">
                 <FormLabel>Country</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="Nigeria" />
+                  <Input {...field} placeholder="Nigeria" disabled={isSubmitting} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -440,7 +569,7 @@ const RegisterForm = () => {
             <FormItem>
               <FormLabel>Emergency Contact Name</FormLabel>
               <FormControl>
-                <Input {...field} placeholder="Sandra William" />
+                <Input {...field} placeholder="Sandra William" disabled={isSubmitting} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -454,7 +583,7 @@ const RegisterForm = () => {
               <FormItem className="flex-1 min-w-[250px]">
                 <FormLabel>Relationship to Patient</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="Spouse" />
+                  <Input {...field} placeholder="Spouse" disabled={isSubmitting} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -467,7 +596,7 @@ const RegisterForm = () => {
               <FormItem className="flex-1 min-w-[250px]">
                 <FormLabel>Emergency Contact Phone Number</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="090235837**" />
+                  <Input {...field} placeholder="090235837**" disabled={isSubmitting} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -492,7 +621,7 @@ const RegisterForm = () => {
               <FormItem className="flex-1 min-w-[250px]">
                 <FormLabel>Blood Group</FormLabel>
                 <FormControl>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isSubmitting} >
                     <SelectTrigger>
                       <SelectValue placeholder="Select Blood Group" />
                     </SelectTrigger>
@@ -520,7 +649,7 @@ const RegisterForm = () => {
               <FormItem className="flex-1 min-w-[250px]">
                 <FormLabel>Known Allergies</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="Lactose Intolerant" />
+                  <Input {...field} placeholder="Lactose Intolerant" disabled={isSubmitting} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -535,7 +664,7 @@ const RegisterForm = () => {
             <FormItem>
               <FormLabel>Pre-existing Medical Conditions</FormLabel>
               <FormControl>
-                <Input {...field} placeholder="Asthmatic" />
+                <Input {...field} placeholder="Asthmatic" disabled={isSubmitting} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -550,7 +679,7 @@ const RegisterForm = () => {
               <FormItem className="flex-1 min-w-[250px]">
                 <FormLabel>Insurance Number</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="1023473834" />
+                  <Input {...field} placeholder="1023473834" disabled={isSubmitting} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -563,7 +692,7 @@ const RegisterForm = () => {
               <FormItem className="flex-1 min-w-[250px]">
                 <FormLabel>Provider</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="AXA Mansard" />
+                  <Input {...field} placeholder="AXA Mansard" disabled={isSubmitting} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -587,7 +716,7 @@ const RegisterForm = () => {
             <FormItem className="flex-1 min-w-[250px]">
               <FormLabel>Password</FormLabel>
               <FormControl>
-                <Input type="password" {...field} placeholder="********" />
+                <Input type="password" {...field} placeholder="********" disabled={isSubmitting} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -601,7 +730,7 @@ const RegisterForm = () => {
               <FormItem className="flex-1 min-w-[250px]">
                 <FormLabel>Confirm Password</FormLabel>
                 <FormControl>
-                  <Input type="password" {...field} placeholder="*********" />
+                  <Input type="password" {...field} placeholder="*********" disabled={isSubmitting} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -616,7 +745,7 @@ const RegisterForm = () => {
             render={({ field }) => (
               <FormItem>
                 <FormControl>
-                  <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                  <Checkbox checked={field.value} onCheckedChange={field.onChange} disabled={isSubmitting} />
                 </FormControl>
                 <FormLabel> Consent for Data Usage</FormLabel>
                 <br />
@@ -626,7 +755,7 @@ const RegisterForm = () => {
           />
         </div>
 
-        <Button type="submit">Submit</Button>
+        <Button type="submit" disabled={isSubmitting} > {isSubmitting ? "Registering..." : "Register"}</Button>
 
         <div className="pt-12 ">
           Already have an account?

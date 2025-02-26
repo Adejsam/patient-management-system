@@ -76,10 +76,6 @@ const data = {
       icon: ReceiptText,
       items: [
         {
-          title: "View Bills",
-          url: "/patient/view-bills",
-        },
-        {
           title: "Payment History",
           url: "/patient/payment-history",
         },
@@ -92,11 +88,7 @@ const data = {
       items: [
         {
           title: "Lodge Complaint",
-          url: "#",
-        },
-        {
-          title: "Complaint History",
-          url: "#",
+          url: "/patient/lodge-complaint",
         },
       ],
     },
