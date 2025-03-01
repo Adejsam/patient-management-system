@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Modal, ModalHeader, ModalBody, ModalFooter } from "../../components/ui/modal";
+import { Modal, ModalHeader, ModalContent, ModalFooter } from "../../components/ui/modal";
 import { Button } from "../../components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/ui/select";
 import { Calendar } from "../../components/ui/calendar";
@@ -46,9 +46,9 @@ export const RescheduleAppointmentModal: React.FC<RescheduleAppointmentModalProp
   const today = new Date().toISOString().split("T")[0];
 
   return (
-    <Modal isOpen onClose={onClose}>
-      <ModalHeader><span className="text-primary">Reschedule</span> Appointment</ModalHeader>
-      <ModalBody>
+    <Modal isOpen onClose={onClose} className="flex justify-center items-center">
+      <ModalHeader className=""><span className="text-primary">Reschedule</span> Appointment</ModalHeader>
+      <ModalContent className="">
         <div className="mb-4">
           <label className={`block text-sm font-bold mb-2 ${theme === "dark" ? "text-white" : "text-black"}`}>
             New Date:
@@ -94,9 +94,9 @@ export const RescheduleAppointmentModal: React.FC<RescheduleAppointmentModalProp
             </SelectContent>
           </Select>
         </div>
-      </ModalBody>
-      <ModalFooter>
-        <Button variant="outline" onClick={onClose}>
+      </ModalContent>
+      <ModalFooter >
+        <Button variant="outline" onClick={onClose} className="mr-3">
           Cancel
         </Button>
         <Button onClick={handleReschedule}>Reschedule</Button>

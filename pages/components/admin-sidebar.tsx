@@ -56,16 +56,12 @@ const data = {
       icon: BookOpen,
       items: [
         {
-          title: "Patient Records",
-          url: "#",
+          title: "View Records",
+          url: "/admin/view-medical-record",
         },
         {
-          title: "Approve Records",
-          url: "#",
-        },
-        {
-          title: "Modify Records",
-          url: "#",
+          title: "Add Records",
+          url: "/admin/add-medical-record",
         },
       ],
     },
@@ -75,12 +71,12 @@ const data = {
       icon: ReceiptText,
       items: [
         {
-          title: "All transaction",
-          url: "#",
+          title: "View Transaction",
+          url: "/admin/view-invoice-reciept",
         },
         {
-          title: "Process payment",
-          url: "#",
+          title: "Create Payment",
+          url: "/admin/add-invoice-reciept",
         },
       ],
     },
@@ -91,16 +87,16 @@ const data = {
       items: [
         {
           title: "Manage Patient",
-          url: "#",
-        },
-        {
-          title: "Manage Doctor",
-          url: "#",
+          url: "/admin/manage-patient",
         },
         {
           title: "Manage Staff",
-          url: "#",
+          url: "/admin/manage-staff",
         },
+        {
+          title: "Add Staff",
+          url: "/admin/add-staff",
+        }
       ],
     },
     {

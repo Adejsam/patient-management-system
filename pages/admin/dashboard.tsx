@@ -13,9 +13,22 @@ import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/card"
 import Seo from "../../shared/seo/seo";
 import { User, Users, Wallet } from 'lucide-react';
 import { ModeToggle } from "../components/ui/modeToggle";
+import { useEffect, useState } from "react";
+import { useTheme } from "next-themes";
 
 
 export default function Page() {
+  useTheme();
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isMounted) {
+    return null;
+  }
+
   return (
     <AdminLayout>
       <Seo title="Dashboard"></Seo>

@@ -151,6 +151,15 @@ export const generateMedicalRecordPDF = async (record: MedicalRecordData, logoSr
     currentY += SECTION_GAP;
     drawHorizontalLine(currentY - 3);
 
+    // Vital Signs Section
+    currentY = drawSection("Vital Signs", currentY + 3);
+    currentY = addField("Temperature", record.temperature, MARGIN_LEFT, currentY);
+    currentY = addField("Weight", record.weight, MARGIN_LEFT + columnWidth, currentY - LINE_HEIGHT);
+    currentY = addField("Heart Rate", record.heartRate, MARGIN_LEFT, currentY + 3);
+    currentY = addField("Blood Pressure", record.bloodPressure, MARGIN_LEFT + columnWidth, currentY - LINE_HEIGHT);
+    currentY += SECTION_GAP;
+    drawHorizontalLine(currentY - 3);
+
     // Clinical Information Section
     currentY = drawSection("Clinical Information", currentY + 3);
     currentY = addMultiLineField("Symptoms", record.symptoms, MARGIN_LEFT, currentY);

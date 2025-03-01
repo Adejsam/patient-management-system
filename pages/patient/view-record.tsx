@@ -5,8 +5,8 @@ import Seo from "../../shared/seo/seo";
 import { useTheme } from "next-themes";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../components/ui/card";
 import { generateMedicalRecordPDF } from "../../services/PDFMedicalGenerator";
-import LightLogo from "../../public/assets/icons/logo-full-light.png";
-import DarkLogo from "../../public/assets/icons/logo-full.svg";
+import LightfullLogo from "../../public/assets/icons/logo-full-light.png";
+import DarkfullLogo from "../../public/assets/icons/logo-full.svg";
 import Image from "next/image";
 import { MedicalRecordData } from "../../types/medical";
 
@@ -20,6 +20,10 @@ const medicalRecordsData: MedicalRecordData[] = [
     date: "2024-01-15",
     doctor: "Dr. Smith",
     field: "Cardiology",
+    temperature: "98.6°F",
+    weight: "70kg",
+    heartRate: "72 bpm",
+    bloodPressure: "120/80 mmHg",
     symptoms: "Chest pain, shortness of breath",
     allergies: "None",
     diagnosis: "Mild hypertension",
@@ -29,12 +33,13 @@ const medicalRecordsData: MedicalRecordData[] = [
       {
         name: "Lisinopril",
         dosage: "10mg",
-        frequency: "Once daily"
-      }
+        frequency: "Once daily",
+      },
     ],
-    doctorNotes: "Patient presents with elevated blood pressure. Recommended lifestyle changes and medication.",
-    nursingNotes: "Patient education provided regarding medication and diet."
-  }
+    doctorNotes:
+      "Patient presents with elevated blood pressure. Recommended lifestyle changes and medication.",
+    nursingNotes: "Patient education provided regarding medication and diet.",
+  },
   // Add more records as needed
 ];
 
@@ -55,7 +60,7 @@ const ViewRecord: React.FC = () => {
 
   const exportToPDF = async (record: MedicalRecordData) => {
     try {
-      const logoSrc = resolvedTheme === "dark" ? DarkLogo.src : LightLogo.src;
+      const logoSrc = resolvedTheme === "dark" ? DarkfullLogo.src : LightfullLogo.src;
       await generateMedicalRecordPDF(record, logoSrc);
     } catch (error) {
       console.error("Error exporting PDF:", error);
@@ -64,7 +69,7 @@ const ViewRecord: React.FC = () => {
 
   if (!isMounted) return null;
 
-  const logoSrc = resolvedTheme === "dark" ? LightLogo : DarkLogo;
+  const logoSrc = resolvedTheme === "dark" ? LightfullLogo : DarkfullLogo;
 
   return (
     <PatientLayout>
@@ -79,7 +84,9 @@ const ViewRecord: React.FC = () => {
         <div className="p-4 my-5 w-full">
           <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-4 pt-4 pb-8">
             {medicalRecordsData.map((record, index) => (
-              <Card key={index} className="w-[400px] py-5 mb-5 md:w-full hover:shadow-lg transition-shadow duration-200">
+              <Card
+                key={index}
+                className="w-[400px] py-5 mb-5 md:w-full hover:shadow-lg transition-shadow duration-200">
                 <CardHeader>
                   <Image src={logoSrc} alt="logo" height={200} width={200} className="pb-3" />
                   <CardTitle className="text-xl font-bold">{record.date}</CardTitle>
@@ -98,76 +105,111 @@ const ViewRecord: React.FC = () => {
                         <strong className="block text-sm font-medium mb-1">Date of Birth:</strong>
                         <p className="p-2 rounded-md bg-muted/50">{record.dateOfBirth}</p>
                       </div>
+                      <div>
+                        <strong className="block text-sm font-medium mb-1">Gender:</strong>
+                        <p className="p-2 rounded-md bg-muted/50">{record.gender}</p>
+                      </div>
+                      <div>
+                        <strong className="block text-sm font-medium mb-1">Contact:</strong>
+                        <p className="p-2 rounded-md bg-muted/50">{record.contactDetails}</p>
+                      </div>
                     </div>
 
-                    <div>
-                      <strong className="block text-sm font-medium mb-1">Symptoms:</strong>
-                      <p className="p-2 rounded-md bg-muted/50">{record.symptoms}</p>
-                    </div>
-
-                    <div>
-                      <strong className="block text-sm font-medium mb-1">Allergies:</strong>
-                      <p className="p-2 rounded-md bg-muted/50">{record.allergies}</p>
-                    </div>
+                    {!expandedRecords.includes(index) && (
+                      <div className="flex justify-between mt-4">
+                        <button
+                          onClick={() => toggleExpand(index)}
+                          className="px-4 py-2 text-blue-600 hover:text-blue-800 rounded-md transition-all duration-200">
+                          View Details
+                        </button>
+                        <button
+                          onClick={() => exportToPDF(record)}
+                          className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors">
+                          Export as PDF
+                        </button>
+                      </div>
+                    )}
 
                     {expandedRecords.includes(index) && (
-                      <>
+                      <div className="space-y-4">
                         <div>
-                          <strong className="block text-sm font-medium mb-1">Diagnosis:</strong>
-                          <p className="p-2 rounded-md bg-muted/50">{record.diagnosis}</p>
-                        </div>
-
-                        <div>
-                          <strong className="block text-sm font-medium mb-1">Lab Tests:</strong>
-                          <p className="p-2 rounded-md bg-muted/50">{record.labTests}</p>
-                        </div>
-
-                        <div>
-                          <strong className="block text-sm font-medium mb-1">Lab Test Results:</strong>
-                          <p className="p-2 rounded-md bg-muted/50">{record.labTestResults}</p>
-                        </div>
-
-                        <div>
-                          <strong className="block text-sm font-medium mb-1">Medications:</strong>
+                          <strong className="block text-sm font-medium mb-1">Vital Signs:</strong>
                           <div className="p-2 rounded-md bg-muted/50">
-                            {record.medications.map((med, idx) => (
-                              <p key={idx} className="mb-1 last:mb-0">
-                                {med.name} - {med.dosage} ({med.frequency})
-                              </p>
-                            ))}
+                            <p className="mb-1">Temperature: {record.temperature}</p>
+                            <p className="mb-1">Weight: {record.weight}</p>
+                            <p className="mb-1">Heart Rate: {record.heartRate}</p>
+                            <p className="mb-1">Blood Pressure: {record.bloodPressure}</p>
                           </div>
                         </div>
 
                         <div>
-                          <strong className="block text-sm font-medium mb-1">Doctor Notes:</strong>
-                          <p className="p-2 rounded-md bg-muted/50 whitespace-pre-wrap">
-                            {record.doctorNotes}
-                          </p>
+                          <strong className="block text-sm font-medium mb-1">Symptoms:</strong>
+                          <p className="p-2 rounded-md bg-muted/50">{record.symptoms}</p>
                         </div>
 
                         <div>
-                          <strong className="block text-sm font-medium mb-1">Nursing Notes:</strong>
-                          <p className="p-2 rounded-md bg-muted/50 whitespace-pre-wrap">
-                            {record.nursingNotes}
-                          </p>
+                          <strong className="block text-sm font-medium mb-1">Allergies:</strong>
+                          <p className="p-2 rounded-md bg-muted/50">{record.allergies}</p>
                         </div>
-                      </>
-                    )}
 
-                    <div className="flex justify-between mt-4">
-                      <button
-                        onClick={() => toggleExpand(index)}
-                        className="px-4 py-2 text-blue-600 hover:text-blue-800 hover:text-blue-800 rounded-md transition-all duration-200"
-                      >
-                        {expandedRecords.includes(index) ? "Read Less" : "Read More"}
-                      </button>
-                      <button
-                        onClick={() => exportToPDF(record)}
-                        className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
-                      >
-                        Export as PDF
-                      </button>
-                    </div>
+                        <div className="space-y-4">
+                          <div>
+                            <strong className="block text-sm font-medium mb-1">Diagnosis:</strong>
+                            <p className="p-2 rounded-md bg-muted/50">{record.diagnosis}</p>
+                          </div>
+
+                          <div>
+                            <strong className="block text-sm font-medium mb-1">Lab Tests:</strong>
+                            <p className="p-2 rounded-md bg-muted/50">{record.labTests}</p>
+                          </div>
+
+                          <div>
+                            <strong className="block text-sm font-medium mb-1">
+                              Lab Test Results:
+                            </strong>
+                            <p className="p-2 rounded-md bg-muted/50">{record.labTestResults}</p>
+                          </div>
+
+                          <div>
+                            <strong className="block text-sm font-medium mb-1">Medications:</strong>
+                            <div className="p-2 rounded-md bg-muted/50">
+                              {record.medications.map((med, idx) => (
+                                <p key={idx} className="mb-1 last:mb-0">
+                                  {med.name} - {med.dosage} ({med.frequency})
+                                </p>
+                              ))}
+                            </div>
+                          </div>
+
+                          <div>
+                            <strong className="block text-sm font-medium mb-1">Doctor Notes:</strong>
+                            <p className="p-2 rounded-md bg-muted/50 whitespace-pre-wrap">
+                              {record.doctorNotes}
+                            </p>
+                          </div>
+
+                          <div>
+                            <strong className="block text-sm font-medium mb-1">Nursing Notes:</strong>
+                            <p className="p-2 rounded-md bg-muted/50 whitespace-pre-wrap">
+                              {record.nursingNotes}
+                            </p>
+                          </div>
+
+                          <div className="flex justify-between mt-4">
+                            <button
+                              onClick={() => toggleExpand(index)}
+                              className="px-4 py-2 text-blue-600 hover:text-blue-800 rounded-md transition-all duration-200">
+                              Hide Details
+                            </button>
+                            <button
+                              onClick={() => exportToPDF(record)}
+                              className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors">
+                              Export as PDF
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -180,3 +222,4 @@ const ViewRecord: React.FC = () => {
 };
 
 export default ViewRecord;
+

@@ -40,11 +40,9 @@ const formSchema = z
     photoUpload: z.any().refine((file) => file instanceof File, "Photo upload must be a file"),
     primaryPhoneNumber: z
       .string()
-      .min(1, "Primary phone number is required")
-      .regex(/^(0|\+234)[789]\d{9}$/, "Invalid Nigerian phone number format"),
+      .min(1, "Primary phone number is required"),
     alternatePhoneNumber: z
       .string()
-      .regex(/^(0|\+234)[789]\d{9}$/, "Invalid Nigerian phone number format")
       .optional(),
     email: z.string().email("Invalid email address"),
     residentialAddress: z.object({
