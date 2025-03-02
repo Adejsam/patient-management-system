@@ -106,7 +106,58 @@ input[type="number"] {
   -moz-appearance: textfield;
 }
 
+*{
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Existing global styles... */
+
+input[type="date"],
+select {
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius);
+  padding: 0.5rem;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(50%) sepia(100%) saturate(500%) hue-rotate(180deg);
+}
+
+.dark input[type="date"],
+.dark select {
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  border: 1px solid hsl(var(--border));
+}
+
+input[type="date"]:focus,
+select:focus {
+  outline: 2px solid hsl(var(--ring));
+}
+
+.dark input[type="date"]:focus,
+.dark select:focus {
+  outline: 2px solid hsl(var(--ring));
+}
+
 
 textarea {
   @apply block ;
+}
+
+
+
+
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
 }

@@ -335,8 +335,8 @@ export default function ManagePatientsPage() {
     <AdminLayout>
       <Seo title="Manage Patients" />
       <Header title="Manage Patients" breadcrumbLinkText="Home" breadcrumbLinkHref="/" />
-      <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-        <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50">
+      <div className="flex flex-1 flex-col gap-4 p-4 pt-0 ">
+        <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 w-[97%] mx-auto md:min-h-min]">
           <h1 className="text-3xl/9 font-bold mt-5 mb-2 pl-5 pt-5">
             Manage <span className="text-primary"> Patient</span>
           </h1>

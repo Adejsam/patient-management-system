@@ -21,7 +21,7 @@ export default function PaymentDocumentsPage() {
     <>
       <Seo title="Payment Documents" />
       <Header title="Payment Documents" breadcrumbLinkText="Home" breadcrumbLinkHref="/" />
-      <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 w-[97%] mx-auto pb-10">
+      <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 w-[97%] mx-auto pb-10 md-h-[100vh]">
         <div className="py-2 px-4">
           <h1 className="text-3xl font-bold mt-5 mb-2">
             Payment <span className="text-primary">Documents</span>

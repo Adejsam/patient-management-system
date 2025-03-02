@@ -105,12 +105,8 @@ const data = {
       icon: MessageSquareMore,
       items: [
         {
-          title: "Patient QuerieS",
-          url: "#",
-        },
-        {
-          title: "Staff Feedback",
-          url: "#",
+          title: "Patient Queries",
+          url: "/admin/patient-queries",
         },
       ],
     },

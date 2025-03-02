@@ -11,13 +11,7 @@ import {
   FormLabel,
   FormMessage,
 } from "../../components/ui/form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../../components/ui/select";
+
 import { Calendar } from "../../components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "../../components/ui/popover";
 import { CalendarIcon } from "lucide-react";
@@ -32,13 +26,13 @@ const AddInvoiceForm = () => {
     resolver: zodResolver(invoiceFormSchema),
     defaultValues: {
       items: [{ description: '', amount: 0 }],
-      paymentTerms: "net-30",
       patient: {
         name: '',
         email: '',
         phone: '',
         address: ''
-      }
+      },
+      date: new Date(),
     },
   });
 
@@ -86,7 +80,6 @@ const AddInvoiceForm = () => {
                     {...field} 
                     placeholder="Enter invoice number" 
                     readOnly 
-                    className="bg-gray-100"
                   />
                 </FormControl>
                 <FormMessage />
@@ -128,29 +121,6 @@ const AddInvoiceForm = () => {
             )}
           />
 
-          <FormField
-            control={form.control}
-            name="paymentTerms"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Payment Terms</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select payment terms" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="net-15">Net 15</SelectItem>
-                    <SelectItem value="net-30">Net 30</SelectItem>
-                    <SelectItem value="net-45">Net 45</SelectItem>
-                    <SelectItem value="net-60">Net 60</SelectItem>
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
         </div>
 
         <div className="flex justify-between p-4 bg-muted rounded-lg">

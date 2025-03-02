@@ -40,7 +40,8 @@ const AddReceiptForm = () => {
         email: '',
         phone: '',
         address: ''
-      }
+      },
+      date: new Date(),
     },
   });
 
@@ -88,7 +89,6 @@ const AddReceiptForm = () => {
                     {...field} 
                     placeholder="Enter receipt number" 
                     readOnly 
-                    className="bg-gray-100"
                   />
                 </FormControl>
                 <FormMessage />

@@ -6,7 +6,7 @@ import { format } from "date-fns";
 import Image from "next/image";
 import { ScrollArea } from "../../components/ui/scroll-area";
 import { Staff } from "../../../types/staff";
-import { DoctorDetails, AdminDetails, PharmacistDetails, ReceptionistDetails, BillingOfficerDetails } from "../../../types/staff";
+import { DoctorDetails, PharmacistDetails } from "../../../types/staff";
 
 interface StaffDetailsModalProps {
   staff: Staff;
@@ -34,25 +34,11 @@ export const StaffDetailsModal: React.FC<StaffDetailsModalProps> = ({ staff, onC
             <p>Specialization: {(staff.details as DoctorDetails).specialization}</p>
           </div>
         );
-      case "admin":
-        return (
-          <div>
-            <p>System Access Level: {(staff.details as AdminDetails).systemAccessLevel}</p>
-            <p>Security Clearance: {(staff.details as AdminDetails).securityClearance}</p>
-          </div>
-        );
       case "pharmacist":
         return (
           <p>Pharmacy License Number: {(staff.details as PharmacistDetails).pharmacyLicenseNumber}</p>
         );
-      case "receptionist":
-        return (
-          <p>Training Level: {(staff.details as ReceptionistDetails).trainingLevel}</p>
-        );
-      case "billingOfficer":
-        return (
-          <p>Certification Number: {(staff.details as BillingOfficerDetails).certificationNumber}</p>
-        );
+      
       default:
         return null;
     }

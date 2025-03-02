@@ -26,6 +26,9 @@ import AdminLayout from "../../shared/layout/AdminLayout";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { Staff } from "../../types/staff";
+import { StaffDetailsModal } from "./manage users/view-staff-details";
+import Header from "../components/headers/Header";
+import Seo from "../../shared/seo/seo";
 
 export const mockStaff: Staff[] = [
   {
@@ -37,9 +40,10 @@ export const mockStaff: Staff[] = [
     role: "doctor",
     details: {
       medicalLicenseNumber: "MED123456",
-      specialization: "Internal Medicine"
+      specialization: "Internal Medicine",
     },
-    createdAt: new Date()
+    createdAt: new Date(),
+    experienceYears: "3",
   },
   {
     id: "2",
@@ -48,11 +52,8 @@ export const mockStaff: Staff[] = [
     email: "jane.smith@example.com",
     phoneNumber: "+1 555-987-6543",
     role: "admin",
-    details: {
-      systemAccessLevel: "superuser",
-      securityClearance: "level-3"
-    },
-    createdAt: new Date()
+    createdAt: new Date(),
+    experienceYears: "2",
   },
   {
     id: "3",
@@ -62,9 +63,10 @@ export const mockStaff: Staff[] = [
     phoneNumber: "+1 555-555-5555",
     role: "pharmacist",
     details: {
-      pharmacyLicenseNumber: "PHAR12345"
+      pharmacyLicenseNumber: "PHAR12345",
     },
-    createdAt: new Date()
+    createdAt: new Date(),
+    experienceYears: "4",
   },
   {
     id: "4",
@@ -73,10 +75,8 @@ export const mockStaff: Staff[] = [
     email: "sarah.williams@example.com",
     phoneNumber: "+1 555-876-5432",
     role: "receptionist",
-    details: {
-      trainingLevel: "advanced"
-    },
-    createdAt: new Date()
+    createdAt: new Date(),
+    experienceYears: "5",
   },
   {
     id: "5",
@@ -85,11 +85,19 @@ export const mockStaff: Staff[] = [
     email: "david.brown@example.com",
     phoneNumber: "+1 555-765-4321",
     role: "billingOfficer",
-    details: {
-      certificationNumber: "BILL12345"
-    },
-    createdAt: new Date()
-  }
+    createdAt: new Date(),
+    experienceYears: "1",
+  },
+  {
+    id: "6",
+    firstName: "David",
+    lastName: "Brown",
+    email: "david.brown@example.com",
+    phoneNumber: "+1 555-765-4321",
+    role: "billingOfficer",
+    createdAt: new Date(),
+    experienceYears: "4",
+  },
 ];
 
 export default function ManageStaffPage() {
@@ -134,25 +142,20 @@ export default function ManageStaffPage() {
       header: "Details",
       cell: (info) => {
         const details = info.getValue();
-        if (!details) return null;
-        
-        // Display relevant details based on role
+        if (!details || typeof details !== "object") return null;
+
+        // Use type guards to handle union types
         if (info.row.original.role === "doctor") {
-          return `License: ${details.medicalLicenseNumber}, Specialization: ${details.specialization}`;
-        }
-        if (info.row.original.role === "admin") {
-          return `Access Level: ${details.systemAccessLevel}, Clearance: ${details.securityClearance}`;
+          if ("medicalLicenseNumber" in details && "specialization" in details) {
+            return `License: ${details.medicalLicenseNumber}, Specialization: ${details.specialization}`;
+          }
         }
         if (info.row.original.role === "pharmacist") {
-          return `License: ${details.pharmacyLicenseNumber}`;
+          if ("pharmacyLicenseNumber" in details) {
+            return `License: ${details.pharmacyLicenseNumber}`;
+          }
         }
-        if (info.row.original.role === "receptionist") {
-          return `Training Level: ${details.trainingLevel}`;
-        }
-        if (info.row.original.role === "billingOfficer") {
-          return `Certification: ${details.certificationNumber}`;
-        }
-        
+
         return null;
       },
     },
@@ -216,8 +219,10 @@ export default function ManageStaffPage() {
 
   return (
     <AdminLayout>
+      <Seo title="Manage staff"></Seo>
+      <Header title="Manage staff" breadcrumbLinkText="Home" breadcrumbLinkHref="/" />
       <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-        <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50">
+        <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 w-full mx-auto max-w-7xl">
           <h1 className="text-3xl/9 font-bold mt-5 mb-2 pl-5 pt-5">
             Manage <span className="text-primary">Staff</span>
           </h1>
@@ -234,7 +239,7 @@ export default function ManageStaffPage() {
             />
           </div>
 
-          <div className="rounded-md border m-4">
+          <div className="rounded-md border m-4 overflow-x-auto">
             <Table>
               <TableHeader>
                 {table.getHeaderGroups().map((headerGroup) => (
@@ -271,7 +276,7 @@ export default function ManageStaffPage() {
             </Table>
           </div>
 
-          <div className="flex items-center justify-end space-x-2 py-4">
+          <div className="flex items-center justify-end space-x-2 py-4 px-4">
             <Button
               variant="secondary"
               size="sm"
@@ -282,6 +287,15 @@ export default function ManageStaffPage() {
             <Button size="sm" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
               Next
             </Button>
+            {isModalOpen && selectedStaff && (
+              <StaffDetailsModal
+                staff={selectedStaff}
+                onClose={() => {
+                  setIsModalOpen(false);
+                  setSelectedStaff(null);
+                }}
+              />
+            )}
           </div>
         </div>
       </div>

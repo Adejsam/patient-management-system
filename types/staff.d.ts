@@ -2,24 +2,11 @@ interface DoctorDetails {
     medicalLicenseNumber: string;
     specialization: string;
   }
-  
-  interface AdminDetails {
-    systemAccessLevel?: string;
-    securityClearance?: string;
-  }
-  
-  interface BillingOfficerDetails {
-    certificationNumber?: string;
-  }
-  
+   
   interface PharmacistDetails {
     pharmacyLicenseNumber: string;
   }
   
-  interface ReceptionistDetails {
-    trainingLevel?: string;
-  }
-
 export interface Staff {
     id: string;
     firstName: string;
@@ -27,7 +14,8 @@ export interface Staff {
     email: string;
     phoneNumber: string;
     photoUpload?: File;
+    experienceYears: string
     role: "doctor" | "billingOfficer" | "pharmacist" | "receptionist" | "admin";
-    details?: DoctorDetails | AdminDetails | BillingOfficerDetails | PharmacistDetails | ReceptionistDetails;
+    details?: DoctorDetails | PharmacistDetails;
     createdAt: Date;
   }

@@ -14,7 +14,6 @@ export interface Patient {
     date: Date;
     items: BillItem[];
     patient: Patient;
-    paymentTerms: string;
     status: string;
     totalAmount: number;
   }

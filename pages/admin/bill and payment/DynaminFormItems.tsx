@@ -10,21 +10,22 @@ import {
   FormMessage,
 } from "../../components/ui/form";
 import { Plus, Trash2 } from "lucide-react";
-import { BillItem, ReceiptFormValues, InvoiceFormValues } from '../../admin/bill and payment/payment-forms';
-
+import { BillItem} from '../../admin/bill and payment/payment-forms';
+import { InvoiceFormValues, ReceiptFormValues } from './payment-form';
 
 interface DynamicFormItemsProps {
   form: UseFormReturn<InvoiceFormValues | ReceiptFormValues>;
-  formType: 'receipt' | 'invoice';
   minItems?: number;
 }
 
 export const DynamicFormItems: React.FC<DynamicFormItemsProps> = ({
   form,
-  formType,
   minItems = 1
 }) => {
   const items = form.watch('items') || [];
+
+  const formValues = form.getValues();
+
 
   const handleAddItem = () => {
     try {
@@ -91,7 +92,7 @@ export const DynamicFormItems: React.FC<DynamicFormItemsProps> = ({
                 <FormControl>
                   <Input 
                     {...field}
-                    placeholder={`${formType === 'receipt' ? 'Receipt' : 'Invoice'} item description`}
+                    placeholder={`${formValues.formType === 'invoice' ? 'Invoice' : 'Receipt'} item description`}
                     className="w-full"
                   />
                 </FormControl>
@@ -142,7 +143,7 @@ export const DynamicFormItems: React.FC<DynamicFormItemsProps> = ({
         className="mt-2"
       >
         <Plus className="h-4 w-4 mr-2" />
-        Add {formType === 'receipt' ? 'Receipt' : 'Invoice'} Item
+          Add {formValues.formType === 'invoice' ? 'Invoice' : 'Receipt'} Item
       </Button>
     </div>
   );
