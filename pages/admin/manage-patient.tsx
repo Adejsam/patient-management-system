@@ -29,199 +29,264 @@ import AdminLayout from "../../shared/layout/AdminLayout";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { PatientDetailsModal } from "./manage users/view-pateint-details";
+import { EditPatientModal } from "./manage users/edit-patient-modal";
 
 export const mockPatients: Patient[] = [
   {
-    firstName: "John",
-    middleName: "David",
-    lastName: "Doe",
+    firstName: "Emeka",
+    middleName: "Chukwuemeka",
+    lastName: "Okafor",
     dateOfBirth: new Date("1985-05-15"),
     gender: "Male",
     photoUpload: new File([""], "patient-photo.jpg", { type: "image/jpeg" }),
-    primaryPhoneNumber: "+1 555-123-4567",
-    alternatePhoneNumber: "+1 555-987-6543",
-    email: "john.doe@example.com",
+    primaryPhoneNumber: "+234 802-123-4567",
+    alternatePhoneNumber: "+234 816-987-6543",
+    email: "emeka.okafor@example.com",
     residentialAddress: {
-      street: "123 Main Street",
-      city: "New York",
-      state: "NY",
-      country: "USA",
+      street: "12 Adeola Odeku Street",
+      city: "Lagos",
+      state: "Lagos",
+      country: "Nigeria",
     },
     emergencyContact: {
-      name: "Jane Doe",
+      name: "Ngozi Okafor",
       relationship: "Spouse",
-      phoneNumber: "+1 555-234-5678",
+      phoneNumber: "+234 803-234-5678",
     },
     bloodGroup: "A+",
-    knownAllergies: "Penicillin, Shellfish",
+    knownAllergies: "Penicillin, Groundnut",
     preExistingConditions: "Hypertension",
-    primaryPhysician: "Dr. Smith",
+    primaryPhysician: "Dr. Adeyemi",
     healthInsurance: {
-      insuranceNumber: "INS1234567",
-      provider: "HealthCare Plus",
+      insuranceNumber: "NHIS1234567",
+      provider: "National Health Insurance Scheme (NHIS)",
     },
     maritalStatus: "Married",
     occupation: "Software Engineer",
+  },
+  {
+    firstName: "Babatunde",
+    middleName: "Oluwaseun",
+    lastName: "Adebayo",
+    dateOfBirth: new Date("1990-07-22"),
+    gender: "Male",
+    photoUpload: new File([""], "patient-photo.jpg", { type: "image/jpeg" }),
+    primaryPhoneNumber: "+234 803-987-2345",
+    alternatePhoneNumber: "+234 705-654-3210",
+    email: "babatunde.adebayo@example.com",
+    residentialAddress: {
+      street: "15 Ikorodu Road",
+      city: "Lagos",
+      state: "Lagos",
+      country: "Nigeria",
+    },
+    emergencyContact: {
+      name: "Tosin Adebayo",
+      relationship: "Brother",
+      phoneNumber: "+234 806-765-4321",
+    },
+    bloodGroup: "O+",
+    knownAllergies: "None",
+    preExistingConditions: "Asthma",
+    primaryPhysician: "Dr. Okon",
+    healthInsurance: {
+      insuranceNumber: "NHIS2345678",
+      provider: "National Health Insurance Scheme (NHIS)",
+    },
+    maritalStatus: "Single",
+    occupation: "Civil Engineer",
+  },
+  {
+    firstName: "Aisha",
+    middleName: "Zainab",
+    lastName: "Muhammad",
+    dateOfBirth: new Date("1988-11-05"),
+    gender: "Female",
+    photoUpload: new File([""], "patient-photo.jpg", { type: "image/jpeg" }),
+    primaryPhoneNumber: "+234 909-555-6789",
+    alternatePhoneNumber: "+234 802-888-1234",
+    email: "aisha.muhammad@example.com",
+    residentialAddress: {
+      street: "20 Ahmadu Bello Way",
+      city: "Abuja",
+      state: "FCT",
+      country: "Nigeria",
+    },
+    emergencyContact: {
+      name: "Suleiman Muhammad",
+      relationship: "Husband",
+      phoneNumber: "+234 808-999-4567",
+    },
+    bloodGroup: "B+",
+    knownAllergies: "Seafood",
+    preExistingConditions: "Diabetes",
+    primaryPhysician: "Dr. Yusuf",
+    healthInsurance: {
+      insuranceNumber: "NHIS3456789",
+      provider: "National Health Insurance Scheme (NHIS)",
+    },
+    maritalStatus: "Married",
+    occupation: "Teacher",
+  },
+  {
+    firstName: "Amina",
+    middleName: "Zainab",
+    lastName: "Aliyu",
+    dateOfBirth: new Date("1990-09-21"),
+    gender: "Female",
+    photoUpload: new File([""], "patient-photo.jpg", { type: "image/jpeg" }),
+    primaryPhoneNumber: "+234 701-234-5678",
+    alternatePhoneNumber: "+234 802-345-6789",
+    email: "amina.aliyu@example.com",
+    residentialAddress: {
+      street: "45 Garki Road",
+      city: "Abuja",
+      state: "Federal Capital Territory",
+      country: "Nigeria",
+    },
+    emergencyContact: {
+      name: "Fatimah Aliyu",
+      relationship: "Sister",
+      phoneNumber: "+234 703-456-7890",
+    },
+    bloodGroup: "B+",
+    knownAllergies: "Dust, Pollen",
+    preExistingConditions: "Asthma",
+    primaryPhysician: "Dr. Mohammed",
+    healthInsurance: {
+      insuranceNumber: "NHIS9876543",
+      provider: "National Health Insurance Scheme (NHIS)",
+    },
+    maritalStatus: "Single",
+    occupation: "Nurse",
   },
   {
     firstName: "John",
-    middleName: "David",
-    lastName: "Doe",
-    dateOfBirth: new Date("1985-05-15"),
+    middleName: "Michael",
+    lastName: "Smith",
+    dateOfBirth: new Date("1988-02-17"),
     gender: "Male",
     photoUpload: new File([""], "patient-photo.jpg", { type: "image/jpeg" }),
-    primaryPhoneNumber: "+1 555-123-4567",
-    alternatePhoneNumber: "+1 555-987-6543",
-    email: "john.doe@example.com",
+    primaryPhoneNumber: "+234 704-567-8901",
+    alternatePhoneNumber: "+234 705-678-9012",
+    email: "john.smith@example.com",
     residentialAddress: {
-      street: "123 Main Street",
-      city: "New York",
-      state: "NY",
-      country: "USA",
+      street: "20 Victoria Island",
+      city: "Lagos",
+      state: "Lagos",
+      country: "Nigeria",
     },
     emergencyContact: {
-      name: "Jane Doe",
-      relationship: "Spouse",
-      phoneNumber: "+1 555-234-5678",
+      name: "Jane Smith",
+      relationship: "Wife",
+      phoneNumber: "+234 706-789-0123",
     },
-    bloodGroup: "A+",
-    knownAllergies: "Penicillin, Shellfish",
-    preExistingConditions: "Hypertension",
-    primaryPhysician: "Dr. Smith",
+    bloodGroup: "O-",
+    knownAllergies: "None",
+    preExistingConditions: "Diabetes",
+    primaryPhysician: "Dr. Peter",
     healthInsurance: {
-      insuranceNumber: "INS1234567",
-      provider: "HealthCare Plus",
+      insuranceNumber: "NHIS1122334",
+      provider: "National Health Insurance Scheme (NHIS)",
     },
     maritalStatus: "Married",
-    occupation: "Software Engineer",
+    occupation: "Architect",
   },
   {
-    firstName: "Frank",
-    middleName: "Eben",
-    lastName: "Doe",
-    dateOfBirth: new Date("1985-05-15"),
-    gender: "Male",
+    firstName: "Grace",
+    middleName: "Chinonso",
+    lastName: "Okwuosa",
+    dateOfBirth: new Date("1995-11-10"),
+    gender: "Female",
     photoUpload: new File([""], "patient-photo.jpg", { type: "image/jpeg" }),
-    primaryPhoneNumber: "+1 555-123-4567",
-    alternatePhoneNumber: "+1 555-987-6543",
-    email: "john.doe@example.com",
+    primaryPhoneNumber: "+234 707-789-0123",
+    alternatePhoneNumber: "+234 708-890-1234",
+    email: "grace.okwuosa@example.com",
     residentialAddress: {
-      street: "123 Main Street",
-      city: "New York",
-      state: "NY",
-      country: "USA",
+      street: "67 Awolowo Road",
+      city: "Ibadan",
+      state: "Oyo",
+      country: "Nigeria",
     },
     emergencyContact: {
-      name: "Jane Doe",
-      relationship: "Spouse",
-      phoneNumber: "+1 555-234-5678",
+      name: "Chuka Okwuosa",
+      relationship: "Father",
+      phoneNumber: "+234 709-901-2345",
     },
-    bloodGroup: "A+",
-    knownAllergies: "Penicillin, Shellfish",
-    preExistingConditions: "Hypertension",
-    primaryPhysician: "Dr. Smith",
+    bloodGroup: "AB+",
+    knownAllergies: "Shellfish",
+    preExistingConditions: "None",
+    primaryPhysician: "Dr. Okoro",
     healthInsurance: {
-      insuranceNumber: "INS1234567",
-      provider: "HealthCare Plus",
+      insuranceNumber: "NHIS3344556",
+      provider: "National Health Insurance Scheme (NHIS)",
     },
-    maritalStatus: "Married",
-    occupation: "Software Engineer",
+    maritalStatus: "Single",
+    occupation: "Teacher",
   },
   {
-    firstName: "olawa",
-    middleName: "David",
-    lastName: "Doe",
-    dateOfBirth: new Date("1985-05-15"),
+    firstName: "David",
+    middleName: "Chigozie",
+    lastName: "Eze",
+    dateOfBirth: new Date("1982-06-30"),
     gender: "Male",
     photoUpload: new File([""], "patient-photo.jpg", { type: "image/jpeg" }),
-    primaryPhoneNumber: "+1 555-123-4567",
-    alternatePhoneNumber: "+1 555-987-6543",
-    email: "john.doe@example.com",
+    primaryPhoneNumber: "+234 801-234-5678",
+    alternatePhoneNumber: "+234 802-345-6789",
+    email: "david.eze@example.com",
     residentialAddress: {
-      street: "123 Main Street",
-      city: "New York",
-      state: "NY",
-      country: "USA",
+      street: "23 Ifeanyi Street",
+      city: "Enugu",
+      state: "Enugu",
+      country: "Nigeria",
     },
     emergencyContact: {
-      name: "Jane Doe",
-      relationship: "Spouse",
-      phoneNumber: "+1 555-234-5678",
+      name: "Chinyere Eze",
+      relationship: "Mother",
+      phoneNumber: "+234 803-456-7890",
     },
-    bloodGroup: "A+",
-    knownAllergies: "Penicillin, Shellfish",
-    preExistingConditions: "Hypertension",
-    primaryPhysician: "Dr. Smith",
+    bloodGroup: "O+",
+    knownAllergies: "None",
+    preExistingConditions: "None",
+    primaryPhysician: "Dr. Nwankwo",
     healthInsurance: {
-      insuranceNumber: "INS1234567",
-      provider: "HealthCare Plus",
+      insuranceNumber: "NHIS6655443",
+      provider: "National Health Insurance Scheme (NHIS)",
     },
-    maritalStatus: "Married",
-    occupation: "Software Engineer",
+    maritalStatus: "Single",
+    occupation: "Electrician",
   },
   {
-    firstName: "John",
-    middleName: "gannis",
-    lastName: "Doe",
-    dateOfBirth: new Date("1985-05-15"),
+    firstName: "Uche",
+    middleName: "Chijioke",
+    lastName: "Nwachukwu",
+    dateOfBirth: new Date("1993-04-25"),
     gender: "Male",
     photoUpload: new File([""], "patient-photo.jpg", { type: "image/jpeg" }),
-    primaryPhoneNumber: "+1 555-123-4567",
-    alternatePhoneNumber: "+1 555-987-6543",
-    email: "john.doe@example.com",
+    primaryPhoneNumber: "+234 704-123-4567",
+    alternatePhoneNumber: "+234 702-234-5678",
+    email: "uche.nwachukwu@example.com",
     residentialAddress: {
-      street: "123 Main Street",
-      city: "New York",
-      state: "NY",
-      country: "USA",
+      street: "18 Aguiyi Ironsi Street",
+      city: "Owerri",
+      state: "Imo",
+      country: "Nigeria",
     },
     emergencyContact: {
-      name: "Jane Doe",
-      relationship: "Spouse",
-      phoneNumber: "+1 555-234-5678",
+      name: "Ngozi Nwachukwu",
+      relationship: "Sister",
+      phoneNumber: "+234 703-345-6789",
     },
-    bloodGroup: "A+",
-    knownAllergies: "Penicillin, Shellfish",
-    preExistingConditions: "Hypertension",
-    primaryPhysician: "Dr. Smith",
+    bloodGroup: "A-",
+    knownAllergies: "None",
+    preExistingConditions: "Epilepsy",
+    primaryPhysician: "Dr. Obi",
     healthInsurance: {
-      insuranceNumber: "INS1234567",
-      provider: "HealthCare Plus",
+      insuranceNumber: "NHIS7777777",
+      provider: "National Health Insurance Scheme (NHIS)",
     },
-    maritalStatus: "Married",
-    occupation: "Software Engineer",
-  },
-  {
-    firstName: "james",
-    middleName: "David",
-    lastName: "Doe",
-    dateOfBirth: new Date("1985-05-15"),
-    gender: "Male",
-    photoUpload: new File([""], "patient-photo.jpg", { type: "image/jpeg" }),
-    primaryPhoneNumber: "+1 555-123-4567",
-    alternatePhoneNumber: "+1 555-987-6543",
-    email: "john.doe@example.com",
-    residentialAddress: {
-      street: "123 Main Street",
-      city: "New York",
-      state: "NY",
-      country: "USA",
-    },
-    emergencyContact: {
-      name: "Jane Doe",
-      relationship: "Spouse",
-      phoneNumber: "+1 555-234-5678",
-    },
-    bloodGroup: "A+",
-    knownAllergies: "Penicillin, Shellfish",
-    preExistingConditions: "Hypertension",
-    primaryPhysician: "Dr. Smith",
-    healthInsurance: {
-      insuranceNumber: "INS1234567",
-      provider: "HealthCare Plus",
-    },
-    maritalStatus: "Married",
-    occupation: "Software Engineer",
+    maritalStatus: "Single",
+    occupation: "Student",
   },
 ];
 
@@ -234,6 +299,8 @@ export default function ManagePatientsPage() {
   const [isMounted, setIsMounted] = useState(false);
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedPatientForEdit, setSelectedPatientForEdit] = useState<Patient | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   useTheme();
 
@@ -288,7 +355,14 @@ export default function ManagePatientsPage() {
               }}>
               View
             </Button>
-            <Button variant="outline">Edit</Button>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setSelectedPatientForEdit(patient);
+                setIsEditModalOpen(true);
+              }}>
+              Edit
+            </Button>
           </div>
         );
       },
@@ -409,6 +483,23 @@ export default function ManagePatientsPage() {
                 setIsModalOpen(false);
                 setSelectedPatient(null);
               }}
+            />
+          )}
+          {isEditModalOpen && selectedPatientForEdit && (
+            <EditPatientModal
+              patient={selectedPatientForEdit}
+              onClose={() => {
+                setIsEditModalOpen(false);
+                setSelectedPatientForEdit(null);
+              }}
+              onUpdate={(updatedPatient) => {
+                // Handle the updated patient data
+                console.log("Updated Patient:", updatedPatient);
+                setIsEditModalOpen(false);
+                setSelectedPatientForEdit(null);
+              }}
+              isOpen={isEditModalOpen}
+              onOpenChange={(open) => setIsEditModalOpen(open)}
             />
           )}
         </div>

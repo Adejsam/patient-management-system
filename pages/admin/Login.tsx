@@ -24,8 +24,8 @@ const LoginPage = () => {
   const logoSrc = resolvedTheme === "dark" ? DarkfullLogo : LightfullLogo;
 
   return (
-    <main className='h-auto w-full bg-dark-300 flex md:flex-col'>
-      <div className="w-1/2 my-10 px-12 bg-dark-300 md:w-full sm:px-5">
+    <main className='h-auto w-full bg-dark-300 flex md:flex-col sm:h-[100vh]'>
+      <div className="w-1/2 my-10 px-12 bg-dark-300 md:w-full sm:px-5 sm:my-auto">
         <div className="w-full ">
           <Image
             alt="Your Company"
@@ -54,9 +54,7 @@ const LoginPage = () => {
             <p className="text-dark-600 justify-items-end xl:text-left">
               © 2025 CarePluse
             </p>
-            <Link href="/admin/login" className="text-green-500 hover:text-green-600">
-              Admin
-            </Link>
+            
           </div>
         </div>
       </div>

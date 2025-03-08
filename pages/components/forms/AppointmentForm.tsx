@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -27,7 +26,10 @@ import { Calendar } from "../../components/ui/calendar";
 import Textarea from "../../components/ui/Textarea";
 import { useRouter } from "next/router";
 import { toast } from "sonner";
+import { useState } from "react";
+import { useTheme } from "next-themes";
 
+// Updated schema to match PHP backend requirements
 const formSchema = z.object({
   patientName: z.string().min(1, "Patient name is required"),
   doctorName: z.string().min(1, "Doctor name is required"),
@@ -45,12 +47,13 @@ type FormData = z.infer<typeof formSchema>;
 interface ApiResponse {
   success: boolean;
   message: string;
-  appointmentId?: string;
+  appointmentId?: number;
 }
 
-const CompliantForm = () => {
+const AppointmentForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
+  useTheme();
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -59,22 +62,25 @@ const CompliantForm = () => {
     },
   });
 
+  // Updated to use the PHP backend API endpoint
   const handleApiSubmission = async (data: FormData): Promise<ApiResponse> => {
     try {
-      const response = await fetch("/api/appointments", {
+      // Update the endpoint to point to the PHP backend
+      const response = await fetch("http://localhost/hospital_api/book_appointment.php", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           ...data,
-          appointmentDate: data.appointmentDate.toISOString(),
+          // Format date as YYYY-MM-DD for PHP backend
+          appointmentDate: data.appointmentDate.toISOString().split("T")[0],
         }),
       });
 
       const responseData = await response.json();
 
-      if (!response.ok) {
+      if (!response.ok || !responseData.success) {
         throw new Error(responseData.message || "Network response was not ok");
       }
 
@@ -93,13 +99,18 @@ const CompliantForm = () => {
       if (response.success) {
         toast.success("Appointment booked successfully!");
 
+        // Pass all relevant appointment details to the success page
         const queryString = new URLSearchParams({
-          appointmentId: response.appointmentId || "",
+          appointmentId: response.appointmentId?.toString() || "",
           date: data.appointmentDate.toISOString().split("T")[0],
           time: data.appointmentTime,
           doctor: data.doctorName,
+          patient: data.patientName,
+          reason: data.reasonForVisit,
+          contactNumber: data.contactNumber,
         }).toString();
 
+        // Navigate to the appointment success page with all the details
         router.push(`/patient/appointment-success?${queryString}`);
       } else {
         throw new Error(response.message);
@@ -135,7 +146,7 @@ const CompliantForm = () => {
               <FormItem className="min-w-[250px] flex-1">
                 <FormLabel>Patient Name</FormLabel>
                 <FormControl>
-                  <Input placeholder="Patient Name" {...field} />
+                  <Input placeholder="Olumide Micheal" {...field}/>
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -148,16 +159,7 @@ const CompliantForm = () => {
               <FormItem className="min-w-[250px] flex-1">
                 <FormLabel>Doctor Name</FormLabel>
                 <FormControl>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select Doctor" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Dr. Smith">Dr. Smith</SelectItem>
-                      <SelectItem value="Dr. Johnson">Dr. Johnson</SelectItem>
-                      <SelectItem value="Dr. Williams">Dr. Williams</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <Input {...field} placeholder="Doc Adeyemi James"/>
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -179,7 +181,7 @@ const CompliantForm = () => {
                         type="button"
                         variant={"outline"}
                         className={cn(
-                          "w-[100%] pl-3 text-left font-normal border data-[state=open]:border-primary",
+                          "w-[100%] pl-3 text-left font-normal border data-[state=open]:border-primary ",
                           !field.value && "text-muted-foreground"
                         )}>
                         {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
@@ -190,6 +192,7 @@ const CompliantForm = () => {
                   <PopoverContent className="w-auto p-0" align="start">
                     <Calendar
                       mode="single"
+                      className="bg-background text-foreground border-border"
                       selected={field.value}
                       onSelect={field.onChange}
                       disabled={isDateInRange}
@@ -273,4 +276,4 @@ const CompliantForm = () => {
   );
 };
 
-export default CompliantForm;
+export default AppointmentForm;

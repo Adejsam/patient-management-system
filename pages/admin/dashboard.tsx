@@ -35,31 +35,28 @@ export default function Page() {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
-                <Wallet className="h-4 w-4 text-muted-foreground" />
+                <Wallet className="h-7 w-7  text-green-500" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">₦45,231.89</div>
-                <p className="text-xs text-muted-foreground">+20.1% from last month</p>
               </CardContent>
             </Card>
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Total Appointment</CardTitle>
-                <Users className="h-4 w-4 text-muted-foreground" />
+                <Users className="h-7 w-7 text-blue-500" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">2350</div>
-                <p className="text-xs text-muted-foreground">+11% from last month</p>
+                <div className="text-2xl font-bold">950</div>
               </CardContent>
             </Card>
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Total Patient</CardTitle>
-                <User className="h-4 w-4 text-muted-foreground" />
+                <User className="h-7 w-7 text-red-500" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">12,234</div>
-                <p className="text-xs text-muted-foreground">+10% from last month</p>
+                <div className="text-2xl font-bold">70</div>
               </CardContent>
             </Card>
           </div>

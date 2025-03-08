@@ -35,7 +35,7 @@ const AddInvoiceForm = () => {
       date: new Date(),
     },
   });
-
+  
   // Generate unique invoice number
   const generateInvoiceNumber = () => {
     const date = new Date();

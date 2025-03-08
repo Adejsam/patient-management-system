@@ -3,10 +3,9 @@
 import * as React from "react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { DayPicker } from "react-day-picker"
-import { useTheme } from "next-themes"
 
 import { cn } from "../../../lib/utils"
-import { buttonVariants } from "../../components/ui/button"
+import { buttonVariants } from "../..//components/ui/button"
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker>
 
@@ -16,16 +15,10 @@ function Calendar({
   showOutsideDays = true,
   ...props
 }: CalendarProps) {
-  const { resolvedTheme } = useTheme();
-
   return (
     <DayPicker
       showOutsideDays={showOutsideDays}
-      className={cn(
-        "p-3",
-        resolvedTheme === "dark" ? "bg-gray-800 text-white" : "bg-white text-black",
-        className
-      )}
+      className={cn("p-3", className)}
       classNames={{
         months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
         month: "space-y-4",
@@ -34,7 +27,7 @@ function Calendar({
         nav: "space-x-1 flex items-center",
         nav_button: cn(
           buttonVariants({ variant: "outline" }),
-          "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100"
+          "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 text-foreground border-border "
         ),
         nav_button_previous: "absolute left-1",
         nav_button_next: "absolute right-1",
@@ -56,8 +49,8 @@ function Calendar({
         day_range_start: "day-range-start",
         day_range_end: "day-range-end",
         day_selected:
-          "bg-primary text-white hover:bg-primary hover:text-white focus:bg-primary focus:text-white",
-        day_today: "bg-primary text-accent-foreground",
+          "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
+        day_today: "bg-accent text-accent-foreground",
         day_outside:
           "day-outside text-muted-foreground aria-selected:bg-accent/50 aria-selected:text-muted-foreground",
         day_disabled: "text-muted-foreground opacity-50",

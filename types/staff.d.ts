@@ -14,7 +14,7 @@ export interface Staff {
     email: string;
     phoneNumber: string;
     photoUpload?: File;
-    experienceYears: string
+    experienceYears?: string
     role: "doctor" | "billingOfficer" | "pharmacist" | "receptionist" | "admin";
     details?: DoctorDetails | PharmacistDetails;
     createdAt: Date;

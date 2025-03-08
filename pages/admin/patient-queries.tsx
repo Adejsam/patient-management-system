@@ -38,7 +38,6 @@ interface Complaint {
   description: string;
   response: string;
   complaintType: string;
-  preferredContact: string;
   attachments: Array<{
     name: string;
     type: string;
@@ -51,11 +50,10 @@ const mockComplaints: Complaint[] = [
     subject: "Billing Discrepancy",
     department: "Billing",
     status: "replied",
-    date: "2024-03-14",
+    date: "2025-02-14",
     description: "Incorrect charges on medical bill",
     response: "We are investigating the billing discrepancy",
     complaintType: "Billing",
-    preferredContact: "Email",
     attachments: [
       { name: "bill.pdf", type: "application/pdf" },
       { name: "receipt.jpg", type: "image/jpeg" },
@@ -66,23 +64,32 @@ const mockComplaints: Complaint[] = [
     subject: "Appointment Rescheduling",
     department: "Scheduling",
     status: "replied",
-    date: "2024-03-13",
+    date: "2025-02-13",
     description: "Unable to keep appointment on March 15th",
     response: "We have rescheduled your appointment to March 22nd at 2:00 PM",
     complaintType: "Scheduling",
-    preferredContact: "Phone",
     attachments: [{ name: "appointment_confirmation.pdf", type: "application/pdf" }],
+  },
+  {
+    id: "7",
+    subject: "Discomfort After Procedure",
+    department: "Surgery",
+    status: "unreplied",
+    date: "2025-02-08",
+    description: "Experiencing unusual discomfort after minor surgery",
+    response: "Please contact our post-operative care team immediately",
+    complaintType: "Post-Surgical",
+    attachments: [{ name: "surgery_report.pdf", type: "application/pdf" }],
   },
   {
     id: "3",
     subject: "Test Result Concerns",
     department: "Radiology",
     status: "replied",
-    date: "2024-03-12",
+    date: "2025-02-12",
     description: "Unexplained results from recent MRI scan",
     response: "A radiologist will contact you within 48 hours to discuss the results",
     complaintType: "Diagnostic",
-    preferredContact: "Email",
     attachments: [{ name: "scan_results.pdf", type: "application/pdf" }],
   },
   {
@@ -90,11 +97,10 @@ const mockComplaints: Complaint[] = [
     subject: "Medication Refill Inquiry",
     department: "Pharmacy",
     status: "replied",
-    date: "2024-03-11",
+    date: "2025-01-11",
     description: "Unable to refill prescription for blood pressure medication",
     response: "Your prescription has been refilled and is ready for pickup",
     complaintType: "Medication",
-    preferredContact: "Phone",
     attachments: [{ name: "prescription.pdf", type: "application/pdf" }],
   },
   {
@@ -102,11 +108,10 @@ const mockComplaints: Complaint[] = [
     subject: "Insurance Coverage Issue",
     department: "Insurance",
     status: "replied",
-    date: "2024-03-10",
+    date: "2025-01-10",
     description: "Denied coverage for recent treatment",
     response: "We are reviewing your case and will provide an update within 72 hours",
     complaintType: "Billing",
-    preferredContact: "Email",
     attachments: [
       { name: "insurance_claim.pdf", type: "application/pdf" },
       { name: "treatment_summary.pdf", type: "application/pdf" },
@@ -117,35 +122,21 @@ const mockComplaints: Complaint[] = [
     subject: "Lab Test Delay",
     department: "Laboratory",
     status: "replied",
-    date: "2024-03-09",
+    date: "2025-02-09",
     description: "Delayed results for routine blood work",
     response: "Results are now available and can be viewed through your patient portal",
     complaintType: "Diagnostic",
-    preferredContact: "Email",
     attachments: [{ name: "blood_work_results.pdf", type: "application/pdf" }],
-  },
-  {
-    id: "7",
-    subject: "Discomfort After Procedure",
-    department: "Surgery",
-    status: "unreplied",
-    date: "2024-03-08",
-    description: "Experiencing unusual discomfort after minor surgery",
-    response: "Please contact our post-operative care team immediately",
-    complaintType: "Post-Surgical",
-    preferredContact: "Phone",
-    attachments: [{ name: "surgery_report.pdf", type: "application/pdf" }],
   },
   {
     id: "8",
     subject: "Missing Test Order",
     department: "Reception",
     status: "unreplied",
-    date: "2024-03-07",
+    date: "2025-01-07",
     description: "Test order not received by lab",
     response: "We have resent the test order and are following up with the lab",
     complaintType: "Diagnostic",
-    preferredContact: "Phone",
     attachments: [{ name: "test_order.pdf", type: "application/pdf" }],
   },
   {
@@ -153,11 +144,10 @@ const mockComplaints: Complaint[] = [
     subject: "Billing Statement Missing",
     department: "Billing",
     status: "unreplied",
-    date: "2024-03-06",
+    date: "2025-02-06",
     description: "No billing statement received for February services",
     response: "A new statement has been sent to your email address",
     complaintType: "Billing",
-    preferredContact: "Email",
     attachments: [{ name: "billing_statement.pdf", type: "application/pdf" }],
   },
   {
@@ -165,11 +155,10 @@ const mockComplaints: Complaint[] = [
     subject: "Allergy Concerns",
     department: "Allergy",
     status: "unreplied",
-    date: "2024-03-05",
+    date: "2025-01-05",
     description: "Experiencing severe allergic reactions to prescribed medication",
     response: "We recommend consulting with our allergy specialist as soon as possible",
     complaintType: "Medication",
-    preferredContact: "Phone",
     attachments: [{ name: "allergy_test_results.pdf", type: "application/pdf" }],
   },
 ];
@@ -375,12 +364,6 @@ export default function PatientQueriesAdmin() {
                   <h4 className="font-medium">Complaint Type:</h4>
                   <p className="">
                     {mockComplaints.find((c) => c.id === expandedComplaint)?.complaintType}
-                  </p>
-                </div>
-                <div>
-                  <h4 className="font-medium">Preferred Contact:</h4>
-                  <p className="">
-                    {mockComplaints.find((c) => c.id === expandedComplaint)?.preferredContact}
                   </p>
                 </div>
                 <div>

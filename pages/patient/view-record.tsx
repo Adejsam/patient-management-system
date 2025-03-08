@@ -13,12 +13,13 @@ import { MedicalRecordData } from "../../types/medical";
 // Sample medical records data
 const medicalRecordsData: MedicalRecordData[] = [
   {
-    name: "John Doe",
-    dateOfBirth: "1990-01-01",
-    gender: "Male",
-    contactDetails: "john.doe@email.com",
-    date: "2024-01-15",
-    doctor: "Dr. Smith",
+    id: "1",
+    name: "Mary Olusegun Aina",
+    dateOfBirth: "2000-01-11",
+    gender: "Female",
+    contactDetails: "maryosegun@gmail.com",
+    date: "2025-01-15",
+    doctor: "Doc James",
     field: "Cardiology",
     temperature: "98.6°F",
     weight: "70kg",

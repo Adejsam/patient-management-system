@@ -5,90 +5,102 @@ import Seo from "../../shared/seo/seo";
 import DoctorCard from "./doctor/DoctorCard";
 import DoctorFilter from "./doctor/DoctorFilter";
 import { useTheme } from "next-themes";
+import Doctor1 from "../../public/assets/images/doctor 1.jpg";
+import Doctor2 from "../../public/assets/images/doctor 2.jpg";
+import Doctor3 from "../../public/assets/images/doctor 3.jpg";
+import Doctor4 from "../../public/assets/images/doctor 4.jpg";
+import Doctor5 from "../../public/assets/images/doctor 5.jpg";
+import Doctor6 from "../../public/assets/images/doctor 6.jpg";
+import Doctor7 from "../../public/assets/images/doctor 7.jpg";
+import Doctor9 from "../../public/assets/images/doctor 9.jpg";
+import Doctor10 from "../../public/assets/images/doctor 10.jpg";
+import Doctor8 from "../../public/assets/images/doctor 8.jpg";
+// import { StaticImageData } from "next/image";
 
 const doctorsData = [
   {
-    profilePicture: "/images/doctor1.jpg",
-    name: "Dr. John Doe",
+    profilePicture: Doctor4,
+    name: "Doc. Chukwuma Okeke",
     field: "Cardiology",
-    contact: "123-456-7890",
+    contact: "+234-803-456-7890",
     yearsOfExperience: 10,
     about: "Experienced cardiologist with a passion for patient care.",
   },
   {
-    profilePicture: "/images/doctor2.jpg",
-    name: "Dr. Jane Smith",
+    profilePicture: Doctor1,
+    name: "Doc. Aisha Bello",
     field: "Dermatology",
-    contact: "987-654-3210",
+    contact: "+234-802-654-3210",
     yearsOfExperience: 8,
     about: "Expert in skin care and dermatological treatments.",
   },
   {
-    profilePicture: "/images/doctor3.jpg",
-    name: "Dr. Emily Johnson",
+    profilePicture: Doctor3,
+    name: "Doc. Emeka Uche",
     field: "Neurology",
-    contact: "555-123-4567",
+    contact: "+234-701-123-4567",
     yearsOfExperience: 12,
     about: "Specialist in neurological disorders with extensive research experience.",
   },
   {
-    profilePicture: "/images/doctor4.jpg",
-    name: "Dr. Michael Brown",
-    field: "Pediatrics",
-    contact: "555-987-6543",
+    profilePicture: Doctor2,
+    name: "Doc. Olufemi Adebayo",
+    field: "Family Doctor",
+    contact: "+234-705-987-6543",
     yearsOfExperience: 15,
     about: "Dedicated pediatrician with a focus on child development and health.",
   },
   {
-    profilePicture: "/images/doctor5.jpg",
-    name: "Dr. Sarah Davis",
-    field: "Psychiatry",
-    contact: "555-654-3210",
+    profilePicture: Doctor9,
+    name: "Doc. Chioma Nwankwo",
+    field: "Family Doctor",
+    contact: "+234-806-654-3210",
     yearsOfExperience: 9,
     about: "Experienced psychiatrist with a compassionate approach to mental health.",
   },
   {
-    profilePicture: "/images/doctor6.jpg",
-    name: "Dr. William Martinez",
-    field: "Orthopedics",
-    contact: "555-321-0987",
+    profilePicture: Doctor6,
+    name: "Doc. Ibrahim Musa",
+    field: "Family Doctor",
+    contact: "+234-809-321-0987",
     yearsOfExperience: 20,
     about: "Expert in orthopedic surgery with a focus on sports injuries.",
   },
   {
-    profilePicture: "/images/doctor7.jpg",
-    name: "Dr. Linda Wilson",
+    profilePicture: Doctor7,
+    name: "Doc. Kemi Balogun",
     field: "Dermatology",
-    contact: "555-789-0123",
+    contact: "+234-803-789-0123",
     yearsOfExperience: 7,
     about: "Skilled dermatologist with a passion for skincare and cosmetic treatments.",
   },
   {
-    profilePicture: "/images/doctor8.jpg",
-    name: "Dr. James Anderson",
+    profilePicture: Doctor8,
+    name: "Doc. Samuel Eze",
     field: "Cardiology",
-    contact: "555-456-7890",
+    contact: "+234-805-456-7890",
     yearsOfExperience: 18,
     about: "Renowned cardiologist with a focus on preventive cardiology.",
   },
   {
-    profilePicture: "/images/doctor9.jpg",
-    name: "Dr. Patricia Thomas",
+    profilePicture: Doctor10,
+    name: "Doc. Hauwa Abdullahi",
     field: "Endocrinology",
-    contact: "555-654-7890",
+    contact: "+234-807-654-7890",
     yearsOfExperience: 14,
     about: "Expert in hormonal disorders with a patient-centered approach.",
   },
   {
-    profilePicture: "/images/doctor10.jpg",
-    name: "Dr. Robert Garcia",
+    profilePicture: Doctor5,
+    name: "Doc. Tunde Onifade",
     field: "Gastroenterology",
-    contact: "555-321-4567",
+    contact: "+234-810-321-4567",
     yearsOfExperience: 11,
     about: "Specialist in digestive health with a focus on minimally invasive procedures.",
   },
   // Add more doctor data as needed
 ];
+
 
 const ViewDoctors: React.FC = () => {
   useTheme();

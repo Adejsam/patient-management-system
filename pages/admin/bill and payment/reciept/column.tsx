@@ -1,7 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { MoreHorizontal, ArrowUpDown,Printer, Mail } from "lucide-react";
+import { MoreHorizontal, ArrowUpDown } from "lucide-react";
 import { Checkbox } from "../../../components/ui/checkbox";
 import { Button } from "../../../components/ui/button";
 import {
@@ -30,16 +30,6 @@ export type Receipt = {
 const ActionsCell = ({ receipt }: { receipt: Receipt }) => {
   const [selectedReceipt, setSelectedReceipt] = useState<Receipt | null>(null);
 
-  const handlePrintReceipt = () => {
-    // Implement print logic here
-    console.log("Printing receipt:", receipt.id);
-  };
-
-  const handleEmailReceipt = () => {
-    // Implement email logic here
-    console.log("Emailing receipt:", receipt.id);
-  };
-
   const handleVoidReceipt = () => {
     // Implement void logic here
     console.log("Voided:", receipt.id);
@@ -61,17 +51,9 @@ const ActionsCell = ({ receipt }: { receipt: Receipt }) => {
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => setSelectedReceipt(receipt)}>
             View receipt details
-          </DropdownMenuItem>
+          </DropdownMenuItem>N
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={handlePrintReceipt}>
-            <Printer className="mr-2 h-4 w-4" />
-            Print
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={handleEmailReceipt}>
-            <Mail className="mr-2 h-4 w-4" />
-            Email
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={handleVoidReceipt}>Void Receipt</DropdownMenuItem>
+          <DropdownMenuItem onClick={handleVoidReceipt}>Void Reciept</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
       {selectedReceipt && (

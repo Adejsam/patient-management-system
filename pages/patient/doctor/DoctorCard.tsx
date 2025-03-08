@@ -1,10 +1,10 @@
 import React from "react";
-import Image from "next/image";
+import Image, { StaticImageData } from "next/image";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../../components/ui/card";
 import { useTheme } from "next-themes";
 
 interface DoctorCardProps {
-  profilePicture: string;
+  profilePicture: string | StaticImageData;
   name: string;
   field: string;
   contact: string;
@@ -17,13 +17,13 @@ useTheme();
   return (
     <Card className="shadow-md w-72 mb-4 md:w-full">
       <CardHeader>
-        <Image src={profilePicture} alt={`${name}'s profile`} width={200} height={200} className="w-full h-[200px] mx-auto" />
+        <Image src={profilePicture} alt={`${name}'s profile`} width={200} height={200} className="w-full h-[200px] mx-auto object-cover object-top" />
         <CardTitle className="text-xl font-bold mt-4">{name}</CardTitle>
         <CardDescription className="text-foreground">{field}</CardDescription>
       </CardHeader>
       <CardContent>
-        <p className="text-foreground">{contact}</p>
-        <p className="text-foreground">{yearsOfExperience} years of experience</p>
+        <p className="text-foreground pb-1">{contact}</p>
+        <p className="text-foreground pb-1">{yearsOfExperience} years of experience</p>
         <p className="text-foreground ">{about}</p>
       </CardContent>
     </Card>

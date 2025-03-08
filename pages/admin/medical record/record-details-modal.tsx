@@ -26,7 +26,7 @@ export function MedicalRecordDetailsModal({
       onClose={onClose}
       className="flex justify-center items-center">
       <ModalHeader>
-        <h2 className="text-xl font-semibold text-center">Medical Record Details</h2>
+        <h2 className="text-xl font-semibold text-center"><span className="text-primary">Medical Record</span> Details</h2>
       </ModalHeader>
       <ScrollArea>
         <ModalContent className="flex justify-center items-center">
@@ -151,7 +151,7 @@ export function MedicalRecordDetailsModal({
         </ModalContent>
       </ScrollArea>
       <ModalFooter className="flex justify-end">
-        <Button variant="secondary" onClick={onClose}>
+        <Button onClick={onClose}>
           Close
         </Button>
       </ModalFooter>

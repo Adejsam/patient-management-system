@@ -90,6 +90,10 @@ const data = {
           title: "Lodge Complaint",
           url: "/patient/lodge-complaint",
         },
+        {
+          title: "Complaint History",
+          url: "/patient/complaint-history",
+        },
       ],
     },
   ],

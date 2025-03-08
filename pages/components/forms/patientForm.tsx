@@ -1,11 +1,11 @@
 "use client";
+
 import { useState } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import Link from "next/link";
-import { useRouter } from "next/router";
-import { toast } from 'sonner';
+import { useRouter } from "next/navigation";
 import {
   Form,
   FormControl,
@@ -34,21 +34,10 @@ const formSchema = z.object({
 
 type FormData = z.infer<typeof formSchema>;
 
-interface LoginResponse {
-  success: boolean;
-  message: string;
-  data?: {
-    token: string;
-    user: {
-      id: string;
-      hospitalNumber: string;
-      name: string;
-    };
-  };
-}
-
 export default function PatientForm() {
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const router = useRouter();
 
   const form = useForm<FormData>({
@@ -60,60 +49,98 @@ export default function PatientForm() {
   });
 
   const onSubmit = async (values: FormData) => {
+    if (isLoading) {
+      return;
+    }
+
     try {
       setIsLoading(true);
-      const response = await fetch('/api/auth/patient/login', {
-        method: 'POST',
+      setError(null);
+
+      // Transform form values to match backend API expectations
+      const apiValues = {
+        hospital_number: values.hospitalNumber,
+        password: values.password,
+      };
+
+      const response = await fetch("http://localhost/hospital_api/login.php", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(values),
+        body: JSON.stringify(apiValues),
       });
 
-      const data: LoginResponse = await response.json();
+      const data = await response.json();
 
-      if (data.success && data.data) {
-        // Store authentication token
-        localStorage.setItem('token', data.data.token);
-        
-        // Store user data
-        localStorage.setItem('user', JSON.stringify(data.data.user));
-        
-        toast.success("Login successful!");
-        router.push('/patient/portal/home');
+      if (data.message === "Login successful") {
+        // Store user data and role
+        localStorage.setItem("user", JSON.stringify(data.user_id));
+        localStorage.setItem("userRole", data.role);
+        localStorage.setItem("email", data.email);
+        localStorage.setItem("hospitalNumber", data.hospitalNumber);
+        localStorage.setItem("patientInfo", JSON.stringify(data.patient));
+      
+        // Set cookies with appropriate options
+        document.cookie = `user=${data.user_id}; path=/`;
+        document.cookie = `userRole=${data.role}; path=/`;
+      
+        setShowSuccessMessage(true);
+        setTimeout(() => {
+          router.push(`/patient/dashboard/`);
+        }, 1000);
       } else {
-        toast.error(data.message || "Login failed");
+        const errorMessage =
+          data.message || "Login failed. Please check your credentials and try again.";
+        setError(errorMessage);
       }
     } catch (error) {
-      toast.error("An error occurred during login");
+      setError("An error occurred during login");
       console.error("Login error:", error);
     } finally {
       setIsLoading(false);
     }
   };
-
+  console.log(localStorage);
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      {error && (
+        <div className="text-red-900 p-2 bg-red-300 rounded-md text-sm mb-4 text-center">
+          {error}
+        </div>
+      )}
+      {showSuccessMessage && (
+        <div className="text-green-900 p-2 bg-green-300 rounded-md text-sm mb-4 text-center">
+          Login successful! Redirecting to dashboard...
+        </div>
+      )}
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="space-y-4"
+        aria-label="Patient Login Form">
         <FormField
           control={form.control}
           name="hospitalNumber"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Hospital Number</FormLabel>
+              <FormLabel className="flex items-center">
+                Hospital Number
+                <span className="text-red-500 ml-1">*</span>
+              </FormLabel>
               <FormControl>
-                <Input 
-                  {...field} 
-                  placeholder="e.g 2934039221" 
+                <Input
+                  {...field}
+                  placeholder="e.g 2934039221"
                   disabled={isLoading}
                   autoComplete="username"
+                  autoFocus
                 />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        
+
         <div className="pt-2 pb-5">
           <FormField
             control={form.control}
@@ -121,22 +148,27 @@ export default function PatientForm() {
             render={({ field }) => (
               <FormItem>
                 <div className="flex items-center justify-between">
-                  <FormLabel>Password</FormLabel>
-                  <Link 
-                    href="/forgot-password" 
+                  <FormLabel>
+                    Password <span className="text-red-500 ml-1">*</span>
+                  </FormLabel>
+
+                  <Link
+                    href="/forgot-password"
                     className="text-green-500 hover:text-green-600 text-sm"
-                    tabIndex={-1}
-                  >
+                    tabIndex={-1}>
                     Forgot password?
                   </Link>
                 </div>
                 <FormControl>
-                  <Input 
-                    type="password" 
-                    {...field} 
-                    placeholder="**********" 
+                  <Input
+                    type="password"
+                    {...field}
+                    placeholder="**********"
                     disabled={isLoading}
                     autoComplete="current-password"
+                    onChange={(e) => {
+                      field.onChange(e);
+                    }}
                   />
                 </FormControl>
                 <FormMessage />
@@ -148,20 +180,16 @@ export default function PatientForm() {
         <Button
           type="submit"
           disabled={isLoading}
-          className="w-full bg-green-500 hover:bg-green-600 text-white"
-        >
-          {isLoading ? "Signing in..." : "Sign in"}
+          className="w-full bg-green-500 hover:bg-green-600 text-white relative"
+          aria-disabled={isLoading}
+          role="button">
+          {isLoading && (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
+            </div>
+          )}
+          {!isLoading && "Sign in"}
         </Button>
-
-        <div className="text-center text-sm text-gray-500 mt-4">
-          Don&apos;t have an account?{" "}
-          <Link 
-            href="/register" 
-            className="text-green-500 hover:text-green-600"
-          >
-            Register here
-          </Link>
-        </div>
       </form>
     </Form>
   );

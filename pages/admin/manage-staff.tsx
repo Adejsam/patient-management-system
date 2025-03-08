@@ -29,77 +29,73 @@ import { Staff } from "../../types/staff";
 import { StaffDetailsModal } from "./manage users/view-staff-details";
 import Header from "../components/headers/Header";
 import Seo from "../../shared/seo/seo";
+import { EditStaffModal } from "./manage users/edit-staff-modal";
 
 export const mockStaff: Staff[] = [
   {
     id: "1",
-    firstName: "John",
-    lastName: "Doe",
-    email: "john.doe@example.com",
-    phoneNumber: "+1 555-123-4567",
+    firstName: "Chinedu",
+    lastName: "Okonkwo",
+    email: "chinedu.okonkwo@mediclinic.com.ng",
+    phoneNumber: "+234 803 456 7890",
     role: "doctor",
     details: {
-      medicalLicenseNumber: "MED123456",
-      specialization: "Internal Medicine",
+      medicalLicenseNumber: "MDCN/2018/123456",
+      specialization: "Cardiology",
     },
     createdAt: new Date(),
-    experienceYears: "3",
+    experienceYears: "5",
   },
   {
     id: "2",
-    firstName: "Jane",
-    lastName: "Smith",
-    email: "jane.smith@example.com",
-    phoneNumber: "+1 555-987-6543",
+    firstName: "Amina",
+    lastName: "Ibrahim",
+    email: "amina.ibrahim@mediclinic.com.ng",
+    phoneNumber: "+234 705 123 4567",
     role: "admin",
     createdAt: new Date(),
-    experienceYears: "2",
   },
   {
     id: "3",
-    firstName: "Mike",
-    lastName: "Johnson",
-    email: "mike.johnson@example.com",
-    phoneNumber: "+1 555-555-5555",
+    firstName: "Oluwaseun",
+    lastName: "Adeyemi",
+    email: "oluwaseun.adeyemi@mediclinic.com.ng",
+    phoneNumber: "+234 812 987 6543",
     role: "pharmacist",
     details: {
-      pharmacyLicenseNumber: "PHAR12345",
+      pharmacyLicenseNumber: "PCN/2019/54321",
     },
     createdAt: new Date(),
     experienceYears: "4",
   },
   {
     id: "4",
-    firstName: "Sarah",
-    lastName: "Williams",
-    email: "sarah.williams@example.com",
-    phoneNumber: "+1 555-876-5432",
+    firstName: "Ngozi",
+    lastName: "Eze",
+    email: "ngozi.eze@mediclinic.com.ng",
+    phoneNumber: "+234 908 765 4321",
     role: "receptionist",
     createdAt: new Date(),
-    experienceYears: "5",
   },
   {
     id: "5",
-    firstName: "David",
-    lastName: "Brown",
-    email: "david.brown@example.com",
-    phoneNumber: "+1 555-765-4321",
+    firstName: "Emeka",
+    lastName: "Nwachukwu",
+    email: "emeka.nwachukwu@mediclinic.com.ng",
+    phoneNumber: "+234 701 234 5678",
     role: "billingOfficer",
     createdAt: new Date(),
-    experienceYears: "1",
   },
   {
     id: "6",
-    firstName: "David",
-    lastName: "Brown",
-    email: "david.brown@example.com",
-    phoneNumber: "+1 555-765-4321",
+    firstName: "Folake",
+    lastName: "Adesina",
+    email: "folake.adesina@mediclinic.com.ng",
+    phoneNumber: "+234 809 876 5432",
     role: "billingOfficer",
     createdAt: new Date(),
-    experienceYears: "4",
   },
 ];
-
 export default function ManageStaffPage() {
   const [searchTerm, setSearchTerm] = React.useState("");
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -109,6 +105,8 @@ export default function ManageStaffPage() {
   const [isMounted, setIsMounted] = useState(false);
   const [selectedStaff, setSelectedStaff] = useState<Staff | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedStaffForEdit, setSelectedStaffForEdit] = useState<Staff | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   useTheme();
 
@@ -173,7 +171,14 @@ export default function ManageStaffPage() {
               }}>
               View
             </Button>
-            <Button variant="outline">Edit</Button>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setSelectedStaffForEdit(staff);
+                setIsEditModalOpen(true);
+              }}>
+              Edit
+            </Button>
           </div>
         );
       },
@@ -294,6 +299,23 @@ export default function ManageStaffPage() {
                   setIsModalOpen(false);
                   setSelectedStaff(null);
                 }}
+              />
+            )}
+            {isEditModalOpen && selectedStaffForEdit && (
+              <EditStaffModal
+                staff={selectedStaffForEdit}
+                onClose={() => {
+                  setIsEditModalOpen(false);
+                  setSelectedStaffForEdit(null);
+                }}
+                onUpdate={(updatedPatient) => {
+                  // Handle the updated patient data
+                  console.log("Updated Patient:", updatedPatient);
+                  setIsEditModalOpen(false);
+                  setSelectedStaffForEdit(null);
+                }}
+                isOpen={isEditModalOpen}
+                onOpenChange={(open) => setIsEditModalOpen(open)}
               />
             )}
           </div>

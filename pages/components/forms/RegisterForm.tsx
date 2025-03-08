@@ -1,13 +1,8 @@
-"use client";
 import React, { useState } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Button } from "../../components/ui/button";
-import { CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
-import { cn } from "../../../lib/utils";
-import { toast } from "sonner";
 import {
   Select,
   SelectContent,
@@ -24,186 +19,78 @@ import {
   FormLabel,
   FormMessage,
 } from "../../components/ui/form";
-import { Popover, PopoverContent, PopoverTrigger } from "../../components/ui/popover";
 import { Input } from "../../components/ui/input";
 import { Checkbox } from "../../components/ui/checkbox";
-import { Calendar } from "../ui/calendar";
-import { useRouter } from "next/router";
+
+
 
 const formSchema = z
   .object({
     firstName: z.string().min(3, "First name is required"),
     middleName: z.string().optional(),
     lastName: z.string().min(3, "Last name is required"),
-    dateOfBirth: z.date({ required_error: "Date of birth is required" }),
+    dateOfBirth: z.string({ required_error: "Date of birth is required" }),
     gender: z.enum(["Male", "Female", "Other", "Prefer Not to Say"]),
-    photoUpload: z.any().refine((file) => file instanceof File, "Photo upload must be a file"),
+    photoUpload: z
+      .any()
+      .optional()
+      .refine((file) => file instanceof File, "Photo upload must be a file"),
     primaryPhoneNumber: z
       .string()
-      .min(1, "Primary phone number is required"),
-    alternatePhoneNumber: z
-      .string()
-      .optional(),
-    email: z.string().email("Invalid email address"),
+      .min(11, "Primary phone number is required")
+      .max(11, "Primary phone number is required"),
+    alternatePhoneNumber: z.string().optional(),
+    email: z.string().email("Invalid email format"),
     residentialAddress: z.object({
       street: z.string().min(1, "Street is required"),
       city: z.string().min(1, "City is required"),
-      state: z.string().min(1, "State/Province is required"),
+      state: z.string().min(1, "State is required"),
       country: z.string().min(1, "Country is required"),
     }),
     emergencyContact: z.object({
       name: z.string().min(1, "Emergency contact name is required"),
-      relationship: z.string().min(1, "Relationship to patient is required"),
-      phoneNumber: z
-        .string()
-        .min(1, "Emergency contact phone number is required")
-        .regex(/^\+?[1-9]\d{1,14}$/, "Invalid phone number format"),
+      relationship: z.string().min(1, "Relationship is required"),
+      phoneNumber: z.string().min(1, "Emergency contact phone number is required"),
     }),
     bloodGroup: z.string().optional(),
     knownAllergies: z.string().optional(),
     preExistingConditions: z.string().optional(),
     primaryPhysician: z.string().optional(),
     healthInsurance: z.object({
-      insuranceNumber: z.string().regex(/^\d+$/, "Insurance number must be numeric").optional(),
+      insuranceNumber: z.string().optional(),
       provider: z.string().optional(),
     }),
     maritalStatus: z.enum(["Single", "Married", "Divorced", "Widowed"]),
     occupation: z.string().optional(),
-    consentForDataUsage: z.boolean().refine((val) => val === true, {
-      message: "Consent for data usage is required",
-    }),
-    password: z
-      .string()
-      .min(8)
-      .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
-      .regex(/[a-z]/, "Password must contain at least one lowercase letter")
-      .regex(/[0-9]/, "Password must contain at least one number")
-      .regex(/[^a-zA-Z0-9]/, "Password must contain at least one special character"),
-    confirmPassword: z
-      .string()
-      .min(8)
-      .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
-      .regex(/[a-z]/, "Password must contain at least one lowercase letter")
-      .regex(/[0-9]/, "Password must contain at least one number")
-      .regex(/[^a-zA-Z0-9]/, "Password must contain at least one special character"),
+    consentForDataUsage: z.boolean(),
+    password: z.string().min(8, "Password must be at least 8 characters"),
+    confirmPassword: z.string().min(8, "Confirm password is required"),
   })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords don't match",
-    path: ["confirmPassword"],
-  });
+  .refine(
+    ({ password, confirmPassword }) =>
+      password === confirmPassword || !password,
+    "Passwords do not match"
+  );
 
-  // Types
 type FormData = z.infer<typeof formSchema>;
-
-interface RegistrationResponse {
-  success: boolean;
+type RegistrationResponse = {
   message: string;
-  data?: {
-    hospitalNumber: string;
-    token: string;
-    user: {
-      id: string;
-      name: string;
-    };
-  };
+  hospital_number?: string;
   error?: string;
-}
-
-// Custom error class
-class RegistrationError extends Error {
-  constructor(
-    message: string,
-    public code?: string,
-    public details?: Record<string, unknown>
-  ) {
-    super(message);
-    this.name = 'RegistrationError';
-  }
-}
-
-// File upload handler
-const uploadPhoto = async (file: File): Promise<string> => {
-  try {
-    const formData = new FormData();
-    formData.append('file', file);
-
-    const response = await fetch('/api/upload', {
-      method: 'POST',
-      body: formData,
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to upload photo');
-    }
-
-    const data = await response.json();
-    return data.fileUrl;
-  } catch (error) {
-    console.error('Photo upload error:', error);
-    throw new RegistrationError('Failed to upload photo');
-  }
-};
-
-// Main registration function
-const registerPatient = async (
-  formData: FormData
-): Promise<RegistrationResponse> => {
-  try {
-    let photoUrl: string | undefined;
-
-    if (formData.photoUpload instanceof File) {
-      photoUrl = await uploadPhoto(formData.photoUpload);
-    }
-
-    const registrationData = {
-      ...formData,
-      photoUrl,
-      photoUpload: undefined,
-    };
-
-    const response = await fetch('/api/auth/patient/register', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(registrationData),
-    });
-
-    const responseData = await response.json();
-
-    if (!response.ok) {
-      throw new RegistrationError(
-        responseData.message || 'Registration failed',
-        responseData.code,
-        responseData.details
-      );
-    }
-
-    return responseData;
-  } catch (error) {
-    if (error instanceof RegistrationError) {
-      throw error;
-    }
-
-    if (error instanceof Error) {
-      throw new RegistrationError(error.message);
-    }
-
-    throw new RegistrationError('An unexpected error occurred');
-  }
 };
 
 const RegisterForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const router = useRouter();
+  const [error, setError] = useState<string | null>(null);
+  const [registrationSuccess, setRegistrationSuccess] = useState<RegistrationResponse | null>(null);
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       firstName: "",
       middleName: "",
       lastName: "",
-      dateOfBirth: undefined,
+      dateOfBirth: "",
       gender: "Male",
       photoUpload: undefined,
       primaryPhoneNumber: "",
@@ -237,26 +124,49 @@ const RegisterForm = () => {
   });
 
   const onSubmit = async (values: FormData) => {
+    setIsSubmitting(true);
+    setError(null);
+    setRegistrationSuccess(null);
+  
     try {
-      setIsSubmitting(true);
-      const response = await registerPatient(values);
-
-      if (response.success && response.data) {
-        // Store authentication data
-        localStorage.setItem('token', response.data.token);
-        localStorage.setItem('hospitalNumber', response.data.hospitalNumber);
-        localStorage.setItem('user', JSON.stringify(response.data.user));
-
-        toast.success('Registration successful! Redirecting...');
-        router.push(`/patient/verify?hospitalNumber=${response.data.hospitalNumber}`);
+      // Handle file upload separately if needed
+      if (values.photoUpload instanceof File) {
+        const formData = new FormData();
+        formData.append('photoUpload', values.photoUpload);
+        
+        // You could upload the file first and get a URL back
+         const fileUploadResponse = await fetch("http://localhost/hospital_api/file_upload.php", {
+           method: "POST",
+           body: formData,
+        });
+        const fileData = await fileUploadResponse.json();
+        values.photoUpload = fileData.fileUrl; // Replace file object with URL
       }
-    } catch (error) {
-      if (error instanceof RegistrationError) {
-        toast.error(error.message);
-      } else {
-        toast.error('Registration failed. Please try again.');
+  
+      // For regular JSON submission
+      const response = await fetch("http://localhost/hospital_api/register_patient.php", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+        },
+        body: JSON.stringify(values),
+      });
+  
+      const data = await response.json();
+  
+      if (data.error) {
+        setError(data.error);
+        return;
       }
-      console.error('Registration error:', error);
+  
+      if (data.message) {
+        setRegistrationSuccess(data);
+        form.reset();
+      }
+    } catch (err) {
+      setError("An error occurred during registration. Please try again later.");
+      console.error("Registration error:", err);
     } finally {
       setIsSubmitting(false);
     }
@@ -264,7 +174,7 @@ const RegisterForm = () => {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 ">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 " method="POST">
         <section className="">
           <h1 className="header text-3xl font-bold">Welcome 👋</h1>
           <p className="text-dark-700 text-xl">Let us know more about yourself.</p>
@@ -288,7 +198,7 @@ const RegisterForm = () => {
               <FormItem className="min-w-[250px] flex-1">
                 <FormLabel>First Name</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="John"  disabled={isSubmitting} />
+                  <Input {...field} placeholder="John" disabled={isSubmitting} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -331,31 +241,16 @@ const RegisterForm = () => {
               render={({ field }) => (
                 <FormItem className="flex flex-col min-w-[250px] flex-1">
                   <FormLabel>Date of birth</FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          disabled={isSubmitting} 
-                          variant={"outline"}
-                          className={cn(
-                            "w-[250px] pl-3 text-left font-normal",
-                            !field.value && "text-muted-foreground"
-                          )}>
-                          {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
-                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={field.value}
-                        onSelect={field.onChange}
-                        disabled={(date) => date > new Date() || date < new Date("1900-01-01")}
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      type="date"
+                      disabled={isSubmitting}
+                      placeholder="Pick Date of Birth"
+                      max={new Date().toISOString().split("T")[0]}
+                      className="w-full"
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
@@ -371,7 +266,10 @@ const RegisterForm = () => {
               <FormItem className="min-w-[250px] flex-1">
                 <FormLabel>Gender</FormLabel>
                 <FormControl>
-                  <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isSubmitting} >
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                    disabled={isSubmitting}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select gender" />
                     </SelectTrigger>
@@ -394,7 +292,10 @@ const RegisterForm = () => {
               <FormItem className="min-w-[250px] flex-1">
                 <FormLabel>Marital Status</FormLabel>
                 <FormControl>
-                  <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isSubmitting} >
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                    disabled={isSubmitting}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select marital status" />
                     </SelectTrigger>
@@ -420,7 +321,7 @@ const RegisterForm = () => {
               <FormItem className="min-w-[250px] flex-1">
                 <FormLabel>Occupation</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="Business Man" disabled={isSubmitting}  />
+                  <Input {...field} placeholder="Business Man" disabled={isSubmitting} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -433,7 +334,12 @@ const RegisterForm = () => {
               <FormItem className="min-w-[250px] flex-1">
                 <FormLabel>Photo Upload</FormLabel>
                 <FormControl>
-                  <Input type="file" onChange={(e) => field.onChange(e.target.files?.[0])} disabled={isSubmitting} />
+                  <Input
+                    type="file"
+                    onChange={(e) => field.onChange(e.target.files?.[0])}
+                    disabled={isSubmitting}
+                    name="profile_picture" accept="image/"
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -486,7 +392,12 @@ const RegisterForm = () => {
             <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input type="email" {...field} placeholder="example@gmail.com" disabled={isSubmitting} />
+                <Input
+                  type="email"
+                  {...field}
+                  placeholder="example@gmail.com"
+                  disabled={isSubmitting}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -619,7 +530,10 @@ const RegisterForm = () => {
               <FormItem className="flex-1 min-w-[250px]">
                 <FormLabel>Blood Group</FormLabel>
                 <FormControl>
-                  <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isSubmitting} >
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                    disabled={isSubmitting}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select Blood Group" />
                     </SelectTrigger>
@@ -688,7 +602,7 @@ const RegisterForm = () => {
             name="healthInsurance.provider"
             render={({ field }) => (
               <FormItem className="flex-1 min-w-[250px]">
-                <FormLabel>Provider</FormLabel>
+                <FormLabel>Insurance Provider</FormLabel>
                 <FormControl>
                   <Input {...field} placeholder="AXA Mansard" disabled={isSubmitting} />
                 </FormControl>
@@ -728,7 +642,12 @@ const RegisterForm = () => {
               <FormItem className="flex-1 min-w-[250px]">
                 <FormLabel>Confirm Password</FormLabel>
                 <FormControl>
-                  <Input type="password" {...field} placeholder="*********" disabled={isSubmitting} />
+                  <Input
+                    type="password"
+                    {...field}
+                    placeholder="*********"
+                    disabled={isSubmitting}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -743,7 +662,11 @@ const RegisterForm = () => {
             render={({ field }) => (
               <FormItem>
                 <FormControl>
-                  <Checkbox checked={field.value} onCheckedChange={field.onChange} disabled={isSubmitting} />
+                  <Checkbox
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                    disabled={isSubmitting}
+                  />
                 </FormControl>
                 <FormLabel> Consent for Data Usage</FormLabel>
                 <br />
@@ -752,8 +675,21 @@ const RegisterForm = () => {
             )}
           />
         </div>
+        {error && (
+        <div className="text-red-900 p-2 bg-red-300 rounded-md text-sm my-4 text-center">
+          {error}
+        </div>
+      )}
+      {registrationSuccess && (
+        <div className="text-green-900 p-2 bg-green-300 rounded-md text-sm my-4 text-center">
+          {registrationSuccess.message}
+        </div>
+      )}
 
-        <Button type="submit" disabled={isSubmitting} > {isSubmitting ? "Registering..." : "Register"}</Button>
+        <Button type="submit" disabled={isSubmitting}>
+          {" "}
+          {isSubmitting ? "Registering..." : "Register"}
+        </Button>
 
         <div className="pt-12 ">
           Already have an account?

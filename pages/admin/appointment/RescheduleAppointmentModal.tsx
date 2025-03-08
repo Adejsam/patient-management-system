@@ -20,7 +20,7 @@ export const RescheduleAppointmentModal: React.FC<RescheduleAppointmentModalProp
   onClose,
 }) => {
   const { theme } = useTheme();
-  const [newDate, setNewDate] = useState(new Date(appointment.appointmentDate));
+  const [newDate, setNewDate] = useState<Date>(new Date(appointment.appointmentDate));
   const [newTime, setNewTime] = useState(appointment.appointmentTime);
   const [isMounted, setIsMounted] = useState(false);
 
@@ -31,6 +31,13 @@ export const RescheduleAppointmentModal: React.FC<RescheduleAppointmentModalProp
   if (!isMounted) {
     return null;
   }
+
+  // Handle date selection from Calendar
+  const handleDateSelect = (date: Date | undefined) => {
+    if (date) {
+      setNewDate(date);
+    }
+  };
 
   const handleReschedule = () => {
     // Implement reschedule logic here
@@ -71,7 +78,7 @@ export const RescheduleAppointmentModal: React.FC<RescheduleAppointmentModalProp
                 mode="single"
                 required
                 selected={newDate}
-                onSelect={setNewDate}
+                onSelect={handleDateSelect}
                 disabled={(date) => date < new Date(today)}
               />
             </PopoverContent>

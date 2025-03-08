@@ -58,7 +58,6 @@ const defaultValues: Partial<ComplaintFormValues> = {
   subject: "",
   description: "",
   incidentDate: "",
-  preferredContact: "",
 };
 
 export default function LodgeComplaintForm() {
@@ -73,7 +72,6 @@ export default function LodgeComplaintForm() {
         subject: "",
         description: "",
         incidentDate: "",
-        preferredContact: "",
         attachments: null
       },
     });
@@ -224,29 +222,7 @@ export default function LodgeComplaintForm() {
                   )}
                 />
   
-                <FormField
-                  control={form.control}
-                  name="preferredContact"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Preferred Contact Method</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select contact method" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="email">Email</SelectItem>
-                          <SelectItem value="phone">Phone</SelectItem>
-                          <SelectItem value="both">Both Email and Phone</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-  
+              
                 <FormField
                   control={form.control}
                   name="attachments"
