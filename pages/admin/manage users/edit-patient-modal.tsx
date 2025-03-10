@@ -19,35 +19,35 @@ type GenderType = "Male" | "Female" | "Other" | "Prefer Not to Say";
 type MaritalType = "Single" | "Married" | "Widowed" | "Divorced";
 
 interface FormState {
-  firstName: string;
-  middleName: string;
-  lastName: string;
-  dateOfBirth: string;
+  first_name: string;
+  middle_name: string;
+  last_name: string;
+  date_of_birth: string;
   gender: GenderType;
-  primaryPhoneNumber: string;
-  alternatePhoneNumber: string;
+  primary_phone_number: string;
+  alternate_phone_number: string;
   email: string;
-  residentialAddress: {
-    street: string;
-    city: string;
-    state: string;
-    country: string;
-  };
-  emergencyContact: {
-    name: string;
-    relationship: string;
-    phoneNumber: string;
-  };
-  bloodGroup: string;
-  knownAllergies: string;
-  preExistingConditions: string;
-  primaryPhysician: string;
-  healthInsurance: {
-    insuranceNumber: string;
-    provider: string;
-  };
-  maritalStatus: MaritalType;
+  street: string;
+  city: string;
+  state: string;
+  country: string;
+  emergency_contact_name: string;
+  emergency_contact_relationship: string;
+  emergency_contact_phone: string;
+  blood_group: string;
+  known_allergies: string;
+  pre_existing_conditions: string;
+  primary_physician: string;
+  insurance_number: string;
+  insurance_provider: string;
+  marital_status: MaritalType;
   occupation: string;
+  error?: string;
+}
+
+interface EditorData {
+  editorRole: string;
+  editorId: string;
 }
 
 interface EditPatientModalProps {
@@ -58,49 +58,74 @@ interface EditPatientModalProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export const EditPatientModal: React.FC<EditPatientModalProps> = ({
-  patient,
-  onClose,
-  onUpdate,
-  isOpen,
-  onOpenChange,
-}) => {
+export const EditPatientModal: React.FC<EditPatientModalProps> = (props) => {
+  const { patient, onClose, onUpdate, isOpen, onOpenChange } = props;
   useTheme();
 
   const [isMounted, setIsMounted] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [formState, setFormState] = useState<FormState>({
-    firstName: patient.firstName,
-    middleName: patient.middleName || "",
-    lastName: patient.lastName,
-    dateOfBirth: patient.dateOfBirth.toISOString(),
-    gender: patient.gender,
-    primaryPhoneNumber: patient.primaryPhoneNumber,
-    alternatePhoneNumber: patient.alternatePhoneNumber || "",
-    email: patient.email,
-    residentialAddress: {
-      street: patient.residentialAddress.street,
-      city: patient.residentialAddress.city,
-      state: patient.residentialAddress.state,
-      country: patient.residentialAddress.country,
-    },
-    emergencyContact: {
-      name: patient.emergencyContact.name,
-      relationship: patient.emergencyContact.relationship,
-      phoneNumber: patient.emergencyContact.phoneNumber,
-    },
-    bloodGroup: patient.bloodGroup || "",
-    knownAllergies: patient.knownAllergies || "",
-    preExistingConditions: patient.preExistingConditions || "",
-    primaryPhysician: patient.primaryPhysician || "",
-    healthInsurance: {
-      insuranceNumber: patient.healthInsurance?.insuranceNumber || "",
-      provider: patient.healthInsurance?.provider || "",
-    },
-    maritalStatus: patient.maritalStatus,
+    first_name: patient.first_name,
+    middle_name: patient.middle_name || "",
+    last_name: patient.last_name,
+    date_of_birth: patient.date_of_birth,
+    gender: patient.gender as GenderType,
+    primary_phone_number: patient.primary_phone_number,
+    alternate_phone_number: patient.alternate_phone_number || "",
+    email: patient.email || "",
+    street: patient.street,
+    city: patient.city,
+    state: patient.state,
+    country: patient.country,
+    emergency_contact_name: patient.emergency_contact_name,
+    emergency_contact_relationship: patient.emergency_contact_relationship,
+    emergency_contact_phone: patient.emergency_contact_phone,
+    blood_group: patient.blood_group || "",
+    known_allergies: patient.known_allergies || "",
+    pre_existing_conditions: patient.pre_existing_conditions || "",
+    primary_physician: patient.primary_physician || "",
+    insurance_number: patient.insurance_number || "",
+    insurance_provider: patient.insurance_provider || "",
+    marital_status: patient.marital_status as MaritalType,
     occupation: patient.occupation || "",
   });
+
+  const [editorData, setEditorData] = useState<EditorData | null>(null);
+
+  useEffect(() => {
+    setIsMounted(true);
+    const fetchEditorData = async () => {
+      try {
+        const userRole = localStorage.getItem("userRole");
+        const userData = localStorage.getItem("userData");
+        console.log(localStorage)
+
+        if (!userRole || !userData) {
+          throw new Error("User data not found in localStorage");
+        }
+
+        const parsedUserData = JSON.parse(userData);
+        if (!parsedUserData.user_id) {
+          throw new Error("Invalid user data in localStorage");
+        }
+
+        setEditorData({
+          editorRole: userRole,
+          editorId: parsedUserData.user_id,
+        });
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to fetch editor data");
+        setFormState((prev) => ({
+          ...prev,
+          error: err instanceof Error ? err.message : "Failed to fetch editor data",
+        }));
+      }
+    };
+
+    fetchEditorData();
+  }, []);
 
   useEffect(() => {
     setIsMounted(true);
@@ -110,51 +135,72 @@ export const EditPatientModal: React.FC<EditPatientModalProps> = ({
     return null;
   }
 
-  const validateForm = () => {
-    const errors = {
-      firstName: "",
-      lastName: "",
-      primaryPhoneNumber: "",
-      email: "",
-    };
+  const transformDataToCamelCase = (formData: FormState): Record<string, unknown> => {
+    const transformedData: Record<string, unknown> = {};
 
-    if (!formState.firstName.trim()) errors.firstName = "First name is required";
-    if (!formState.lastName.trim()) errors.lastName = "Last name is required";
-    if (!formState.primaryPhoneNumber.trim())
-      errors.primaryPhoneNumber = "Phone number is required";
-    if (!formState.email.trim()) errors.email = "Email is required";
+    Object.entries(formData).forEach(([key, value]) => {
+      // Convert snake_case to camelCase
+      const camelKey = key.replace(/_([a-z])/g, (g) => g[1].toUpperCase());
+      transformedData[camelKey] = value;
+    });
 
-    return errors;
+    return transformedData;
   };
+
 
   const handleUpdate = async () => {
     try {
+      if (!editorData) {
+        throw new Error("Editor data not available");
+      }
+      console.log(localStorage)
+
       setIsSubmitting(true);
       setError(null);
+      setSuccessMessage(null);
 
-      const errors = validateForm();
-      if (Object.values(errors).some((err) => err !== "")) {
-        setError("Please correct the form errors");
-        return;
-      }
+      // Transform form data to camelCase for API
+      const formData = transformDataToCamelCase(formState);
 
-      const updatedPatient: Patient = {
-        ...patient,
-        ...formState,
-        dateOfBirth: new Date(formState.dateOfBirth),
-        residentialAddress: {
-          ...formState.residentialAddress,
-        },
-        emergencyContact: {
-          ...formState.emergencyContact,
-        },
-        healthInsurance: {
-          ...formState.healthInsurance,
-        },
+      // Construct the API payload
+      const payload = {
+        editorRole: editorData.editorRole,
+        editorId: editorData.editorId,
+        targetUserId: patient.user_id,
+        targetRole: "patient",
+        fields: formData,
       };
 
-      onUpdate(updatedPatient);
-      onClose();
+      // Send the update request
+      const response = await fetch("http://localhost/hospital_api/edit_user.php", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update patient");
+      }
+
+      const data = await response.json();
+      if (typeof data === 'object' && data !== null) {
+        if (data.success) {
+          setSuccessMessage("Patient updated successfully");
+          setError(null);
+          
+          // Close modal after 1 second
+          setTimeout(() => {
+            onUpdate(patient); // Refresh the patient data
+            onClose();
+          }, 1000);
+        } else {
+          setError(data.message || "Failed to update patient");
+        }
+      } else {
+        setError("Invalid response format from server");
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to update patient");
     } finally {
@@ -168,19 +214,27 @@ export const EditPatientModal: React.FC<EditPatientModalProps> = ({
       onOpenChange={onOpenChange}
       onClose={onClose}
       className="flex justify-center items-center">
-      <ModalHeader>
+      <ModalHeader className="text-center text-sm">
         <span className="text-primary">Edit</span> Patient Information
+        {successMessage && (
+          <div className="mt-2 p-2 text-center bg-green-100 text-green-700 rounded">
+            {successMessage}
+          </div>
+        )}
+        {error && (
+          <div className="mt-2 p-2 bg-red-100 text-center text-red-700 rounded">{error}</div>
+        )}
       </ModalHeader>
       <ScrollArea>
-        <ModalContent className="max-h-[70vh]">
+        <ModalContent className="max-h-[65vh]">
           <div className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>First Name</Label>
                 <Input
-                  value={formState.firstName}
+                  value={formState.first_name}
                   onChange={(e) => {
-                    setFormState({ ...formState, firstName: e.target.value });
+                    setFormState({ ...formState, first_name: e.target.value });
                     setError(null);
                   }}
                   className="w-full"
@@ -190,9 +244,9 @@ export const EditPatientModal: React.FC<EditPatientModalProps> = ({
               <div className="space-y-2">
                 <Label>Middle Name</Label>
                 <Input
-                  value={formState.middleName}
+                  value={formState.middle_name}
                   onChange={(e) => {
-                    setFormState({ ...formState, middleName: e.target.value });
+                    setFormState({ ...formState, middle_name: e.target.value });
                     setError(null);
                   }}
                   className="w-full"
@@ -202,9 +256,9 @@ export const EditPatientModal: React.FC<EditPatientModalProps> = ({
               <div className="space-y-2">
                 <Label>Last Name</Label>
                 <Input
-                  value={formState.lastName}
+                  value={formState.last_name}
                   onChange={(e) => {
-                    setFormState({ ...formState, lastName: e.target.value });
+                    setFormState({ ...formState, last_name: e.target.value });
                     setError(null);
                   }}
                   className="w-full"
@@ -215,9 +269,9 @@ export const EditPatientModal: React.FC<EditPatientModalProps> = ({
                 <Label>Date of Birth</Label>
                 <Input
                   type="date"
-                  value={formState.dateOfBirth}
+                  value={formState.date_of_birth}
                   onChange={(e) => {
-                    setFormState({ ...formState, dateOfBirth: e.target.value });
+                    setFormState({ ...formState, date_of_birth: e.target.value });
                     setError(null);
                   }}
                   className="w-full"
@@ -247,9 +301,9 @@ export const EditPatientModal: React.FC<EditPatientModalProps> = ({
               <div className="space-y-2">
                 <Label>Primary Phone Number</Label>
                 <Input
-                  value={formState.primaryPhoneNumber}
+                  value={formState.primary_phone_number}
                   onChange={(e) => {
-                    setFormState({ ...formState, primaryPhoneNumber: e.target.value });
+                    setFormState({ ...formState, primary_phone_number: e.target.value });
                     setError(null);
                   }}
                   className="w-full"
@@ -260,9 +314,9 @@ export const EditPatientModal: React.FC<EditPatientModalProps> = ({
               <div className="space-y-2">
                 <Label>Alternate Phone Number</Label>
                 <Input
-                  value={formState.alternatePhoneNumber}
+                  value={formState.alternate_phone_number}
                   onChange={(e) => {
-                    setFormState({ ...formState, alternatePhoneNumber: e.target.value });
+                    setFormState({ ...formState, alternate_phone_number: e.target.value });
                     setError(null);
                   }}
                   className="w-full"
@@ -288,60 +342,36 @@ export const EditPatientModal: React.FC<EditPatientModalProps> = ({
                 <Label>Residential Address</Label>
                 <div className="space-y-2">
                   <Input
-                    value={formState.residentialAddress.street}
+                    value={formState.street}
                     onChange={(e) => {
-                      setFormState({
-                        ...formState,
-                        residentialAddress: {
-                          ...formState.residentialAddress,
-                          street: e.target.value,
-                        },
-                      });
+                      setFormState({ ...formState, street: e.target.value });
                       setError(null);
                     }}
                     className="w-full"
                     placeholder="Street Address"
                   />
                   <Input
-                    value={formState.residentialAddress.city}
+                    value={formState.city}
                     onChange={(e) => {
-                      setFormState({
-                        ...formState,
-                        residentialAddress: {
-                          ...formState.residentialAddress,
-                          city: e.target.value,
-                        },
-                      });
+                      setFormState({ ...formState, city: e.target.value });
                       setError(null);
                     }}
                     className="w-full"
                     placeholder="City"
                   />
                   <Input
-                    value={formState.residentialAddress.state}
+                    value={formState.state}
                     onChange={(e) => {
-                      setFormState({
-                        ...formState,
-                        residentialAddress: {
-                          ...formState.residentialAddress,
-                          state: e.target.value,
-                        },
-                      });
+                      setFormState({ ...formState, state: e.target.value });
                       setError(null);
                     }}
                     className="w-full"
                     placeholder="State"
                   />
                   <Input
-                    value={formState.residentialAddress.country}
+                    value={formState.country}
                     onChange={(e) => {
-                      setFormState({
-                        ...formState,
-                        residentialAddress: {
-                          ...formState.residentialAddress,
-                          country: e.target.value,
-                        },
-                      });
+                      setFormState({ ...formState, country: e.target.value });
                       setError(null);
                     }}
                     className="w-full"
@@ -354,26 +384,20 @@ export const EditPatientModal: React.FC<EditPatientModalProps> = ({
                 <Label>Emergency Contact</Label>
                 <div className="space-y-2">
                   <Input
-                    value={formState.emergencyContact.name}
+                    value={formState.emergency_contact_name}
                     onChange={(e) => {
-                      setFormState({
-                        ...formState,
-                        emergencyContact: { ...formState.emergencyContact, name: e.target.value },
-                      });
+                      setFormState({ ...formState, emergency_contact_name: e.target.value });
                       setError(null);
                     }}
                     className="w-full"
                     placeholder="Name"
                   />
                   <Input
-                    value={formState.emergencyContact.relationship}
+                    value={formState.emergency_contact_relationship}
                     onChange={(e) => {
                       setFormState({
                         ...formState,
-                        emergencyContact: {
-                          ...formState.emergencyContact,
-                          relationship: e.target.value,
-                        },
+                        emergency_contact_relationship: e.target.value,
                       });
                       setError(null);
                     }}
@@ -381,15 +405,9 @@ export const EditPatientModal: React.FC<EditPatientModalProps> = ({
                     placeholder="Relationship"
                   />
                   <Input
-                    value={formState.emergencyContact.phoneNumber}
+                    value={formState.emergency_contact_phone}
                     onChange={(e) => {
-                      setFormState({
-                        ...formState,
-                        emergencyContact: {
-                          ...formState.emergencyContact,
-                          phoneNumber: e.target.value,
-                        },
-                      });
+                      setFormState({ ...formState, emergency_contact_phone: e.target.value });
                       setError(null);
                     }}
                     className="w-full"
@@ -401,9 +419,9 @@ export const EditPatientModal: React.FC<EditPatientModalProps> = ({
               <div className="space-y-2">
                 <Label>Blood Group</Label>
                 <Input
-                  value={formState.bloodGroup}
+                  value={formState.blood_group}
                   onChange={(e) => {
-                    setFormState({ ...formState, bloodGroup: e.target.value });
+                    setFormState({ ...formState, blood_group: e.target.value });
                     setError(null);
                   }}
                   className="w-full"
@@ -414,9 +432,9 @@ export const EditPatientModal: React.FC<EditPatientModalProps> = ({
               <div className="space-y-2">
                 <Label>Known Allergies</Label>
                 <Textarea
-                  value={formState.knownAllergies}
+                  value={formState.known_allergies}
                   onChange={(e) => {
-                    setFormState({ ...formState, knownAllergies: e.target.value });
+                    setFormState({ ...formState, known_allergies: e.target.value });
                     setError(null);
                   }}
                   className="w-full"
@@ -427,9 +445,9 @@ export const EditPatientModal: React.FC<EditPatientModalProps> = ({
               <div className="space-y-2">
                 <Label>Pre-existing Conditions</Label>
                 <Textarea
-                  value={formState.preExistingConditions}
+                  value={formState.pre_existing_conditions}
                   onChange={(e) => {
-                    setFormState({ ...formState, preExistingConditions: e.target.value });
+                    setFormState({ ...formState, pre_existing_conditions: e.target.value });
                     setError(null);
                   }}
                   className="w-full"
@@ -440,9 +458,9 @@ export const EditPatientModal: React.FC<EditPatientModalProps> = ({
               <div className="space-y-2">
                 <Label>Primary Physician</Label>
                 <Input
-                  value={formState.primaryPhysician}
+                  value={formState.primary_physician}
                   onChange={(e) => {
-                    setFormState({ ...formState, primaryPhysician: e.target.value });
+                    setFormState({ ...formState, primary_physician: e.target.value });
                     setError(null);
                   }}
                   className="w-full"
@@ -454,27 +472,18 @@ export const EditPatientModal: React.FC<EditPatientModalProps> = ({
                 <Label>Health Insurance</Label>
                 <div className="space-y-2">
                   <Input
-                    value={formState.healthInsurance.insuranceNumber}
+                    value={formState.insurance_number}
                     onChange={(e) => {
-                      setFormState({
-                        ...formState,
-                        healthInsurance: {
-                          ...formState.healthInsurance,
-                          insuranceNumber: e.target.value,
-                        },
-                      });
+                      setFormState({ ...formState, insurance_number: e.target.value });
                       setError(null);
                     }}
                     className="w-full"
                     placeholder="Insurance Number"
                   />
                   <Input
-                    value={formState.healthInsurance.provider}
+                    value={formState.insurance_provider}
                     onChange={(e) => {
-                      setFormState({
-                        ...formState,
-                        healthInsurance: { ...formState.healthInsurance, provider: e.target.value },
-                      });
+                      setFormState({ ...formState, insurance_provider: e.target.value });
                       setError(null);
                     }}
                     className="w-full"
@@ -486,9 +495,9 @@ export const EditPatientModal: React.FC<EditPatientModalProps> = ({
               <div className="space-y-2">
                 <Label>Marital Status</Label>
                 <Select
-                  value={formState.maritalStatus}
+                  value={formState.marital_status}
                   onValueChange={(value) => {
-                    setFormState({ ...formState, maritalStatus: value as MaritalType });
+                    setFormState({ ...formState, marital_status: value as MaritalType });
                     setError(null);
                   }}>
                   <SelectTrigger>
@@ -516,8 +525,6 @@ export const EditPatientModal: React.FC<EditPatientModalProps> = ({
                 />
               </div>
             </div>
-
-            {error && <div className="mt-4 p-2 bg-red-100 text-red-700 rounded">{error}</div>}
           </div>
         </ModalContent>
       </ScrollArea>

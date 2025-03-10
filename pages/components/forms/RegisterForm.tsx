@@ -22,8 +22,6 @@ import {
 import { Input } from "../../components/ui/input";
 import { Checkbox } from "../../components/ui/checkbox";
 
-
-
 const formSchema = z
   .object({
     firstName: z.string().min(3, "First name is required"),
@@ -63,12 +61,23 @@ const formSchema = z
     maritalStatus: z.enum(["Single", "Married", "Divorced", "Widowed"]),
     occupation: z.string().optional(),
     consentForDataUsage: z.boolean(),
-    password: z.string().min(8, "Password must be at least 8 characters"),
-    confirmPassword: z.string().min(8, "Confirm password is required"),
+    password: z
+      .string()
+      .min(8, "Password must be at least 8 characters")
+      .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+      .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+      .regex(/[0-9]/, "Password must contain at least one number")
+      .regex(/[^a-zA-Z0-9]/, "Password must contain at least one special character"),
+    confirmPassword: z
+      .string()
+      .min(8, "Password must be at least 8 characters")
+      .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+      .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+      .regex(/[0-9]/, "Password must contain at least one number")
+      .regex(/[^a-zA-Z0-9]/, "Password must contain at least one special character"),
   })
   .refine(
-    ({ password, confirmPassword }) =>
-      password === confirmPassword || !password,
+    ({ password, confirmPassword }) => password === confirmPassword || !password,
     "Passwords do not match"
   );
 
@@ -127,39 +136,39 @@ const RegisterForm = () => {
     setIsSubmitting(true);
     setError(null);
     setRegistrationSuccess(null);
-  
+
     try {
       // Handle file upload separately if needed
       if (values.photoUpload instanceof File) {
         const formData = new FormData();
-        formData.append('photoUpload', values.photoUpload);
-        
+        formData.append("photoUpload", values.photoUpload);
+
         // You could upload the file first and get a URL back
-         const fileUploadResponse = await fetch("http://localhost/hospital_api/file_upload.php", {
-           method: "POST",
-           body: formData,
+        const fileUploadResponse = await fetch("http://localhost/hospital_api/file_upload.php", {
+          method: "POST",
+          body: formData,
         });
         const fileData = await fileUploadResponse.json();
         values.photoUpload = fileData.fileUrl; // Replace file object with URL
       }
-  
+
       // For regular JSON submission
       const response = await fetch("http://localhost/hospital_api/register_patient.php", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Accept": "application/json",
+          Accept: "application/json",
         },
         body: JSON.stringify(values),
       });
-  
+
       const data = await response.json();
-  
+
       if (data.error) {
         setError(data.error);
         return;
       }
-  
+
       if (data.message) {
         setRegistrationSuccess(data);
         form.reset();
@@ -338,7 +347,8 @@ const RegisterForm = () => {
                     type="file"
                     onChange={(e) => field.onChange(e.target.files?.[0])}
                     disabled={isSubmitting}
-                    name="profile_picture" accept="image/"
+                    name="profile_picture"
+                    accept="image/"
                   />
                 </FormControl>
                 <FormMessage />
@@ -676,15 +686,15 @@ const RegisterForm = () => {
           />
         </div>
         {error && (
-        <div className="text-red-900 p-2 bg-red-300 rounded-md text-sm my-4 text-center">
-          {error}
-        </div>
-      )}
-      {registrationSuccess && (
-        <div className="text-green-900 p-2 bg-green-300 rounded-md text-sm my-4 text-center">
-          {registrationSuccess.message}
-        </div>
-      )}
+          <div className="text-red-900 p-2 bg-red-300 rounded-md text-sm my-4 text-center">
+            {error}
+          </div>
+        )}
+        {registrationSuccess && (
+          <div className="text-green-900 p-2 bg-green-300 rounded-md text-sm my-4 text-center">
+            {registrationSuccess.message}
+          </div>
+        )}
 
         <Button type="submit" disabled={isSubmitting}>
           {" "}

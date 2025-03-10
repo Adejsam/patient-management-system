@@ -31,71 +31,6 @@ import Header from "../components/headers/Header";
 import Seo from "../../shared/seo/seo";
 import { EditStaffModal } from "./manage users/edit-staff-modal";
 
-export const mockStaff: Staff[] = [
-  {
-    id: "1",
-    firstName: "Chinedu",
-    lastName: "Okonkwo",
-    email: "chinedu.okonkwo@mediclinic.com.ng",
-    phoneNumber: "+234 803 456 7890",
-    role: "doctor",
-    details: {
-      medicalLicenseNumber: "MDCN/2018/123456",
-      specialization: "Cardiology",
-    },
-    createdAt: new Date(),
-    experienceYears: "5",
-  },
-  {
-    id: "2",
-    firstName: "Amina",
-    lastName: "Ibrahim",
-    email: "amina.ibrahim@mediclinic.com.ng",
-    phoneNumber: "+234 705 123 4567",
-    role: "admin",
-    createdAt: new Date(),
-  },
-  {
-    id: "3",
-    firstName: "Oluwaseun",
-    lastName: "Adeyemi",
-    email: "oluwaseun.adeyemi@mediclinic.com.ng",
-    phoneNumber: "+234 812 987 6543",
-    role: "pharmacist",
-    details: {
-      pharmacyLicenseNumber: "PCN/2019/54321",
-    },
-    createdAt: new Date(),
-    experienceYears: "4",
-  },
-  {
-    id: "4",
-    firstName: "Ngozi",
-    lastName: "Eze",
-    email: "ngozi.eze@mediclinic.com.ng",
-    phoneNumber: "+234 908 765 4321",
-    role: "receptionist",
-    createdAt: new Date(),
-  },
-  {
-    id: "5",
-    firstName: "Emeka",
-    lastName: "Nwachukwu",
-    email: "emeka.nwachukwu@mediclinic.com.ng",
-    phoneNumber: "+234 701 234 5678",
-    role: "billingOfficer",
-    createdAt: new Date(),
-  },
-  {
-    id: "6",
-    firstName: "Folake",
-    lastName: "Adesina",
-    email: "folake.adesina@mediclinic.com.ng",
-    phoneNumber: "+234 809 876 5432",
-    role: "billingOfficer",
-    createdAt: new Date(),
-  },
-];
 export default function ManageStaffPage() {
   const [searchTerm, setSearchTerm] = React.useState("");
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -107,18 +42,28 @@ export default function ManageStaffPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedStaffForEdit, setSelectedStaffForEdit] = useState<Staff | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [staffData, setStaffData] = useState<Staff[]>([]);
 
   useTheme();
-
   useEffect(() => {
+    const fetchStaff = async () => {
+      try {
+        const response = await fetch("http://localhost/hospital_api/get_staff.php");
+        const data = await response.json();
+        console.log(localStorage);
+        if (data.success) {
+          setStaffData(data.staff);
+        }
+      } catch (error) {
+        console.error("Error fetching staff:", error);
+      }
+    };
+
     setIsMounted(true);
+    fetchStaff();
   }, []);
 
   const columns: ColumnDef<Staff>[] = [
-    {
-      accessorKey: "id",
-      header: "ID",
-    },
     {
       accessorKey: "firstName",
       header: "First Name",
@@ -133,27 +78,15 @@ export default function ManageStaffPage() {
     },
     {
       accessorKey: "role",
-      header: "Role",
-    },
-    {
-      accessorKey: "details",
       header: "Details",
       cell: (info) => {
-        const details = info.getValue();
-        if (!details || typeof details !== "object") return null;
-
-        // Use type guards to handle union types
-        if (info.row.original.role === "doctor") {
-          if ("medicalLicenseNumber" in details && "specialization" in details) {
-            return `License: ${details.medicalLicenseNumber}, Specialization: ${details.specialization}`;
-          }
+        const staff = info.row.original;
+        if (staff.role === "doctor") {
+          return `License: ${staff.licenseNumber}, Specialization: ${staff.specialization}`;
         }
-        if (info.row.original.role === "pharmacist") {
-          if ("pharmacyLicenseNumber" in details) {
-            return `License: ${details.pharmacyLicenseNumber}`;
-          }
+        if (staff.role === "pharmacist") {
+          return `License: ${staff.licenseNumber}`;
         }
-
         return null;
       },
     },
@@ -186,13 +119,13 @@ export default function ManageStaffPage() {
   ];
 
   const filteredData = React.useMemo(() => {
-    return mockStaff.filter(
+    return staffData.filter(
       (staff) =>
-        staff.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        staff.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        staff.email.toLowerCase().includes(searchTerm.toLowerCase())
+        (staff.firstName?.toLowerCase() ?? "").includes(searchTerm.toLowerCase()) ||
+        (staff.lastName?.toLowerCase() ?? "").includes(searchTerm.toLowerCase()) ||
+        (staff.email?.toLowerCase() ?? "").includes(searchTerm.toLowerCase())
     );
-  }, [searchTerm]);
+  }, [searchTerm, staffData]);
 
   const table = useReactTable({
     data: filteredData,
@@ -309,7 +242,6 @@ export default function ManageStaffPage() {
                   setSelectedStaffForEdit(null);
                 }}
                 onUpdate={(updatedPatient) => {
-                  // Handle the updated patient data
                   console.log("Updated Patient:", updatedPatient);
                   setIsEditModalOpen(false);
                   setSelectedStaffForEdit(null);

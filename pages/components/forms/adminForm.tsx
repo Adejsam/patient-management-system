@@ -70,6 +70,7 @@ const AdminLoginForm = () => {
         localStorage.setItem("user", JSON.stringify(data.user_id));
         localStorage.setItem("userRole", data.role);
         localStorage.setItem("userData", JSON.stringify(data.user_data));
+        console.log(localStorage);
         // Set cookies with appropriate options
         document.cookie = `user=${data.user_id}; path=/`;
         document.cookie = `userRole=${data.role}; path=/`;

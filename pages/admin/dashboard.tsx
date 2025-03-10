@@ -28,7 +28,7 @@ export default function Page() {
       <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
         <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:h-[100vh]">
           <h1 className="text-3xl font-bold pt-7 pl-5 pb-1">
-            Admin <span className="text-primary">Dashboard</span>
+            Staff <span className="text-primary">Dashboard</span>
           </h1>
           <h3 className="text-base pl-5 pb-7">Mange Your Patient Effectively</h3>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 p-5">

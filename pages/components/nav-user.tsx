@@ -1,16 +1,12 @@
-"use client"
+"use client";
 
 import {
   // Bell,
   UserRound,
   ChevronsUpDown,
   LogOut,
-} from "lucide-react"
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "./ui/avatar"
+} from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,59 +15,89 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "../components/ui/dropdown-menu"
+} from "../components/ui/dropdown-menu";
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "../components/ui/sidebar"
-import Link from "next/link"
+} from "../components/ui/sidebar";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 
-export function NavUser({
-}: {
+export function NavUser({}: {
   user: {
-    name: string
-    email: string
-    avatar: string
-  }
+    name: string;
+    email: string;
+    avatar: string;
+  };
 }) {
-  const { isMobile } = useSidebar()
+  const { isMobile } = useSidebar();
 
+  const [userData, setUserData] = useState({
+    patientData: {},
+    firstName: "",
+    profilePic: "",
+    email: "",
+    userData: {},
+    userFisrtName: "",
+    userEmail: "",
+    userProfilePic: "",
+  });
 
-  const patientData = JSON.parse(localStorage.getItem('patientInfo') || '{}');
-const firstName = patientData.firstName;
-const profilePic = patientData.photoUpload;
-const email = localStorage.getItem('email');
-const userData = JSON.parse(localStorage.getItem('userData') || '{}');
-const userFisrtName = userData.first_name;
-const userEmail = userData.email;
-const userProfilePic = userData.profile_picture
+  useEffect(() => {
+    const fetchUserData = () => {
+      const patientData = JSON.parse(localStorage.getItem("patientInfo") || "{}");
+      const firstName = patientData.firstName || "";
+      const profilePic = patientData.photoUpload || "";
+      const email = localStorage.getItem("email") || "";
+      const userData = JSON.parse(localStorage.getItem("userData") || "{}");
+      const userFisrtName = userData.first_name || "";
+      const userEmail = userData.email || "";
+      const userProfilePic = userData.profile_picture || "";
 
+      setUserData({
+        patientData,
+        firstName,
+        profilePic,
+        email,
+        userData,
+        userFisrtName,
+        userEmail,
+        userProfilePic,
+      });
+    };
 
-const logout = () => {
-  // Clear localStorage
-  localStorage.removeItem('user');
-  localStorage.removeItem('userRole');
-  localStorage.removeItem('patientInfo');
-  localStorage.removeItem('userData')
-  localStorage.removeItem('email');
-  localStorage.removeItem('role')
-  localStorage.removeItem('user_id')
-  localStorage.removeItem('hospitalNumber')
-  localStorage.removeItem('patient')
-  localStorage.removeItem('message');
-  localStorage.removeItem('success')
-  localStorage.removeItem('patientData')
+    fetchUserData();
+  }, []);
 
+  const logout = () => {
+    // Clear localStorage
+    const keysToRemove = [
+      "user",
+      "userRole",
+      "patientInfo",
+      "userData",
+      "email",
+      "role",
+      "user_id",
+      "hospitalNumber",
+      "patient",
+      "message",
+      "success",
+      "patientData",
+    ];
 
-  // Clear cookies
-  document.cookie = 'user=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT';
-  document.cookie = 'userRole=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT';
+    keysToRemove.forEach((key) => localStorage.removeItem(key));
+    console.log(localStorage);
 
-  // Redirect to home page
-  window.location.href = '/';
-};
+    // Clear cookies
+    document.cookie = "user=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT";
+    document.cookie = "userRole=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT";
+
+    // Redirect to home page
+    window.location.href = "/";
+  };
 
   return (
     <SidebarMenu>
@@ -80,16 +106,19 @@ const logout = () => {
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-            >
+              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
               <Avatar className="h-8 w-8 rounded-lg">
-                <AvatarImage src={profilePic} alt={firstName} />
-                <AvatarImage src={userProfilePic} alt={userFisrtName} />
+                <AvatarImage src={userData.profilePic} alt={userData.firstName} />
+                <AvatarImage src={userData.userProfilePic} alt={userData.userFisrtName} />
                 <AvatarFallback className="rounded-lg">CP</AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold">{firstName} {userFisrtName}</span>
-                <span className="truncate text-xs">{email} {userEmail}</span>
+                <span className="truncate font-semibold">
+                  {userData.firstName} {userData.userFisrtName}
+                </span>
+                <span className="truncate text-xs">
+                  {userData.email} {userData.userEmail}
+                </span>
               </div>
               <ChevronsUpDown className="ml-auto size-4" />
             </SidebarMenuButton>
@@ -98,17 +127,20 @@ const logout = () => {
             className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
             side={isMobile ? "bottom" : "right"}
             align="end"
-            sideOffset={4}
-          >
+            sideOffset={4}>
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src={profilePic} alt={firstName} />
+                  <AvatarImage src={userData.profilePic} alt={userData.firstName} />
                   <AvatarFallback className="rounded-lg">CP</AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">{firstName} {userFisrtName}</span>
-                  <span className="truncate text-xs">{email} {userEmail}</span>
+                  <span className="truncate font-semibold">
+                    {userData.firstName} {userData.userFisrtName}
+                  </span>
+                  <span className="truncate text-xs">
+                    {userData.email} {userData.userEmail}
+                  </span>
                 </div>
               </div>
             </DropdownMenuLabel>
@@ -120,13 +152,6 @@ const logout = () => {
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            {/* <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <Bell />
-                Notifications
-              </DropdownMenuItem>
-            </DropdownMenuGroup> */}
-            <DropdownMenuSeparator />
             <DropdownMenuItem>
               <button onClick={logout} className="inline-flex items-center gap-[5px]">
                 <LogOut />
@@ -137,5 +162,5 @@ const logout = () => {
         </DropdownMenu>
       </SidebarMenuItem>
     </SidebarMenu>
-  )
+  );
 }

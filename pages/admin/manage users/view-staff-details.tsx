@@ -2,11 +2,9 @@ import React, { useEffect, useState } from "react";
 import { Modal, ModalHeader, ModalContent, ModalFooter } from "../../components/ui/modal";
 import { Button } from "../../components/ui/button";
 import { useTheme } from "next-themes";
-import { format } from "date-fns";
 import Image from "next/image";
 import { ScrollArea } from "../../components/ui/scroll-area";
 import { Staff } from "../../../types/staff";
-import { DoctorDetails, PharmacistDetails } from "../../../types/staff";
 
 interface StaffDetailsModalProps {
   staff: Staff;
@@ -30,15 +28,16 @@ export const StaffDetailsModal: React.FC<StaffDetailsModalProps> = ({ staff, onC
       case "doctor":
         return (
           <div>
-            <p>Medical License Number: {(staff.details as DoctorDetails).medicalLicenseNumber}</p>
-            <p>Specialization: {(staff.details as DoctorDetails).specialization}</p>
+            <p><strong>Medical License Number:</strong>  {staff.licenseNumber}</p>
+            <p> <strong>Specialization:</strong> {staff.specialization}</p>
+            <p> <strong>Years of Experience:</strong> {staff.yearsExperience}</p>
+            <p> <strong>About:</strong> {staff.about}</p>
           </div>
         );
       case "pharmacist":
         return (
-          <p>Pharmacy License Number: {(staff.details as PharmacistDetails).pharmacyLicenseNumber}</p>
+          <p> <strong>Pharmacy License Number:</strong> {staff.licenseNumber}</p>
         );
-      
       default:
         return null;
     }
@@ -53,11 +52,11 @@ export const StaffDetailsModal: React.FC<StaffDetailsModalProps> = ({ staff, onC
         <ModalContent className="text-center">
           <div className={`text-sm`}>
             <p className="mx-auto">
-              <strong>Photo:</strong> {staff.photoUpload ? (
+              <strong>Photo:</strong> {staff?.profilePicture ? (
                 <Image
                   width={100}
                   height={100}
-                  src={URL.createObjectURL(staff.photoUpload)}
+                  src={staff.profilePicture ? URL.createObjectURL(staff.profilePicture) : '/default-profile.png'}
                   alt="Staff Photo"
                   className="w-16 h-16 rounded-full mx-auto"
                 />
@@ -76,11 +75,7 @@ export const StaffDetailsModal: React.FC<StaffDetailsModalProps> = ({ staff, onC
               <strong>Role:</strong> {staff.role}
             </p>
             <p>
-              <strong>Details:</strong>
-              {staff.details && renderDetails(staff)}
-            </p>
-            <p>
-              <strong>Created At:</strong> {format(new Date(staff.createdAt), "PPP")}
+              {staff && renderDetails(staff)}
             </p>
           </div>
         </ModalContent>

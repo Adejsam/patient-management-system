@@ -1,4 +1,3 @@
-"use client";
 import * as React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -28,72 +27,124 @@ import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { Loader2 } from "lucide-react";
+import axios from "axios";
 
-// Define the staff schema with validation
-const staffSchema = z.object({
-  firstName: z.string().min(2, { message: "First name is required" }),
-  lastName: z.string().min(2, { message: "Last name is required" }),
-  email: z.string().email({ message: "Invalid email format" }),
-  phoneNumber: z.string().min(10, { message: "Phone number is required" }),
-  role: z.enum(["doctor", "admin", "pharmacist", "receptionist", "billingOfficer"]),
-  password: z.string().min(6, { message: "Password must be at least 6 characters" }),
-  confirmPassword: z.string().min(6, { message: "Confirm password is required" }),
-  experienceYears: z.string().optional(),
-  licenseNumber: z.string().optional(),
-  specialization: z.string().optional(),
-  about: z.string().optional(),
-  photoUpload: z
-        .any()
-        .refine((file) => file instanceof File, "Photo upload must be a file"),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords do not match",
-  path: ["confirmPassword"],
-}).refine(
-  (data) => {
+export interface StaffFormData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber: string;
+  password: string;
+  confirmPassword: string;
+  role: string;
+  photoUpload?: File | null;
+  licenseNumber?: string;
+  experienceYears?: string;
+  specialization?: string;
+  about?: string;
+}
+
+export const staffSchema = z
+  .object({
+    firstName: z.string().min(2, { message: "First name is required" }),
+    lastName: z.string().min(2, { message: "Last name is required" }),
+    email: z.string().email({ message: "Invalid email format" }),
+    phoneNumber: z.string().min(10, { message: "Phone number is required" }),
+    password: z
+      .string()
+      .min(8, "Password must be at least 8 characters")
+      .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+      .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+      .regex(/[0-9]/, "Password must contain at least one number")
+      .regex(/[^a-zA-Z0-9]/, "Password must contain at least one special character"),
+    confirmPassword: z.string().min(8, "Confirm password is required"),
+    role: z.enum(["admin", "doctor", "pharmacist", "receptionist", "billing_officer"]),
+    licenseNumber: z.string().optional(),
+    experienceYears: z.string().optional(),
+    specialization: z.string().optional(),
+    about: z.string().optional(),
+  })
+  .refine((data) => data.password === data.confirmPassword, "Passwords do not match")
+  .superRefine((data, ctx) => {
+    if (data.role === "doctor" || data.role === "pharmacist") {
+      if (!data.licenseNumber) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "License number is required",
+          path: ["licenseNumber"],
+        });
+      }
+    }
+
     if (data.role === "doctor") {
-      return !!data.licenseNumber && !!data.experienceYears && !!data.specialization && !!data.about;
-    }
-    if (data.role === "pharmacist") {
-      return !!data.licenseNumber;
-    }
-    return true;
-  },
-  {
-    message: "Required fields missing for selected role",
-    path: ["role"],
-  }
-);
+      if (!data.experienceYears) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Years of experience is required",
+          path: ["experienceYears"],
+        });
+      }
 
-type StaffFormData = z.infer<typeof staffSchema>;
+      if (!data.specialization) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Specialization is required",
+          path: ["specialization"],
+        });
+      }
+
+      if (!data.about) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "About section is required",
+          path: ["about"],
+        });
+      }
+    }
+  });
+
+interface ApiDataInterface {
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone_number: string;
+  password: string;
+  confirmPassword: string;
+  role: string;
+  profile_picture?: string | null;
+  license_number?: string;
+  years_of_experience?: number;
+  specialization?: string;
+  about?: string;
+}
 
 export default function AddStaffPage() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [submitSuccess, setSubmitSuccess] = React.useState(false);
   const [submitError, setSubmitError] = React.useState<string | null>(null);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [fileUploadError, setFileUploadError] = React.useState<string | null>(null);
 
   // Check if user is admin on component mount
   useEffect(() => {
     const checkAuth = () => {
-      const user = localStorage.getItem('user');
+      const user = localStorage.getItem("user");
       if (!user) {
-        router.push('/login');
+        router.push("/login");
         return;
       }
-      
+
       try {
-        const userRole = localStorage.getItem("userRole")
-        if (userRole !== 'admin') {
-          router.push('/admin/unauthorized');
+        const userRole = localStorage.getItem("userRole");
+        if (userRole !== "admin") {
+          router.push("/admin/unauthorized");
           return;
         }
-        setIsAdmin(true);
-      } catch  {
-        router.push('/login');
+      } catch {
+        router.push("/admin/login");
       }
     };
-    
+
     checkAuth();
   }, [router]);
 
@@ -104,81 +155,98 @@ export default function AddStaffPage() {
       lastName: "",
       email: "",
       phoneNumber: "",
-      photoUpload: undefined,
-      role: "admin",
       password: "",
       confirmPassword: "",
-      experienceYears: "",
+      role: "admin",
+      photoUpload: undefined,
       licenseNumber: "",
+      experienceYears: "",
       specialization: "",
       about: "",
     },
   });
 
+  const handleFileUpload = async (file: File) => {
+    try {
+      const formData = new FormData();
+      formData.append("photoUpload", file);
+  
+      const response = await axios.post("http://localhost/hospital_api/file_upload.php", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+  
+      if (response.data.success) {
+        return response.data.fileUrl;
+      } else {
+        throw new Error(response.data.error || "File upload failed");
+      }
+    } catch (error) {
+      console.error("File upload error:", error);
+      throw error;
+    }
+  };
+
   const handleAddStaff = async (values: StaffFormData) => {
     setIsSubmitting(true);
     setSubmitError(null);
     setSubmitSuccess(false);
+    setFileUploadError(null);
 
     try {
-      
-      // Map form field names to API expected names
-      const apiData = {
+      // Handle file upload if provided
+      let uploadedPhoto: string | null = null;
+      if (values.photoUpload instanceof File) {
+        try {
+          uploadedPhoto = await handleFileUpload(values.photoUpload);
+        } catch (error) {
+          setFileUploadError(error instanceof Error ? error.message : "Failed to upload photo");
+          setIsSubmitting(false);
+          return;
+        }
+      }
+
+      // Prepare API data
+      const apiData: ApiDataInterface = {
         first_name: values.firstName,
         last_name: values.lastName,
         email: values.email,
         phone_number: values.phoneNumber,
-        profile_picture: values.photoUpload || undefined,  
-        role: values.role === "billingOfficer" ? "billing_officer" : values.role,
         password: values.password,
-        years_of_experience: values.experienceYears || "",
+        confirmPassword: values.confirmPassword,
+        role: values.role,
+        profile_picture: uploadedPhoto || null,
         license_number: values.licenseNumber || "",
+        years_of_experience: values.role === "doctor" ? parseInt(values.experienceYears || "0") : 0,
         specialization: values.specialization || "",
         about: values.about || "",
       };
+      console.log("API Data:", apiData);
 
-      // Handle file upload if provided
-      if (values.photoUpload instanceof File) {
-        const formData = new FormData();
-        formData.append('photoUpload', values.photoUpload);
-        
-        // You could upload the file first and get a URL back
-         const fileUploadResponse = await fetch("http://localhost/hospital_api/file_upload.php", {
-           method: "POST",
-           body: formData,
-        });
-        const fileData = await fileUploadResponse.json();
-        values.photoUpload = fileData.fileUrl; // Replace file object with URL
-      }
+      // Make API request
+      const response = await axios.post(
+        "http://localhost/hospital_api/register_staff.php",
+        apiData
+      );
+      const data = response.data;
 
-      // Make API request with JSON data
-      const response = await fetch("http://localhost/hospital_api/register_staff.php", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json",
-        },
-        body: JSON.stringify(apiData),
-      });
-
-      const data = await response.json();
-
-      if (data.error) {
-        setSubmitError(data.message || "Failed to add staff member");
-        return;
+      if (!data.success) {
+        throw new Error(data.error || "Failed to add staff member");
       }
 
       setSubmitSuccess(true);
       form.reset();
-      
-      // Redirect to staff list after 2 seconds
+
+      // Redirect after success
       setTimeout(() => {
-        router.push('/admin/manage-staff');
-      }, 1000);
-      
+        router.push("/admin/manage-staff");
+      }, 2000);
     } catch (error) {
       console.error("Error adding staff:", error);
-      setSubmitError("Failed to add staff. Please try again.");
+      setSubmitError(
+        error instanceof Error ? error.message : "Failed to add staff. Please try again."
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -193,7 +261,6 @@ export default function AddStaffPage() {
   }, []);
 
   if (!mounted) return null;
-  if (!isAdmin) return null; // Don't render anything until we confirm user is admin
 
   // Watch role to conditionally render fields
   const selectedRole = form.watch("role");
@@ -201,7 +268,11 @@ export default function AddStaffPage() {
   return (
     <AdminLayout>
       <Seo title="Add New Staff"></Seo>
-      <Header title="Add New Staff" breadcrumbLinkText="Manage Staff" breadcrumbLinkHref="/admin/staff" />
+      <Header
+        title="Add New Staff"
+        breadcrumbLinkText="Manage Staff"
+        breadcrumbLinkHref="/admin/staff"
+      />
       <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
         <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 w-[97%] mx-auto">
           <h1 className="text-3xl/9 font-bold mt-5 mb-2 pl-5 pt-5">
@@ -314,7 +385,7 @@ export default function AddStaffPage() {
                           <SelectItem value="doctor">Doctor</SelectItem>
                           <SelectItem value="pharmacist">Pharmacist</SelectItem>
                           <SelectItem value="receptionist">Receptionist</SelectItem>
-                          <SelectItem value="billingOfficer">Billing Officer</SelectItem>
+                          <SelectItem value="billing_officer">Billing Officer</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -322,27 +393,8 @@ export default function AddStaffPage() {
                   )}
                 />
 
-                <FormField
-                  control={form.control}
-                  name="photoUpload"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Profile Picture</FormLabel>
-                      <FormControl>
-                        <Input 
-                          type="file"
-                          onChange={(e) => field.onChange(e.target.files?.[0])}
-                          disabled={isSubmitting}
-                          name="profile_picture" accept="image/"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
                 {selectedRole === "doctor" && (
-                  <>
+                  <div className="space-y-4">
                     <FormField
                       control={form.control}
                       name="licenseNumber"
@@ -351,6 +403,32 @@ export default function AddStaffPage() {
                           <FormLabel>License Number</FormLabel>
                           <FormControl>
                             <Input {...field} placeholder="Enter License Number" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="photoUpload"
+                      render={({ field }) => (
+                        <FormItem className="">
+                          <FormLabel>Photo Upload</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="file"
+                              onChange={(e) => {
+                                if (e.target.files?.[0]) {
+                                  field.onChange(e.target.files[0]);
+                                }else {
+                                  field.onChange(null);
+                                }
+                              }}
+                              name="profile_picture"
+                              disabled={isSubmitting}
+                              accept="image/"
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -378,7 +456,11 @@ export default function AddStaffPage() {
                         <FormItem>
                           <FormLabel>Years of Experience</FormLabel>
                           <FormControl>
-                            <Input {...field} placeholder="Enter Years of Experience" type="number" />
+                            <Input
+                              {...field}
+                              placeholder="Enter Years of Experience"
+                              type="number"
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -392,9 +474,9 @@ export default function AddStaffPage() {
                         <FormItem>
                           <FormLabel>About</FormLabel>
                           <FormControl>
-                            <Textarea 
-                              {...field} 
-                              placeholder="Enter doctor's bio and qualifications" 
+                            <Textarea
+                              {...field}
+                              placeholder="Enter doctor's bio and qualifications"
                               className="min-h-[120px]"
                             />
                           </FormControl>
@@ -402,7 +484,7 @@ export default function AddStaffPage() {
                         </FormItem>
                       )}
                     />
-                  </>
+                  </div>
                 )}
 
                 {selectedRole === "pharmacist" && (
@@ -420,34 +502,24 @@ export default function AddStaffPage() {
                     )}
                   />
                 )}
-
-                {selectedRole !== "doctor" && (
-                  <FormField
-                    control={form.control}
-                    name="experienceYears"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Years of Experience</FormLabel>
-                        <FormControl>
-                          <Input {...field} placeholder="Enter Years of Experience" type="number" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                )}
               </div>
+              {fileUploadError && (
+                <div className="text-red-900 p-2 bg-red-300 rounded-md text-sm my-4 mx-4 text-center">
+                  {fileUploadError}
+                </div>
+              )}
+
               {submitError && (
-            <div className="text-red-900 p-2 bg-red-300 rounded-md text-sm my-4 mx-4 text-center">
-              {submitError}
-            </div>
-          )}
-          
-          {submitSuccess && (
-            <div className="text-green-900 p-2 bg-green-300 rounded-md text-sm my-4 mx-4 text-center">
-              Staff member added successfully! Redirecting to staff list...
-            </div>
-          )}
+                <div className="text-red-900 p-2 bg-red-300 rounded-md text-sm my-4 mx-4 text-center">
+                  {submitError}
+                </div>
+              )}
+
+              {submitSuccess && (
+                <div className="text-green-900 p-2 bg-green-300 rounded-md text-sm my-4 mx-4 text-center">
+                  Staff member added successfully! Redirecting to staff list...
+                </div>
+              )}
 
               <Button type="submit" disabled={isSubmitting} className="w-full">
                 {isSubmitting ? (
