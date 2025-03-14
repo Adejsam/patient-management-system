@@ -1,226 +1,147 @@
 import React, { useEffect, useState } from "react";
+import axios from "axios";
 import { DataTable } from "./data-table";
 import { MedicalRecordData } from "../../../types/medical";
 import { columns } from "./column";
 
+interface MedicalRecordApiResponse {
+  success: boolean;
+  message?: string;
+  medicalRecords: {
+    medicalRecord: {
+      record_id: number;
+      patient_id: number;
+      visit_date: string;
+      doctor: string;
+      field: string;
+      temperature: string;
+      weight: string;
+      heart_rate: number;
+      blood_pressure: string;
+      symptoms: string;
+      allergies: string;
+      diagnosis: string;
+      lab_tests: string;
+      lab_test_results: string;
+      doctor_notes: string;
+      first_name: string;
+      last_name: string;
+      date_of_birth: string;
+      gender: string;
+      primary_phone_number: string;
+      hospital_number: number;
+    };
+    patientInfo: {
+      name: string;
+      dateOfBirth: string;
+      gender: string;
+      hospitalNumber: number;
+      phoneNumber: string;
+    };
+    medications: {
+      medicationId: number;
+      name: string;
+      dosage: string;
+      frequency: string;
+    }[];
+  }[];
+}
+
 export default function MedicalRecordsTable() {
   const [data, setData] = useState<MedicalRecordData[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    console.log(localStorage);
     const fetchMedicalRecords = async () => {
       try {
-        // Simulated API call - replace with actual API
-        const mockData = [
-          {
-            id: "1",
-            name: "Adebayo Oluwaseun",
-            dateOfBirth: "1985-05-12",
-            gender: "Male",
-            contactDetails: "adebayo.seun@example.com, +2348061234567",
-            date: "2023-10-01",
-            doctor: "Dr. Okafor",
-            field: "Cardiology",
-            temperature: "37°C",
-            weight: "75kg",
-            heartRate: "72 bpm",
-            bloodPressure: "120/80 mmHg",
-            symptoms: "Chest pain, dizziness",
-            allergies: "None",
-            diagnosis: "Stable angina",
-            labTests: "ECG",
-            labTestResults: "Normal sinus rhythm",
-            medications: [
-              {
-                name: "Atenolol",
-                dosage: "50mg",
-                frequency: "once daily",
-              },
-            ],
-            doctorNotes: "Continue current medication regimen",
-            nursingNotes: "Patient educated on heart-healthy lifestyle",
+        const response = await axios.get<MedicalRecordApiResponse>("http://localhost/hospital_api/get_all_medical_record.php");
+        
+        if (!response.data.success) {
+          throw new Error(response.data.message || "Failed to fetch medical records");
+        }
+
+        // Transform the API response to match MedicalRecordData interface
+        const transformedData = response.data.medicalRecords.map((record): MedicalRecordData => ({
+          id: record.medicalRecord.record_id.toString(),
+          name: record.patientInfo.name,
+          dateOfBirth: record.patientInfo.dateOfBirth,
+          gender: record.patientInfo.gender,
+          contactDetails: `${record.patientInfo.phoneNumber}, ${record.patientInfo.hospitalNumber}`,
+          date: record.medicalRecord.visit_date,
+          doctor: record.medicalRecord.doctor,
+          field: record.medicalRecord.field,
+          temperature: record.medicalRecord.temperature,
+          weight: record.medicalRecord.weight,
+          heartRate: record.medicalRecord.heart_rate.toString(),
+          bloodPressure: record.medicalRecord.blood_pressure,
+          symptoms: record.medicalRecord.symptoms,
+          allergies: record.medicalRecord.allergies,
+          diagnosis: record.medicalRecord.diagnosis,
+          labTests: record.medicalRecord.lab_tests,
+          labTestResults: record.medicalRecord.lab_test_results,
+          medications: record.medications,
+          doctorNotes: record.medicalRecord.doctor_notes,
+          medicalRecord: {
+            record_id: record.medicalRecord.record_id,
+            patient_id: record.medicalRecord.patient_id,
+            visit_date: record.medicalRecord.visit_date,
+            doctor: record.medicalRecord.doctor,
+            field: record.medicalRecord.field,
+            temperature: record.medicalRecord.temperature,
+            weight: record.medicalRecord.weight,
+            heart_rate: record.medicalRecord.heart_rate,
+            blood_pressure: record.medicalRecord.blood_pressure,
+            symptoms: record.medicalRecord.symptoms,
+            allergies: record.medicalRecord.allergies,
+            diagnosis: record.medicalRecord.diagnosis,
+            lab_tests: record.medicalRecord.lab_tests,
+            lab_test_results: record.medicalRecord.lab_test_results,
+            doctor_notes: record.medicalRecord.doctor_notes,
+            first_name: record.medicalRecord.first_name,
+            last_name: record.medicalRecord.last_name,
+            date_of_birth: record.medicalRecord.date_of_birth,
+            gender: record.medicalRecord.gender,
+            primary_phone_number: record.medicalRecord.primary_phone_number,
+            hospital_number: record.medicalRecord.hospital_number,
+            created_at: "", 
+            updated_at: "" 
           },
-          {
-            id: "2",
-            name: "Chioma Eze",
-            dateOfBirth: "1978-09-22",
-            gender: "Female",
-            contactDetails: "chioma.eze@example.com, +2348023456789",
-            date: "2023-10-02",
-            doctor: "Dr. Adeyemi",
-            field: "Dermatology",
-            temperature: "36.8°C",
-            weight: "68kg",
-            heartRate: "68 bpm",
-            bloodPressure: "118/76 mmHg",
-            symptoms: "Rash, itching",
-            allergies: "Pollen",
-            diagnosis: "Eczema",
-            labTests: "Allergy Test",
-            labTestResults: "Positive for dust mites",
-            medications: [
-              {
-                name: "Hydrocortisone Cream",
-                dosage: "as directed",
-                frequency: "twice daily",
-              },
-            ],
-            doctorNotes: "Apply cream as directed, follow up in 1 month",
-            nursingNotes: "Patient instructed on proper skin care routine",
-          },
-          {
-            id: "3",
-            name: "Emeka Nwosu",
-            dateOfBirth: "1975-03-10",
-            gender: "Male",
-            contactDetails: "emeka.nwosu@example.com, +2348134567890",
-            date: "2023-10-05",
-            doctor: "Dr. Yusuf",
-            field: "Urology",
-            temperature: "36.7°C",
-            weight: "80kg",
-            heartRate: "69 bpm",
-            bloodPressure: "122/78 mmHg",
-            symptoms: "Frequent urination, lower back pain",
-            allergies: "Penicillin",
-            diagnosis: "Kidney Stones",
-            labTests: "CT Scan",
-            labTestResults: "Calcium oxalate stones detected",
-            medications: [
-              {
-                name: "Tamsulosin",
-                dosage: "0.4mg",
-                frequency: "once daily",
-              },
-            ],
-            doctorNotes: "Increase fluid intake, follow up in 4 weeks",
-            nursingNotes: "Patient advised on dietary changes",
-          },
-          {
-            id: "4",
-            name: "Folake Adebisi",
-            dateOfBirth: "1992-07-08",
-            gender: "Female",
-            contactDetails: "folake.adebisi@example.com, +2349012345678",
-            date: "2023-10-04",
-            doctor: "Dr. Balogun",
-            field: "Gynecology",
-            temperature: "37.1°C",
-            weight: "62kg",
-            heartRate: "65 bpm",
-            bloodPressure: "116/74 mmHg",
-            symptoms: "Abdominal pain, irregular periods",
-            allergies: "None",
-            diagnosis: "Endometriosis",
-            labTests: "Ultrasound",
-            labTestResults: "Presence of endometrial tissue outside uterus",
-            medications: [
-              {
-                name: "Naproxen",
-                dosage: "500mg",
-                frequency: "twice daily",
-              },
-            ],
-            doctorNotes: "Start medication, follow up in 3 months",
-            nursingNotes: "Patient educated on condition and treatment options",
-          },
-          {
-            id: "5",
-            name: "Oluwasegun Adewale",
-            dateOfBirth: "1980-11-15",
-            gender: "Male",
-            contactDetails: "oluwasegun.adewale@example.com, +2349098765432",
-            date: "2023-10-03",
-            doctor: "Dr. Olayemi",
-            field: "Orthopedics",
-            temperature: "36.9°C",
-            weight: "85kg",
-            heartRate: "70 bpm",
-            bloodPressure: "125/82 mmHg",
-            symptoms: "Knee pain, swelling",
-            allergies: "Sulfa drugs",
-            diagnosis: "Meniscus Tear",
-            labTests: "MRI Scan",
-            labTestResults: "Tear in medial meniscus",
-            medications: [
-              {
-                name: "Ibuprofen",
-                dosage: "400mg",
-                frequency: "every 6 hours",
-              },
-            ],
-            doctorNotes: "Rest, ice, and elevation. Follow up in 2 weeks",
-            nursingNotes: "Patient instructed on RICE protocol",
-          },
-          {
-            id: "6",
-            name: "Chioma Eze",
-            dateOfBirth: "1978-09-22",
-            gender: "Female",
-            contactDetails: "chioma.eze@example.com, +2348023456789",
-            date: "2023-10-02",
-            doctor: "Dr. Adeyemi",
-            field: "Dermatology",
-            temperature: "36.8°C",
-            weight: "68kg",
-            heartRate: "68 bpm",
-            bloodPressure: "118/76 mmHg",
-            symptoms: "Rash, itching",
-            allergies: "Pollen",
-            diagnosis: "Eczema",
-            labTests: "Allergy Test",
-            labTestResults: "Positive for dust mites",
-            medications: [
-              {
-                name: "Hydrocortisone Cream",
-                dosage: "as directed",
-                frequency: "twice daily",
-              },
-            ],
-            doctorNotes: "Apply cream as directed, follow up in 1 month",
-            nursingNotes: "Patient instructed on proper skin care routine",
-          },
-          {
-            id: "7",
-            name: "Adebayo Oluwaseun",
-            dateOfBirth: "1985-05-12",
-            gender: "Male",
-            contactDetails: "adebayo.seun@example.com, +2348061234567",
-            date: "2023-10-01",
-            doctor: "Dr. Okafor",
-            field: "Cardiology",
-            temperature: "37°C",
-            weight: "75kg",
-            heartRate: "72 bpm",
-            bloodPressure: "120/80 mmHg",
-            symptoms: "Chest pain, dizziness",
-            allergies: "None",
-            diagnosis: "Hypertension",
-            labTests: "Lipid Profile",
-            labTestResults: "Cholesterol: 200 mg/dL",
-            medications: [
-              {
-                name: "Lisinopril",
-                dosage: "10mg",
-                frequency: "once daily",
-              },
-            ],
-            doctorNotes: "Monitor BP, follow up in 2 weeks",
-            nursingNotes: "Patient advised on low sodium diet",
-          },
-        ];
-        return mockData;
-      } catch (error) {
-        console.error("Error fetching medical records:", error);
-        return [];
+          patientInfo: {
+            name: record.patientInfo.name,
+            dateOfBirth: record.patientInfo.dateOfBirth,
+            gender: record.patientInfo.gender,
+            hospitalNumber: record.patientInfo.hospitalNumber,
+            phoneNumber: record.patientInfo.phoneNumber
+          }
+        }));
+
+        setData(transformedData);
+        setLoading(false);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to fetch medical records");
+        setLoading(false);
       }
     };
 
-    fetchMedicalRecords().then((records) => setData(records));
+    fetchMedicalRecords();
   }, []);
 
   return (
     <div className="p-5">
-      <DataTable columns={columns} data={data} />
+      {loading ? (
+        <div className="text-center py-8">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading medical records...</p>
+        </div>
+      ) : error ? (
+        <div className="text-center py-8 text-red-500">
+          {error}
+        </div>
+      ) : (
+        <DataTable columns={columns} data={data} />
+      )}
     </div>
   );
 }

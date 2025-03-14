@@ -3,7 +3,6 @@ import { Modal, ModalHeader, ModalFooter, ModalContent } from "../../components/
 import { Button } from "../../components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "../../components/ui/tabs";
 import { ScrollArea } from "../../components/ui/scroll-area";
-import { Separator } from "../../components/ui/separator";
 import { MedicalRecordData } from "../../../types/medical";
 
 interface MedicalRecordDetailsModalProps {
@@ -110,9 +109,9 @@ export function MedicalRecordDetailsModal({
 
             <TabsContent value="medications" key="medications">
               <div className="overflow-x-auto py-5">
-                <table className="w-full">
+                <table className="w-full ">
                   <thead>
-                    <tr className="text-left text-sm font-medium text-gray-500">
+                    <tr className="text-center text-sm font-medium text-foreground">
                       <th className="pb-2">Medication</th>
                       <th className="pb-2">Dosage</th>
                       <th className="pb-2">Frequency</th>
@@ -121,9 +120,9 @@ export function MedicalRecordDetailsModal({
                   <tbody>
                     {record.medications.map((med, index) => (
                       <tr key={index} className="border-t">
-                        <td className="py-3">{med.name || "N/A"}</td>
-                        <td className="py-3">{med.dosage || "N/A"}</td>
-                        <td className="py-3">{med.frequency || "N/A"}</td>
+                        <td className="py-2">{med.name || "N/A"}</td>
+                        <td className="py-2">{med.dosage || "N/A"}</td>
+                        <td className="py-2">{med.frequency || "N/A"}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -133,17 +132,12 @@ export function MedicalRecordDetailsModal({
 
             <TabsContent value="notes" key="notes">
               <div className="space-y-4 py-5">
-                <h3 className="text-lg font-medium">Notes</h3>
                 <div className="space-y-3">
                   <div className="space-y-1">
-                    <p className="text-sm font-medium">Doctor&apos;s Notes</p>
-                    <p className="text-gray-600">{record.doctorNotes}</p>
+                    <p className="text-sm font-medium " >Doctor&apos;s Notes</p>
+                    <p className="text-gray-600 w-4/5 mx-auto">{record.doctorNotes}</p>
                   </div>
-                  <Separator />
-                  <div className="space-y-1">
-                    <p className="text-sm font-medium">Nursing Notes</p>
-                    <p className="text-gray-600">{record.nursingNotes}</p>
-                  </div>
+                  
                 </div>
               </div>
             </TabsContent>

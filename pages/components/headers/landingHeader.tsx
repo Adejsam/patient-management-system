@@ -71,9 +71,6 @@ export default function LandingHeader() {
           <Link href="/data-usage" className="text-sm/6 hover:text-green-500">
             Data Usage
           </Link>
-          <Link href="#" className="text-sm/6 hover:text-green-500">
-            Company
-          </Link>
         </PopoverGroup>
         <div className="hidden lg:flex lg:flex-1 lg:justify-end">
           <Button asChild variant={"default"}>

@@ -80,6 +80,8 @@ export default function PatientForm() {
         localStorage.setItem("email", data.email);
         localStorage.setItem("hospitalNumber", data.hospitalNumber);
         localStorage.setItem("patientInfo", JSON.stringify(data.patient));
+        localStorage.setItem("patientId", data.patientId);
+        
       
         // Set cookies with appropriate options
         document.cookie = `user=${data.user_id}; path=/`;

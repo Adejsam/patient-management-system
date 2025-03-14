@@ -39,7 +39,6 @@ export interface MedicalRecordData {
 
   // Notes
   doctorNotes: string;
-  nursingNotes: string;
 }
 
 // Optional: You might want to add these additional types for future use
@@ -52,24 +51,6 @@ export interface Appointment {
   doctor: string;
   department: string;
   status: "scheduled" | "completed" | "cancelled";
-}
-
-export interface Insurance {
-  provider: string;
-  policyNumber: string;
-  validFrom: string;
-  validUntil: string;
-  coverageType: string;
-}
-
-// You can add more specific types for different medical specialties
-export interface Cardiology extends MedicalRecord {
-  ecgResults?: string;
-  bloodPressureReadings?: {
-    systolic: number;
-    diastolic: number;
-    timestamp: string;
-  }[];
 }
 
 export interface Laboratory {
@@ -108,55 +89,46 @@ export enum VisitType {
   PROCEDURE = "Procedure",
 }
 
-// Utility type for creating partial records
-export type PartialMedicalRecord = Partial<MedicalRecord>;
-
-// Type for medical record updates
-export interface MedicalRecordUpdate {
-  recordId: string;
-  updatedFields: PartialMedicalRecord;
-  updatedBy: string;
-  updateDate: string;
-  reason: string;
-}
-
-// Type for medical record access log
-export interface MedicalRecordAccess {
-  recordId: string;
-  accessedBy: string;
-  accessDate: string;
-  accessReason: string;
-  accessType: "view" | "edit" | "print" | "export";
-}
-
-// Type for file attachments
-export interface MedicalAttachment {
-  id: string;
-  fileName: string;
-  fileType: string;
-  fileSize: number;
-  uploadDate: string;
-  uploadedBy: string;
-  category: "lab_result" | "imaging" | "prescription" | "other";
-  description?: string;
-  url: string;
-}
-
-// Type for medical record permissions
-export interface MedicalRecordPermissions {
-  canView: boolean;
-  canEdit: boolean;
-  canDelete: boolean;
-  canExport: boolean;
-  canShare: boolean;
-}
-
-// Type for audit trail
-export interface AuditTrail {
-  action: string;
-  performedBy: string;
-  timestamp: string;
-  details: string;
-  ipAddress: string;
-  systemInfo: string;
+export interface MedicalRecordData {
+  date: string;
+  doctor: string;
+  field: string;
+  medicalRecord: {
+    record_id: number;
+    patient_id: number;
+    visit_date: string;
+    doctor: string;
+    field: string;
+    temperature: string;
+    weight: string;
+    heart_rate: number;
+    blood_pressure: string;
+    symptoms: string;
+    allergies: string;
+    diagnosis: string;
+    lab_tests: string;
+    lab_test_results: string;
+    doctor_notes: string;
+    created_at: string;
+    updated_at: string;
+    first_name: string;
+    last_name: string;
+    date_of_birth: string;
+    gender: string;
+    primary_phone_number: string;
+    hospital_number: number;
+  };
+  patientInfo: {
+    name: string;
+    dateOfBirth: string;
+    gender: string;
+    hospitalNumber: number;
+    phoneNumber: string;
+  };
+  medications: Array<{
+    medicationId: number;
+    name: string;
+    dosage: string;
+    frequency: string;
+  }>;
 }

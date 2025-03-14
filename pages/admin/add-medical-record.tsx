@@ -14,29 +14,9 @@ import {
   FormMessage,
 } from "../components/ui/form";
 import { Input } from "../components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../components/ui/select";
 import { Button } from "../components/ui/button";
 import Textarea from "../components/ui/Textarea";
 import { z } from "zod";
-
-const medicalFields = [
-  "General Medicine",
-  "Cardiology",
-  "Dermatology",
-  "Neurology",
-  "Orthopedics",
-  "Pediatrics",
-  "Psychiatry",
-  "Emergency",
-];
-
-const genders = ["Male", "Female", "Other"];
 
 const medicationSchema = z.object({
   name: z.string().min(1, "Medication name is required"),
@@ -46,10 +26,6 @@ const medicationSchema = z.object({
 });
 
 const formSchema = z.object({
-  name: z.string().min(2, { message: "Name is required" }),
-  dateOfBirth: z.string().min(1, { message: "Date of birth is required" }),
-  gender: z.string().min(1, { message: "Gender is required" }),
-  contactDetails: z.string().min(2, { message: "Contact details are required" }),
   date: z.string().min(1, { message: "Visit date is required" }),
   doctor: z.string().min(2, { message: "Doctor name is required" }),
   field: z.string().min(1, { message: "Medical field is required" }),
@@ -58,27 +34,24 @@ const formSchema = z.object({
   heartRate: z.string().optional(),
   bloodPressure: z.string().optional(),
   symptoms: z.string().min(1, { message: "Symptoms are required" }),
-  allergies: z.string().optional(),
-  diagnosis: z.string().optional(),
-  labTests: z.string().optional(),
-  labTestResults: z.string().optional(),
+  allergies: z.string().min(1, { message: "Allergies required input none if no allergies" }),
+  diagnosis: z.string().min(1, { message: "Diagnosis required input none if no diagnosis" }),
+  labTests: z.string().min(1, { message: "Lab Test required input none if no lab test was done" }),
+  labTestResults: z.string().min(1, { message: "Lab Result required input none if no lab result" }),
   medications: z.array(medicationSchema).optional().default([]),
   doctorNotes: z.string().min(1, { message: "Doctor notes are required" }),
-  nursingNotes: z.string().optional(),
+  hospitalNumber: z.string().min(10, { message: "correct Hospital Number Required" }),
 });
 
 type FormValues = z.infer<typeof formSchema>;
-
 export default function AddMedicalRecord() {
   useTheme();
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
-      dateOfBirth: "",
-      gender: "",
-      contactDetails: "",
       date: "",
       doctor: "",
       field: "",
@@ -93,7 +66,7 @@ export default function AddMedicalRecord() {
       labTestResults: "",
       medications: [],
       doctorNotes: "",
-      nursingNotes: "",
+      hospitalNumber: "", // Add hospital number field
     },
   });
 
@@ -105,7 +78,14 @@ export default function AddMedicalRecord() {
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    setIsMounted(true);
+    const userRole = localStorage.getItem("userRole");
+
+    if (userRole === "doctor") {
+      setIsMounted(true);
+    } else {
+      // Redirect to unauthorized page if not a doctor
+      window.location.href = "/admin/unauthorized";
+    }
   }, []);
 
   if (!isMounted) {
@@ -113,11 +93,42 @@ export default function AddMedicalRecord() {
   }
 
   const onSubmit = async (data: FormValues) => {
+    if (!data.hospitalNumber || isNaN(parseInt(data.hospitalNumber))) {
+      alert("Please enter a valid hospital number.");
+      return;
+    }
+    const formattedDate = new Date(data.date).toISOString().split('T')[0];
     try {
-      console.log("Form submitted:", data);
-      alert("Medical record added successfully!");
+      const response = await fetch("http://localhost/hospital_api/add_medical_records.php", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...data,
+          visitDate: formattedDate,
+          hospitalNumber: parseInt(data.hospitalNumber),
+          temperature: parseFloat(data.temperature),
+          weight: parseFloat(data.weight),
+          heartRate: Number(data.heartRate || 0),
+        }),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        setTimeout(() => {
+          setSuccess("Medical record added successfully!");
+        }, 2000);
+        setError(null);
+          form.reset()
+      } else {
+        setError(result.message || "Error adding medical record");
+      }
     } catch (error) {
       console.error("Error submitting form:", error);
+      alert("Error submitting form. Please try again.");
+    }finally{
     }
   };
 
@@ -134,79 +145,25 @@ export default function AddMedicalRecord() {
           Add New <span className="text-primary">Medical Record</span>
         </h1>
 
-
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="max-w-4xl mx-auto space-y-6">
             {/* Patient Information Section */}
             <div className="border-b py-7 border-t">
               <h2 className="text-xl font-bold mb-4">Patient Information</h2>
-              <div className="grid grid-cols-2 md:grid-cols-2 sm:grid-cols-1 gap-4">
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Patient Name</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="dateOfBirth"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Date of Birth</FormLabel>
-                      <FormControl>
-                        <Input type="date" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="gender"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Gender</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select gender" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {genders.map((gender) => (
-                            <SelectItem key={gender} value={gender}>
-                              {gender}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="contactDetails"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Contact Details</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
+              <FormField
+                control={form.control}
+                name="hospitalNumber"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Hospital Number</FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="1092834736" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
-
             {/* Visit Information Section */}
             <div className="border-b pb-7">
               <h2 className="text-xl font-bold mb-4">Visit Information</h2>
@@ -218,7 +175,11 @@ export default function AddMedicalRecord() {
                     <FormItem>
                       <FormLabel>Visit Date</FormLabel>
                       <FormControl>
-                        <Input type="date" {...field} />
+                        <Input
+                          type="date"
+                          {...field}
+                          min={new Date().toISOString().split("T")[0]}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -231,7 +192,7 @@ export default function AddMedicalRecord() {
                     <FormItem>
                       <FormLabel>Doctor</FormLabel>
                       <FormControl>
-                        <Input {...field} />
+                        <Input {...field} placeholder="Samuel Adebisi" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -243,20 +204,9 @@ export default function AddMedicalRecord() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Medical Field</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select medical field" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {medicalFields.map((medicalField) => (
-                            <SelectItem key={medicalField} value={medicalField}>
-                              {medicalField}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      <FormControl>
+                        <Input {...field} placeholder="Family Doctor" />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -275,7 +225,7 @@ export default function AddMedicalRecord() {
                     <FormItem>
                       <FormLabel>Temperature</FormLabel>
                       <FormControl>
-                        <Input {...field} />
+                        <Input {...field} placeholder="26.3" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -288,7 +238,7 @@ export default function AddMedicalRecord() {
                     <FormItem>
                       <FormLabel>Weight</FormLabel>
                       <FormControl>
-                        <Input {...field} />
+                        <Input {...field} placeholder="75" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -301,7 +251,7 @@ export default function AddMedicalRecord() {
                     <FormItem>
                       <FormLabel>Heart Rate</FormLabel>
                       <FormControl>
-                        <Input {...field} />
+                        <Input {...field} placeholder="72" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -314,7 +264,7 @@ export default function AddMedicalRecord() {
                     <FormItem>
                       <FormLabel>Blood Pressure</FormLabel>
                       <FormControl>
-                        <Input {...field} />
+                        <Input {...field} placeholder="120/80" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -334,7 +284,7 @@ export default function AddMedicalRecord() {
                     <FormItem>
                       <FormLabel>Symptoms</FormLabel>
                       <FormControl>
-                        <Input {...field} />
+                        <Input {...field} placeholder="Chest pain, dizziness" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -347,7 +297,7 @@ export default function AddMedicalRecord() {
                     <FormItem>
                       <FormLabel>Allergies</FormLabel>
                       <FormControl>
-                        <Input {...field} />
+                        <Input {...field} placeholder="None" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -360,7 +310,7 @@ export default function AddMedicalRecord() {
                     <FormItem>
                       <FormLabel>Diagnosis</FormLabel>
                       <FormControl>
-                        <Input {...field} />
+                        <Input {...field} placeholder="Hypertension" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -373,7 +323,7 @@ export default function AddMedicalRecord() {
                     <FormItem>
                       <FormLabel>Lab Tests</FormLabel>
                       <FormControl>
-                        <Input {...field} />
+                        <Input {...field} placeholder="Lipid Profile" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -386,7 +336,7 @@ export default function AddMedicalRecord() {
                     <FormItem>
                       <FormLabel>Lab Test Results</FormLabel>
                       <FormControl>
-                        <Input {...field} />
+                        <Input {...field} placeholder="Cholesterol: 200 mg/dL" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -460,26 +410,32 @@ export default function AddMedicalRecord() {
                     <FormItem>
                       <FormLabel>Doctor Notes</FormLabel>
                       <FormControl>
-                        <Textarea {...field} className="min-h-[100px]" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="nursingNotes"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Nursing Notes</FormLabel>
-                      <FormControl>
-                        <Textarea {...field} className="min-h-[100px]" />
+                        <Textarea
+                          {...field}
+                          className="min-h-[100px]"
+                          placeholder="Monitor BP, follow up in 2 weeks"
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
               </div>
+              {error && (
+                <div
+                  className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative my-4"
+                  role="alert">
+                  <span className="block sm:inline">{error}</span>
+                </div>
+              )}
+
+              {success && (
+                <div
+                  className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative my-4"
+                  role="alert">
+                  <span className="block sm:inline">{success}</span>
+                </div>
+              )}
             </div>
 
             <div className="flex justify-end mt-6">

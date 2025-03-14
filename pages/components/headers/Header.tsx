@@ -26,7 +26,7 @@ const Header: React.FC<HeaderProps> = ({ title, breadcrumbLinkText, breadcrumbLi
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem className="md:block">
-              <BreadcrumbLink href={breadcrumbLinkHref}>{breadcrumbLinkText}</BreadcrumbLink>
+              <BreadcrumbLink className="sm:hidden"  href={breadcrumbLinkHref}>{breadcrumbLinkText}</BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator className="md:block" />
             <BreadcrumbItem>

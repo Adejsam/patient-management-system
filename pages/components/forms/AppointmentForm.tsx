@@ -2,7 +2,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Button } from "../../components/ui/button";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, CircleAlert } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "../../../lib/utils";
 import {
@@ -28,18 +28,13 @@ import { useRouter } from "next/router";
 import { toast } from "sonner";
 import { useState } from "react";
 import { useTheme } from "next-themes";
-
-// Updated schema to match PHP backend requirements
 const formSchema = z.object({
   patientName: z.string().min(1, "Patient name is required"),
   doctorName: z.string().min(1, "Doctor name is required"),
   appointmentDate: z.date({ required_error: "Appointment date is required" }),
   appointmentTime: z.string().min(1, "Appointment time is required"),
   reasonForVisit: z.string().min(1, "Reason for visit is required"),
-  contactNumber: z
-    .string()
-    .min(1, "Contact number is required")
-    .regex(/^(0|\+234)[789]\d{9}$/, "Invalid Nigerian phone number format"),
+  contactEmail: z.string().email(),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -48,10 +43,12 @@ interface ApiResponse {
   success: boolean;
   message: string;
   appointmentId?: number;
+  status?: string;
 }
 
 const AppointmentForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   const router = useRouter();
   useTheme();
 
@@ -62,10 +59,8 @@ const AppointmentForm = () => {
     },
   });
 
-  // Updated to use the PHP backend API endpoint
   const handleApiSubmission = async (data: FormData): Promise<ApiResponse> => {
     try {
-      // Update the endpoint to point to the PHP backend
       const response = await fetch("http://localhost/hospital_api/book_appointment.php", {
         method: "POST",
         headers: {
@@ -73,14 +68,14 @@ const AppointmentForm = () => {
         },
         body: JSON.stringify({
           ...data,
-          // Format date as YYYY-MM-DD for PHP backend
           appointmentDate: data.appointmentDate.toISOString().split("T")[0],
+          appointmentTime: format(new Date(data.appointmentDate), "HH:mm:ss"),
         }),
       });
 
       const responseData = await response.json();
 
-      if (!response.ok || !responseData.success) {
+      if (!response.ok) {
         throw new Error(responseData.message || "Network response was not ok");
       }
 
@@ -94,12 +89,12 @@ const AppointmentForm = () => {
   const onSubmit = async (data: FormData) => {
     try {
       setIsSubmitting(true);
+      setErrorMessage("");
       const response = await handleApiSubmission(data);
 
       if (response.success) {
-        toast.success("Appointment booked successfully!");
+        toast.success(response.message);
 
-        // Pass all relevant appointment details to the success page
         const queryString = new URLSearchParams({
           appointmentId: response.appointmentId?.toString() || "",
           date: data.appointmentDate.toISOString().split("T")[0],
@@ -107,26 +102,26 @@ const AppointmentForm = () => {
           doctor: data.doctorName,
           patient: data.patientName,
           reason: data.reasonForVisit,
-          contactNumber: data.contactNumber,
+          contactNumber: data.contactEmail,
+          status: response.status || "pending",
         }).toString();
 
-        // Navigate to the appointment success page with all the details
         router.push(`/patient/appointment-success?${queryString}`);
       } else {
         throw new Error(response.message);
       }
     } catch (submitError) {
-      toast.error(
-        submitError instanceof Error
-          ? submitError.message
-          : "Failed to book appointment. Please try again."
-      );
+      const errorMessage = submitError instanceof Error 
+        ? submitError.message 
+        : "Failed to book appointment. Please try again.";
+      toast.error(errorMessage);
+      setErrorMessage(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // Function to check if a date is within the valid range
+
   const isDateInRange = (date: Date) => {
     const currentDate = new Date();
     const maxDate = new Date();
@@ -138,6 +133,21 @@ const AppointmentForm = () => {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 mx-7 my-7 pb-6">
+      {errorMessage && (
+          <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-md">
+            <div className="flex items-center">
+              <CircleAlert className="h-5 w-5 text-red-500 mr-2" />
+              <p className="text-red-600">{errorMessage}</p>
+            </div>
+            <Button 
+              variant="ghost" 
+              className="mt-2" 
+              onClick={() => setErrorMessage("")}
+            >
+              Dismiss
+            </Button>
+          </div>
+        )}
         <div className="flex flex-wrap gap-5">
           <FormField
             name="patientName"
@@ -146,7 +156,7 @@ const AppointmentForm = () => {
               <FormItem className="min-w-[250px] flex-1">
                 <FormLabel>Patient Name</FormLabel>
                 <FormControl>
-                  <Input placeholder="Olumide Micheal" {...field}/>
+                  <Input placeholder="Olumide Micheal" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -159,7 +169,7 @@ const AppointmentForm = () => {
               <FormItem className="min-w-[250px] flex-1">
                 <FormLabel>Doctor Name</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="Doc Adeyemi James"/>
+                  <Input {...field} placeholder="Adeyemi James" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -237,13 +247,13 @@ const AppointmentForm = () => {
         </div>
 
         <FormField
-          name="contactNumber"
+          name="contactEmail"
           control={form.control}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Contact Number</FormLabel>
+              <FormLabel>Contact Email</FormLabel>
               <FormControl>
-                <Input placeholder="e.g., +2347012345678" {...field} type="tel" />
+                <Input placeholder="e.g., aqat***@gmail.com" {...field} type="email" />
               </FormControl>
               <FormMessage />
             </FormItem>

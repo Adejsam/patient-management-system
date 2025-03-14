@@ -47,10 +47,6 @@ const ActionsCell = React.memo(({ row }: { row: Row<MedicalRecordData> }) => {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
-          <DropdownMenuItem
-            onClick={() => navigator.clipboard.writeText(row.getValue("id") as string)}>
-            Copy Record ID
-          </DropdownMenuItem>
           <DropdownMenuItem onClick={handleEdit}>Edit Medical Record</DropdownMenuItem>
           <DropdownMenuItem onClick={handleViewDetails}>
             View Medical Record Details

@@ -32,18 +32,30 @@ export const generateMedicalRecordPDF = async (record: MedicalRecordData, logoSr
   const checkAndAddNewPage = (currentY: number, neededSpace: number = LINE_HEIGHT): number => {
     if (currentY + neededSpace >= PAGE_HEIGHT) {
       doc.addPage();
-      currentY = 25; // Reduced from 30
-      doc.setFontSize(FONTS.SECTION);
+      currentY = 40;
+      // Reset font and margins for new page
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(FONTS.CONTENT);
+      doc.setTextColor(0, 0, 0);
+      doc.setFillColor(255, 255, 255);
+      doc.setDrawColor(0, 0, 0);
+      
+      // Add page header
+      doc.setFontSize(FONTS.TITLE);
       doc.setFont("helvetica", "bold");
-      doc.text("Medical Record (Continued)", 105, 15, { align: "center" });
-      drawHorizontalLine(20);
+      doc.setTextColor(44, 62, 80);
+      doc.text("Medical Record", 105, 30, { align: "center" });
+      drawHorizontalLine(35);
+      doc.setFontSize(FONTS.CONTENT);
+      doc.setFont("helvetica", "normal");
+      doc.setTextColor(0, 0, 0);
     }
     return currentY;
   };
 
   const drawSection = (title: string, y: number) => {
     y = checkAndAddNewPage(y, 15);
-    const sectionHeight = 6; // Reduced from 8
+    const sectionHeight = 6;
     doc.setFillColor(240, 240, 240);
     doc.rect(10, y - 4, 190, sectionHeight, "F");
     doc.setFontSize(FONTS.SECTION);
@@ -75,13 +87,13 @@ export const generateMedicalRecordPDF = async (record: MedicalRecordData, logoSr
     doc.setFont("helvetica", "normal");
     const valueLines = doc.splitTextToSize(value, 180);
 
+    // Check if we need to add a new page for the value lines
     if (y + (valueLines.length + 1) * LINE_HEIGHT >= PAGE_HEIGHT) {
-      doc.addPage();
-      y = 25;
+      y = checkAndAddNewPage(y);
     }
 
     doc.text(valueLines, x, y + LINE_HEIGHT);
-    return y + (valueLines.length + 1) * LINE_HEIGHT + 3; // Reduced padding
+    return y + (valueLines.length + 1) * LINE_HEIGHT + 3;
   };
 
   const addFooter = (pageNumber: number, totalPages: number) => {
@@ -118,60 +130,111 @@ export const generateMedicalRecordPDF = async (record: MedicalRecordData, logoSr
       );
     }
 
+    // Initialize first page
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(FONTS.CONTENT);
+    doc.setTextColor(0, 0, 0);
+    doc.setFillColor(255, 255, 255);
+    doc.setDrawColor(0, 0, 0);
+
     // Title
     doc.setFontSize(FONTS.TITLE);
     doc.setFont("helvetica", "bold");
     doc.setTextColor(44, 62, 80);
-    doc.text("Medical Record", 105, 25, { align: "center" });
-    drawHorizontalLine(30);
+    doc.text("Medical Record", 105, 30, { align: "center" });
+    drawHorizontalLine(35);
 
-    // Patient Information Section
-    let currentY = 35; // Reduced from 40
+    let currentY = 40;
     currentY = drawSection("Patient Information", currentY);
 
     // Two-column layout for patient info
     const columnWidth = PAGE_WIDTH / 2;
-    currentY = addField("Name", record.name, MARGIN_LEFT, currentY);
+    currentY = addField("Name", record.patientInfo.name, MARGIN_LEFT, currentY);
     addField(
       "Date of Birth",
-      record.dateOfBirth,
+      record.patientInfo.dateOfBirth,
       MARGIN_LEFT + columnWidth,
       currentY - LINE_HEIGHT
     );
-    currentY = addField("Gender", record.gender, MARGIN_LEFT, currentY + 3);
-    addField("Contact", record.contactDetails, MARGIN_LEFT + columnWidth, currentY - LINE_HEIGHT);
+    currentY = addField("Gender", record.patientInfo.gender, MARGIN_LEFT, currentY + 3);
+    addField(
+      "Contact",
+      record.patientInfo.phoneNumber,
+      MARGIN_LEFT + columnWidth,
+      currentY - LINE_HEIGHT
+    );
     currentY += SECTION_GAP;
     drawHorizontalLine(currentY - 3);
 
     // Visit Information Section
     currentY = drawSection("Visit Information", currentY + 3);
-    currentY = addField("Date", record.date, MARGIN_LEFT, currentY);
-    currentY = addField("Doctor", record.doctor, MARGIN_LEFT + columnWidth, currentY - LINE_HEIGHT);
-    currentY = addField("Field", record.field, MARGIN_LEFT, currentY + 3);
+    currentY = addField("Date", record.medicalRecord.visit_date, MARGIN_LEFT, currentY);
+    currentY = addField(
+      "Doctor",
+      record.medicalRecord.doctor,
+      MARGIN_LEFT + columnWidth,
+      currentY - LINE_HEIGHT
+    );
+    currentY = addField("Field", record.medicalRecord.field, MARGIN_LEFT, currentY + 3);
     currentY += SECTION_GAP;
     drawHorizontalLine(currentY - 3);
 
     // Vital Signs Section
     currentY = drawSection("Vital Signs", currentY + 3);
-    currentY = addField("Temperature", record.temperature, MARGIN_LEFT, currentY);
-    currentY = addField("Weight", record.weight, MARGIN_LEFT + columnWidth, currentY - LINE_HEIGHT);
-    currentY = addField("Heart Rate", record.heartRate, MARGIN_LEFT, currentY + 3);
-    currentY = addField("Blood Pressure", record.bloodPressure, MARGIN_LEFT + columnWidth, currentY - LINE_HEIGHT);
+    currentY = addField("Temperature", record.medicalRecord.temperature, MARGIN_LEFT, currentY);
+    currentY = addField(
+      "Weight",
+      record.medicalRecord.weight,
+      MARGIN_LEFT + columnWidth,
+      currentY - LINE_HEIGHT
+    );
+    currentY = addField(
+      "Heart Rate",
+      record.medicalRecord.heart_rate.toString(),
+      MARGIN_LEFT,
+      currentY + 3
+    );
+    currentY = addField(
+      "Blood Pressure",
+      record.medicalRecord.blood_pressure,
+      MARGIN_LEFT + columnWidth,
+      currentY - LINE_HEIGHT
+    );
     currentY += SECTION_GAP;
     drawHorizontalLine(currentY - 3);
 
     // Clinical Information Section
     currentY = drawSection("Clinical Information", currentY + 3);
-    currentY = addMultiLineField("Symptoms", record.symptoms, MARGIN_LEFT, currentY);
-    currentY = addMultiLineField("Allergies", record.allergies, MARGIN_LEFT, currentY);
-    currentY = addMultiLineField("Diagnosis", record.diagnosis, MARGIN_LEFT, currentY);
+    currentY = addMultiLineField("Symptoms", record.medicalRecord.symptoms, MARGIN_LEFT, currentY);
+    currentY = addMultiLineField(
+      "Allergies",
+      record.medicalRecord.allergies,
+      MARGIN_LEFT,
+      currentY
+    );
+    currentY = addMultiLineField(
+      "Diagnosis",
+      record.medicalRecord.diagnosis,
+      MARGIN_LEFT,
+      currentY
+    );
     currentY += SECTION_GAP;
     drawHorizontalLine(currentY - 3);
 
     // Lab Results Section
     currentY = drawSection("Laboratory Results", currentY + 3);
-    currentY = addMultiLineField("Tests Performed", record.labTests, MARGIN_LEFT, currentY);
-    currentY = addMultiLineField("Results", record.labTestResults, MARGIN_LEFT, currentY);
+    currentY = addMultiLineField(
+      "Tests Performed",
+      record.medicalRecord.lab_tests,
+      MARGIN_LEFT,
+      currentY
+    );
+    currentY = addMultiLineField(
+      "Results",
+      record.medicalRecord.lab_test_results,
+      MARGIN_LEFT,
+      currentY
+    );
     currentY += SECTION_GAP;
     drawHorizontalLine(currentY - 3);
 
@@ -189,8 +252,12 @@ export const generateMedicalRecordPDF = async (record: MedicalRecordData, logoSr
 
     // Notes Section
     currentY = drawSection("Medical Notes", currentY + 3);
-    currentY = addMultiLineField("Doctor's Notes", record.doctorNotes, MARGIN_LEFT, currentY);
-    currentY = addMultiLineField("Nursing Notes", record.nursingNotes, MARGIN_LEFT, currentY);
+    currentY = addMultiLineField(
+      "Doctor's Notes",
+      record.medicalRecord.doctor_notes,
+      MARGIN_LEFT,
+      currentY
+    );
 
     // Add footer to all pages
     const pageCount = doc.getNumberOfPages();
@@ -199,7 +266,7 @@ export const generateMedicalRecordPDF = async (record: MedicalRecordData, logoSr
       addFooter(i, pageCount);
     }
 
-    doc.save(`Medical_Record_${record.date}.pdf`);
+    doc.save(`Medical_Record_${record.patientInfo.name}.pdf`);
   } catch (error) {
     console.error("Error generating PDF:", error);
     throw error;

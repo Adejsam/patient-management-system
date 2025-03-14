@@ -13,12 +13,6 @@ import { useTheme } from "next-themes";
 import { MedicalRecordData } from "../../../types/medical";
 import { ScrollArea } from "../../components/ui/scroll-area";
 
-interface Medication {
-  name: string;
-  dosage: string;
-  frequency: string;
-}
-
 interface EditRecordModalProps {
   record: MedicalRecordData;
   onClose: () => void;
@@ -27,35 +21,62 @@ interface EditRecordModalProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export const EditRecordModal: React.FC<EditRecordModalProps> = ({
-  record,
-  onClose,
-  onUpdate,
-  isOpen,
-  onOpenChange,
-}) => {
+export const EditRecordModal: React.FC<EditRecordModalProps> = (props) => {
   useTheme();
-  const [visitDate, setVisitDate] = useState<Date>(new Date(record.date));
+  const [visitDate, setVisitDate] = useState<Date>(new Date(props.record.date));
   const [isMounted, setIsMounted] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formState, setFormState] = useState({
-    temperature: "",
-    weight: "",
-    heartRate: "",
-    bloodPressure: "",
-    symptoms: "",
-    allergies: "",
-    diagnosis: "",
-    labTests: "",
-    labTestResults: "",
-    medications: [] as Medication[],
-    doctorNotes: "",
-    nursingNotes: "",
+    temperature: props.record.temperature || "",
+    weight: props.record.weight || "",
+    heartRate: props.record.heartRate || "",
+    bloodPressure: props.record.bloodPressure || "",
+    symptoms: props.record.symptoms || "",
+    allergies: props.record.allergies || "",
+    diagnosis: props.record.diagnosis || "",
+    labTests: props.record.labTests || "",
+    labTestResults: props.record.labTestResults || "",
+    medications: props.record.medications.map((med) => ({
+      name: med.name || "",
+      dosage: med.dosage || "",
+      frequency: med.frequency || "",
+    })),
+    doctorNotes: props.record.doctorNotes || "",
   });
+
+  // Add state for doctor credentials
+  const [editorRole, setEditorRole] = useState<string>("doctor");
+  const [editorId, setEditorId] = useState<string>("");
 
   useEffect(() => {
     setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    const fetchEditorData = async () => {
+      try {
+        const userRole = localStorage.getItem("userRole");
+        const userData = localStorage.getItem("userData");
+
+        if (!userRole || !userData) {
+          throw new Error("User data not found in localStorage");
+        }
+
+        const parsedUserData = JSON.parse(userData);
+        if (!parsedUserData.user_id) {
+          throw new Error("Invalid user data in localStorage");
+        }
+
+        setEditorRole(userRole);
+        setEditorId(parsedUserData.user_id.toString()); // Ensure editorId is string
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to fetch editor data");
+      }
+    };
+
+    fetchEditorData();
   }, []);
 
   if (!isMounted) {
@@ -70,17 +91,49 @@ export const EditRecordModal: React.FC<EditRecordModalProps> = ({
       bloodPressure: "",
     };
 
-    const validateNumber = (value: string, field: string, allowDecimal = true) => {
-      if (value.trim() === "") return `${field} is required`;
-      const regex = allowDecimal ? /^\d*\.?\d+$|^\.$/ : /^\d+$/;
-      if (!regex.test(value)) return `${field} must be a valid number`;
-      return "";
-    };
+    // Temperature validation
+    if (!formState.temperature.trim()) {
+      errors.temperature = "Temperature is required";
+    } else {
+      const temp = formState.temperature.trim();
+      // Check if it's a valid number without converting to float
+      if (!/^\d*\.?\d+$/.test(temp)) {
+        errors.temperature = "Temperature must be a valid number";
+      } else if (parseFloat(temp) < 35 || parseFloat(temp) > 42) {
+        errors.temperature = "Temperature must be between 35 and 42°C";
+      }
+    }
 
-    errors.temperature = validateNumber(formState.temperature, "Temperature", true);
-    errors.weight = validateNumber(formState.weight, "Weight", true);
-    errors.heartRate = validateNumber(formState.heartRate, "Heart Rate", false);
-    errors.bloodPressure = validateNumber(formState.bloodPressure, "Blood Pressure", false);
+    // Weight validation
+    if (!formState.weight.trim()) {
+      errors.weight = "Weight is required";
+    } else {
+      const weight = parseFloat(formState.weight);
+      if (isNaN(weight)) {
+        errors.weight = "Weight must be a valid number";
+      } else if (weight < 1 || weight > 200) {
+        errors.weight = "Weight must be between 1 and 200 kg";
+      }
+    }
+
+    // Heart Rate validation
+    if (!formState.heartRate.trim()) {
+      errors.heartRate = "Heart Rate is required";
+    } else {
+      const heartRate = parseInt(formState.heartRate);
+      if (isNaN(heartRate)) {
+        errors.heartRate = "Heart Rate must be a valid number";
+      } else if (heartRate < 30 || heartRate > 200) {
+        errors.heartRate = "Heart Rate must be between 30 and 200 bpm";
+      }
+    }
+
+    // Blood Pressure validation
+    if (!formState.bloodPressure.trim()) {
+      errors.bloodPressure = "Blood Pressure is required";
+    } else if (!/^\d{2,3}\/\d{2,3}$/.test(formState.bloodPressure)) {
+      errors.bloodPressure = "Blood Pressure must be in format '120/80'";
+    }
 
     return errors;
   };
@@ -111,6 +164,66 @@ export const EditRecordModal: React.FC<EditRecordModalProps> = ({
     });
   };
 
+  const handleApiUpdate = async (updatedRecord: MedicalRecordData) => {
+    try {
+      const response = await fetch("http://localhost/hospital_api/update_medical_records.php", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          editorRole: editorRole,
+          editorId: editorId,
+          recordId: parseInt(props.record.id),
+          fields: {
+            visitDate: updatedRecord.date,
+            field: updatedRecord.field,
+            temperature: parseFloat(updatedRecord.temperature),
+            weight: parseFloat(updatedRecord.weight),
+            heartRate: parseInt(updatedRecord.heartRate),
+            bloodPressure: updatedRecord.bloodPressure,
+            symptoms: updatedRecord.symptoms,
+            allergies: updatedRecord.allergies,
+            diagnosis: updatedRecord.diagnosis,
+            labTests: updatedRecord.labTests,
+            labTestResults: updatedRecord.labTestResults,
+            doctorNotes: updatedRecord.doctorNotes,
+            medications: updatedRecord.medications,
+          },
+        }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        if (response.status === 403) {
+          setError(
+            "You are not authorized to update medical records."
+          );
+          return;
+        }
+        setError(data.message || "Failed to update record");
+        return;
+      }
+
+      const data = await response.json();
+      if (data.success) {
+        props.onUpdate(updatedRecord);
+        setSuccessMessage("Medical record updated successfully");
+        setError(null);
+        // Close the modal after 2 seconds
+        setTimeout(() => {
+          props.onClose();
+        }, 2000);
+      } else {
+        setError(data.message || "Failed to update record");
+      }
+    } catch (error) {
+      console.error("Error updating record:", error);
+      console.log(error);
+      setError(error instanceof Error ? error.message : "Failed to update record");
+    }
+  };
+
   const handleUpdate = async () => {
     try {
       setIsSubmitting(true);
@@ -122,17 +235,28 @@ export const EditRecordModal: React.FC<EditRecordModalProps> = ({
         return;
       }
 
-      if (formState.medications.some((med) => !med.name || !med.dosage || !med.frequency)) {
-        setError("Please fill in all medication details");
+      // Validate medications
+      if (
+        formState.medications.some((med) => {
+          return (
+            !med.name.trim() ||
+            !med.dosage.trim() ||
+            !med.frequency.trim() ||
+            formState.medications.filter((m) => m.name.toLowerCase() === med.name.toLowerCase())
+              .length > 1
+          );
+        })
+      ) {
+        setError("Please fill in all medication details and ensure names are unique");
         return;
       }
 
       const updatedRecord: MedicalRecordData = {
-        ...record,
+        ...props.record,
         date: visitDate.toISOString(),
-        temperature: formState.temperature,
-        weight: formState.weight,
-        heartRate: formState.heartRate,
+        temperature: formState.temperature.trim(),
+        weight: formState.weight.trim(),
+        heartRate: formState.heartRate.trim(),
         bloodPressure: formState.bloodPressure,
         symptoms: formState.symptoms,
         allergies: formState.allergies,
@@ -140,16 +264,14 @@ export const EditRecordModal: React.FC<EditRecordModalProps> = ({
         labTests: formState.labTests,
         labTestResults: formState.labTestResults,
         medications: formState.medications.map((med) => ({
-          name: med.name,
-          dosage: med.dosage,
-          frequency: med.frequency,
+          name: med.name.trim(),
+          dosage: med.dosage.trim(),
+          frequency: med.frequency.trim(),
         })),
         doctorNotes: formState.doctorNotes,
-        nursingNotes: formState.nursingNotes,
       };
 
-      onUpdate(updatedRecord);
-      onClose();
+      await handleApiUpdate(updatedRecord);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to update record");
     } finally {
@@ -157,14 +279,26 @@ export const EditRecordModal: React.FC<EditRecordModalProps> = ({
     }
   };
 
+  console.log(formState);
+
   return (
     <Modal
-      isOpen={isOpen}
-      onOpenChange={onOpenChange}
-      onClose={onClose}
+      isOpen={props.isOpen}
+      onOpenChange={props.onOpenChange}
+      onClose={props.onClose}
       className="flex justify-center items-center">
       <ModalHeader>
         <span className="text-primary">Edit</span> Medical Record
+        {error && (
+          <div className="my-1 p-2 bg-red-100 text-base text-red-700 rounded text-center">
+            {error}
+          </div>
+        )}
+        {successMessage && (
+          <div className="my-1 p-2 bg-green-100 text-base text-green-700 rounded text-center">
+            {successMessage}
+          </div>
+        )}
       </ModalHeader>
       <ScrollArea>
         <ModalContent className="max-h-[70vh]">
@@ -194,7 +328,7 @@ export const EditRecordModal: React.FC<EditRecordModalProps> = ({
                   </PopoverContent>
                 </Popover>
               </div>
-              
+
               <div className="space-y-2">
                 <Label>Vital Signs</Label>
                 <div className="grid grid-cols-2 gap-2">
@@ -207,7 +341,7 @@ export const EditRecordModal: React.FC<EditRecordModalProps> = ({
                     className="w-full"
                     type="text"
                     pattern="^\d*\.?\d*$"
-                    placeholder="Temperature (e.g., 98.6°F)"
+                    placeholder="Temperature (e.g., 36.8)"
                   />
                   <Input
                     value={formState.weight}
@@ -218,7 +352,7 @@ export const EditRecordModal: React.FC<EditRecordModalProps> = ({
                     className="w-full"
                     type="text"
                     pattern="^\d*\.?\d*$"
-                    placeholder="Weight (e.g., 75kg)"
+                    placeholder="Weight (e.g., 75.5)"
                   />
                   <Input
                     value={formState.heartRate}
@@ -229,7 +363,7 @@ export const EditRecordModal: React.FC<EditRecordModalProps> = ({
                     className="w-full"
                     type="text"
                     pattern="^\d*$"
-                    placeholder="Heart Rate (e.g., 72 bpm)"
+                    placeholder="Heart Rate (e.g., 72)"
                   />
                   <Input
                     value={formState.bloodPressure}
@@ -239,8 +373,7 @@ export const EditRecordModal: React.FC<EditRecordModalProps> = ({
                     }}
                     className="w-full"
                     type="text"
-                    pattern="^\d*$"
-                    placeholder="Blood Pressure (e.g., 120/80 mmHg)"
+                    placeholder="Blood Pressure (e.g., 120/80)"
                   />
                 </div>
               </div>
@@ -274,7 +407,7 @@ export const EditRecordModal: React.FC<EditRecordModalProps> = ({
               <div className="space-y-2">
                 <Label>Diagnosis</Label>
                 <Input
-                placeholder="Malaria"
+                  placeholder="Malaria"
                   value={formState.diagnosis}
                   onChange={(e) => {
                     setFormState({ ...formState, diagnosis: e.target.value });
@@ -302,7 +435,7 @@ export const EditRecordModal: React.FC<EditRecordModalProps> = ({
                 <Label>Lab Tests Result</Label>
                 <div className="space-y-2">
                   <Input
-                  placeholder="No Magraine"
+                    placeholder="No Magraine"
                     value={formState.labTestResults}
                     onChange={(e) => {
                       setFormState({ ...formState, labTestResults: e.target.value });
@@ -359,25 +492,14 @@ export const EditRecordModal: React.FC<EditRecordModalProps> = ({
                     }}
                     className="w-full"
                   />
-                  <Textarea
-                    value={formState.nursingNotes}
-                    placeholder="Nurse Note"
-                    onChange={(e) => {
-                      setFormState({ ...formState, nursingNotes: e.target.value });
-                      setError(null);
-                    }}
-                    className="w-full"
-                  />
                 </div>
               </div>
             </div>
-
-            {error && <div className="mt-4 p-2 bg-red-100 text-red-700 rounded">{error}</div>}
           </div>
         </ModalContent>
       </ScrollArea>
       <ModalFooter className="flex justify-end">
-        <Button variant="outline" onClick={onClose} disabled={isSubmitting} className="mr-4">
+        <Button variant="outline" onClick={props.onClose} disabled={isSubmitting} className="mr-4">
           Cancel
         </Button>
         <Button onClick={handleUpdate} disabled={isSubmitting || !!error}>
