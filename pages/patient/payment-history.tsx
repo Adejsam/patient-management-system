@@ -9,56 +9,47 @@ import { Button } from "../components/ui/button";
 import { Card, CardContent } from "../components/ui/card";
 import { Printer, Download } from "lucide-react";
 import { PDFInvoiceGenerator, InvoiceOrReceipt } from "../../services/PDFInvoiceGenerator";
-
-const SAMPLE_INVOICES: InvoiceOrReceipt[] = [
-  {
-    receiptNumber: "INV-19438489",
-    date: "2025-01-15",
-    amount: "₦7500",
-    status: "Paid",
-    customerInfo: {
-      name: "Mary Olusegun Aina",
-      address: "123 Healthcare Ave, Medical City, MC 12345",
-      email: "maryosegun@gmail.com",
-    },
-    services: [
-      { description: "Consultation Fee", amount: "V3000", quantity: 1 },
-      { description: "Lab Tests", amount: "V3000", quantity: 2 },
-      { description: "Medication", amount: "₦1500", quantity: 1 },
-    ],
-  },
-];
-
-const SAMPLE_RECEIPTS: InvoiceOrReceipt[] = [
-  {
-    receiptNumber: "REC-9283754829",
-    date: "2025-01-15",
-    amount: "₦7500",
-    method: "Credit Card",
-    customerInfo: {
-      name: "Mary Olusegun Aina",
-      address: "13, german street Ikeja Lagos Nigeria",
-      email: "maryosegun@gmail.com",
-    },
-    services: [
-      { description: "Consultation Fee", amount: "V3000", quantity: 1 },
-      { description: "Lab Tests", amount: "V3000", quantity: 2 },
-      { description: "Medication", amount: "₦1500", quantity: 1 },
-    ],
-  },
-];
+import axios from "axios";
 
 export default function BillingPage() {
   const { resolvedTheme } = useTheme();
-
   const [view, setView] = useState<"invoices" | "receipts">("invoices");
   const pdfGenerator = new PDFInvoiceGenerator();
-
   const [isMounted, setIsMounted] = useState(false);
+  const [invoices, setInvoices] = useState<InvoiceOrReceipt[]>([]);
+  const [receipts, setReceipts] = useState<InvoiceOrReceipt[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [hospitalNumber, setHospitalNumber] = useState<string>("");
 
   useEffect(() => {
     setIsMounted(true);
-  }, []);
+    // Get hospital number from local storage
+    const storedHospitalNumber = window.localStorage.getItem('hospitalNumber');
+    setHospitalNumber(storedHospitalNumber || "");
+    const fetchInvoices = async () => {
+      try {
+        const response = await axios.get(`http://localhost/hospital_api/patient_invoice.php?hospital_number=${hospitalNumber}`, {
+          params: { hospital_number: storedHospitalNumber }
+        });
+        setInvoices(response.data.invoices);
+      } catch (error) {
+        console.error("Error fetching invoices:", error);
+      }
+    };
+
+    const fetchReceipts = async () => {
+      try {
+        const response = await axios.get(`http://localhost/hospital_api/patient_receipt.php?hospital_number=${hospitalNumber}`, {
+          params: { hospital_number: storedHospitalNumber }
+        });
+        setReceipts(response.data.receipts);
+      } catch (error) {
+        console.error("Error fetching receipts:", error);
+      }
+    };
+
+    Promise.all([fetchInvoices(), fetchReceipts()]).finally(() => setLoading(false));
+  }, [hospitalNumber]);
 
   if (!isMounted) {
     return null;
@@ -92,7 +83,7 @@ export default function BillingPage() {
         <span>{item.date}</span>
       </div>
       <div className="flex justify-between">
-        <span className="font-semibold">Amount:         </span>
+        <span className="font-semibold">Amount:</span>
         <span>{item.amount}</span>
       </div>
       {item.status && (
@@ -150,15 +141,20 @@ export default function BillingPage() {
             </Button>
           </div>
 
-          <Card>
-            <CardContent className="p-4">
-              <div className="space-y-4">
-                {(view === "invoices" ? SAMPLE_INVOICES : SAMPLE_RECEIPTS).map(renderBillingItem)}
-              </div>
-            </CardContent>
-          </Card>
+          {loading ? (
+            <div className="p-4">Loading...</div>
+          ) : (
+            <Card>
+              <CardContent className="p-4">
+                <div className="space-y-4">
+                  {(view === "invoices" ? invoices : receipts).map(renderBillingItem)}
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </div>
       </div>
     </PatientLayout>
   );
 }
+

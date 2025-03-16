@@ -1,4 +1,5 @@
 "use client";
+
 import * as React from "react";
 import {
   ColumnDef,
@@ -16,6 +17,7 @@ import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
 import {
   DropdownMenu,
+  DropdownMenuItem,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
@@ -67,15 +69,52 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
     },
   });
 
+  const updateStatusFilter = (status: string | null) => {
+    setColumnFilters(prev => {
+      const newFilters = [...prev];
+      const existingStatusFilter = newFilters.find(f => f.id === "status");
+      if (existingStatusFilter) {
+        existingStatusFilter.value = status;
+      } else {
+        newFilters.push({
+          id: "status", // Use 'id' instead of 'columnId'
+          value: status,
+        });
+      }
+      return newFilters;
+    });
+  };
+
   return (
     <div>
-      <div className="flex items-center py-4">
+      <div className="flex items-center justify-between py-4 space-x-4">
         <Input
           placeholder="Filter names..."
-          value={(table.getColumn("patientName")?.getFilterValue() as string) ?? ""}
-          onChange={(event) => table.getColumn("patientName")?.setFilterValue(event.target.value)}
+          value={(table.getColumn("patient_name")?.getFilterValue() as string) ?? ""}
+          onChange={(event) => table.getColumn("patient_name")?.setFilterValue(event.target.value)}
           className="max-w-sm"
         />
+        
+        {/* Status Filter Dropdown */}
+        <div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" className="capitalize">
+              Filter by Status
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            {["pending", "confirmed", "rejected", "cancelled", "completed"].map((status) => (
+              <DropdownMenuItem
+                key={status}
+                onClick={() => updateStatusFilter(status)}
+                className="capitalize">
+                {status}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+        
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
@@ -99,6 +138,7 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
               })}
           </DropdownMenuContent>
         </DropdownMenu>
+        </div>
       </div>
       <div className="rounded-md border">
         <Table>
@@ -147,7 +187,6 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
           Previous
         </Button>
         <Button
-          variant="outline"
           size="sm"
           onClick={() => table.nextPage()}
           disabled={!table.getCanNextPage()}>

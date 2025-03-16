@@ -4,10 +4,7 @@ export interface BillItem {
   }
   
   export interface Patient {
-    name: string;
-    email?: string;
-    phone?: string;
-    address?: string;
+    hospital_number: string;
   }
   
   export interface Receipt {
@@ -16,7 +13,7 @@ export interface BillItem {
     date: Date;
     items: BillItem[];
     totalAmount: number;
-    status: "paid" | "partially paid";
+    status: "paid" | "partially paid" | "cancelled";
     balanceAmount: number | null;
     patient: Patient;
     paymentMethod: "cash" | "card" | "bank-transfer";

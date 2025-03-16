@@ -19,33 +19,13 @@ interface PatientInfoFormProps<T extends FormValues> {
 
 const patientFields = [
   { 
-    name: 'name' as const, 
-    label: 'Patient Name', 
+    name: 'hospital_number' as const, 
+    label: 'Hospital Number', 
     type: 'text' as const, 
-    placeholder: 'Enter patient name',
+    placeholder: 'Enter hospital number',
     required: true 
   },
-  { 
-    name: 'email' as const, 
-    label: 'Email', 
-    type: 'email' as const, 
-    placeholder: 'Enter email',
-    required: true 
-  },
-  { 
-    name: 'phone' as const, 
-    label: 'Phone', 
-    type: 'tel' as const, 
-    placeholder: 'Enter phone number',
-    required: true 
-  },
-  { 
-    name: 'address' as const, 
-    label: 'Address', 
-    type: 'text' as const, 
-    placeholder: 'Enter address',
-    required: true 
-  },
+  
 ] as const;
 
 export const PatientInfoForm = <T extends FormValues>({ 
@@ -53,7 +33,7 @@ export const PatientInfoForm = <T extends FormValues>({
   prefix 
 }: PatientInfoFormProps<T>) => {
   return (
-    <div className="col-span-2 grid grid-cols-2 md:grid-cols-1 gap-4 border p-4 rounded-lg mb-4">
+    <div className="col-span-2 grid grid-cols-1 md:grid-cols-1 gap-4 border p-4 rounded-lg mb-4">
       {patientFields.map((field) => (
         <FormField
           key={field.name}

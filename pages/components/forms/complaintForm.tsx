@@ -1,8 +1,8 @@
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import { useEffect, useState } from 'react';
-import { Button } from '../../components/ui/button';
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { useState } from "react";
+import { Button } from "../../components/ui/button";
 import {
   Form,
   FormControl,
@@ -10,30 +10,16 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '../../components/ui/form';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '../../components/ui/select';
-import Textarea from '../../components/ui/Textarea';
-import { Input } from '../../components/ui/input';
-import { toast } from 'sonner';
-import { useTheme } from 'next-themes';
-
-interface ApiError {
-  message: string;
-  code?: string;
-}
+} from "../../components/ui/form";
+import Textarea from "../../components/ui/Textarea";
+import { Input } from "../../components/ui/input";
 
 const complaintFormSchema = z.object({
   complaintType: z.string({
     required_error: "Please select the type of complaint",
   }),
-  department: z.string({
-    required_error: "Please select the relevant department",
+  patientName: z.string({
+    required_error: "Please enter registered name",
   }),
   subject: z.string().min(5, {
     message: "Subject must be at least 5 characters",
@@ -44,208 +30,233 @@ const complaintFormSchema = z.object({
   incidentDate: z.string({
     required_error: "Please select the date of incident",
   }),
-  preferredContact: z.string({
-    required_error: "Please select your preferred contact method",
-  }),
   attachments: z.any().optional(),
 });
 
 type ComplaintFormValues = z.infer<typeof complaintFormSchema>;
 
-const defaultValues: Partial<ComplaintFormValues> = {
-  complaintType: "",
-  department: "",
-  subject: "",
-  description: "",
-  incidentDate: "",
-};
-
 export default function LodgeComplaintForm() {
-    useTheme();
-    const [isSubmitting, setIsSubmitting] = useState(false);
-  
-    const form = useForm<ComplaintFormValues>({
-      resolver: zodResolver(complaintFormSchema),
-      defaultValues: {
-        complaintType: "",
-        department: "",
-        subject: "",
-        description: "",
-        incidentDate: "",
-        attachments: null
-      },
-    });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-    const [isMounted, setIsMounted] = useState(false);
-    
-      useEffect(() => {
-        setIsMounted(true);
-      }, []);
-    
-      if (!isMounted) {
-        return null;
-      }
-  
-    async function onSubmit(data: ComplaintFormValues) {
-      setIsSubmitting(true);
-      try {
-        // TODO: Implement API call to submit complaint
-        console.log(data);
-        
-        toast.success("Complaint Submitted", {
-          description: "Your complaint has been successfully logged. We will contact you shortly.",
-        });
-        
-        // Reset all form fields
-        form.reset(defaultValues);
-  
-        // Reset file input
-        const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
-        if (fileInput) {
-          fileInput.value = '';
+  const form = useForm<ComplaintFormValues>({
+    resolver: zodResolver(complaintFormSchema),
+    defaultValues: {
+      complaintType: "",
+      patientName: "",
+      subject: "",
+      description: "",
+      incidentDate: "",
+      attachments: [] as File[],
+    },
+  });
+
+  const onSubmit = async (data: ComplaintFormValues) => {
+    setIsSubmitting(true);
+    setErrorMessage(null);
+    setSuccessMessage(null);
+
+    try {
+      // Convert form data to FormData format
+      const formData = new FormData();
+
+      // Add regular form fields
+      Object.entries(data).forEach(([key, value]) => {
+        if (key !== "attachments" && value !== null && value !== undefined) {
+          formData.append(key, value);
         }
-  
-      } catch (error: unknown) {
-        const errorMessage = error instanceof Error 
-          ? error.message 
-          : (error as ApiError)?.message || "An unexpected error occurred";
-        
-        console.error("Complaint submission error:", error);
-        
-        toast.error("Error", {
-          description: errorMessage,
+      });
+
+      // Handle file uploads
+      if (data.attachments && data.attachments.length > 0) {
+        data.attachments.forEach((file: File, index: number) => {
+          formData.append(`attachments[${index}]`, file);
         });
-      } finally {
-        setIsSubmitting(false);
       }
+
+      // First API call to lodge complaint
+      const complaintResponse = await fetch("http://localhost/hospital_api/lodge_complaint.php", {
+        method: "POST",
+        body: formData,
+      });
+
+      const complaintResult = await complaintResponse.json();
+
+      if (!complaintResult.success) {
+        throw new Error(complaintResult.message || "Failed to lodge complaint");
+      }
+
+      const complaintId = complaintResult.complaintId;
+
+      // Handle file uploads if any
+      if (data.attachments && data.attachments.length > 0) {
+        const fileFormData = new FormData();
+        fileFormData.append("complaintId", complaintId.toString());
+
+        data.attachments.forEach((file: File, index: number) => {
+          fileFormData.append(`attachments[${index}]`, file);
+        });
+
+        const uploadResponse = await fetch(
+          "http://localhost/hospital_api/complain_file_upload.php",
+          {
+            method: "POST",
+            body: fileFormData,
+          }
+        );
+
+        // Check if response is JSON before parsing
+        if (!uploadResponse.headers.get("Content-Type")?.includes("application/json")) {
+          throw new Error("Failed to upload attachments - invalid response format");
+        }
+
+        const uploadResult = await uploadResponse.json();
+
+        if (!uploadResult.success) {
+          throw new Error(uploadResult.message || "Failed to upload attachments");
+        }
+      }
+
+      setTimeout(() => {
+        setSuccessMessage("Complaint lodged successfully! we will get back to you");
+        form.reset();
+      }, 2000);
+      setTimeout(() => {
+        setSuccessMessage(null);
+      }, 5000);
+    } catch (error) {
+      // Handle JSON parsing errors
+      if (error instanceof SyntaxError && error.message.includes("Unexpected token")) {
+        setErrorMessage("Failed to process response. Please try again.");
+      } else {
+        setErrorMessage(error instanceof Error ? error.message : "An unknown error occurred");
+      }
+      console.error("Complaint submission failed:", error);
+    } finally {
+      setIsSubmitting(false);
     }
-  
-    return (
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-7">
-                <div className="grid grid-cols-2 md:grid-cols-1 gap-6">
-                  <FormField
-                    control={form.control}
-                    name="complaintType"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Type of Complaint</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select complaint type" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="service">Service Quality</SelectItem>
-                            <SelectItem value="staff">Staff Behavior</SelectItem>
-                            <SelectItem value="facility">Facility Issues</SelectItem>
-                            <SelectItem value="billing">Billing Problems</SelectItem>
-                            <SelectItem value="other">Other</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-  
-                  <FormField
-                    control={form.control}
-                    name="department"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Department</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select department" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="emergency">Emergency</SelectItem>
-                            <SelectItem value="outpatient">Receptionist</SelectItem>
-                            <SelectItem value="pharmacy">Pharmacy</SelectItem>
-                            <SelectItem value="laboratory">Laboratory</SelectItem>
-                            <SelectItem value="billing">Billing</SelectItem>
-                            <SelectItem value="other">Other</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-  
-                  <FormField
-                    control={form.control}
-                    name="subject"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Subject</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Brief subject of your complaint" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-  
-                  <FormField
-                    control={form.control}
-                    name="incidentDate"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Date of Incident</FormLabel>
-                        <FormControl>
-                          <Input type="date" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-  
-                <FormField
-                  control={form.control}
-                  name="description"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Complaint Description</FormLabel>
-                      <FormControl>
-                        <Textarea 
-                          placeholder="Please provide detailed information about your complaint"
-                          className="min-h-[150px]"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+  };
+
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-7">
+        <div className="grid grid-cols-2 md:grid-cols-1 gap-6">
+          <FormField
+            control={form.control}
+            name="patientName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Patient Name</FormLabel>
+                <FormControl>
+                  <Input {...field} placeholder="Registered name" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="complaintType"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Type of Complaint</FormLabel>
+                <FormControl>
+                  <Input {...field} placeholder="e.g service Quality" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="subject"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Subject</FormLabel>
+                <FormControl>
+                  <Input placeholder="Brief subject of your complaint" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="incidentDate"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Date of Incident</FormLabel>
+                <FormControl>
+                  <Input type="date" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        <FormField
+          control={form.control}
+          name="description"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Complaint Description</FormLabel>
+              <FormControl>
+                <Textarea
+                  placeholder="Please provide detailed information about your complaint"
+                  className="min-h-[150px]"
+                  {...field}
                 />
-  
-              
-                <FormField
-                  control={form.control}
-                  name="attachments"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Attachments (Optional)</FormLabel>
-                      <FormControl>
-                        <Input 
-                          type="file" 
-                          multiple 
-                          accept="image/*,.pdf,.doc,.docx"
-                          onChange={(e) => field.onChange(e.target.files)}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="attachments"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Attachments (Optional)</FormLabel>
+              <FormControl>
+                <Input
+                  type="file"
+                  multiple
+                  accept="image/*,.pdf,.doc,.docx"
+                  onChange={(e) => {
+                    const files = e.target.files;
+                    if (files) {
+                      field.onChange(Array.from(files));
+                    }
+                  }}
                 />
-  
-                <Button type="submit" className="w-full" disabled={isSubmitting}>
-                  {isSubmitting ? "Submitting..." : "Submit Complaint"}
-                </Button>
-              </form>
-            </Form>
-    );
-  }
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {successMessage && (
+          <div className="text-center mt-4 p-3 bg-green-100 text-green-700 rounded-md">
+            {successMessage}
+          </div>
+        )}
+
+        {errorMessage && (
+          <div className="text-center mt-4 p-3 bg-red-100 text-red-700 rounded-md">
+            {errorMessage}
+          </div>
+        )}
+
+        <Button type="submit" className="w-full" disabled={isSubmitting}>
+          {isSubmitting ? "Submitting..." : "Submit Complaint"}
+        </Button>
+      </form>
+    </Form>
+  );
+}

@@ -1,3 +1,4 @@
+
 import { z } from "zod";
 
 export const billItemSchema = z.object({
@@ -6,10 +7,7 @@ export const billItemSchema = z.object({
 });
 
 export const patientSchema = z.object({
-  name: z.string().min(1, "Patient name is required"),
-  email: z.string().optional(),
-  phone: z.string().optional(),
-  address: z.string().optional(),
+  hospital_number: z.string().min(1, "Patient name is required"),
 });
 
 export const receiptFormSchema = z.object({
@@ -30,6 +28,8 @@ export const invoiceFormSchema = z.object({
     required_error: "Date is required",
   }),
   items: z.array(billItemSchema).min(1, "At least one item is required"),
+  status: z.enum(["paid", "cancelled", "partially paid", "pending"]),
+  totalAmount: z.number().min(3, "Ammount must be more than three digits"),
   patient: patientSchema,
   paymentTerms: z.enum(["net-15", "net-30", "net-45", "net-60"]),
 });

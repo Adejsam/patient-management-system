@@ -29,7 +29,6 @@ const AppointmentSuccessPage = () => {
   const [isMounted, setIsMounted] = useState(false);
   const router = useRouter();
   const { 
-    appointmentId, 
     date, 
     time, 
     doctor, 
@@ -78,14 +77,7 @@ const AppointmentSuccessPage = () => {
             Your <span className="text-primary">Appointment Request</span> has been Successfully Booked!
           </h1>
           <p className="mt-2 text-base text-muted-foreground text-center">
-            We will be in touch shortly to confirm your appointment
-          </p>
-          
-          {appointmentId && (
-            <p className="mt-2 text-sm font-medium text-primary">
-              Appointment ID: #{appointmentId}
-            </p>
-          )}
+            We will be in touch shortly to confirm your appointment. If you which to cancel this Appointment cantact the support center using the complaint form </p>
         </div>
         
         <Card className="w-full max-w-2xl shadow-md">
@@ -170,7 +162,7 @@ const AppointmentSuccessPage = () => {
           <Button onClick={handleBackToHome} className="px-6">
             Back to Dashboard
           </Button>
-          <Button variant="outline" onClick={() => router.push("/patient/appointments")}>
+          <Button variant="outline" onClick={() => router.push("/patient/appointment-history")}>
             View All Appointments
           </Button>
         </div>

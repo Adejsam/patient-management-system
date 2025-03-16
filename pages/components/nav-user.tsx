@@ -86,6 +86,7 @@ export function NavUser({}: {
       "message",
       "success",
       "patientData",
+      "patientId"
     ];
 
     keysToRemove.forEach((key) => localStorage.removeItem(key));

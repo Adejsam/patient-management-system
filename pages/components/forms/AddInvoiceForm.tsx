@@ -1,8 +1,7 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "../../components/ui/button";
-import { Input } from "../../components/ui/input";
 import {
   Form,
   FormControl,
@@ -11,6 +10,7 @@ import {
   FormLabel,
   FormMessage,
 } from "../../components/ui/form";
+import { useState, useEffect } from 'react'; // Add useState import
 
 import { Calendar } from "../../components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "../../components/ui/popover";
@@ -25,29 +25,30 @@ const AddInvoiceForm = () => {
   const form = useForm<InvoiceFormValues>({
     resolver: zodResolver(invoiceFormSchema),
     defaultValues: {
+      invoiceNumber: '',
+      date: new Date(),
+      status: 'pending',
+      totalAmount: 0,
       items: [{ description: '', amount: 0 }],
       patient: {
-        name: '',
-        email: '',
-        phone: '',
-        address: ''
+        hospital_number: '',
       },
-      date: new Date(),
     },
   });
-  
-  // Generate unique invoice number
-  const generateInvoiceNumber = () => {
-    const date = new Date();
-    const prefix = `INV-${date.toISOString().slice(0, 10).replace(/-/g, '')}`;
-    const suffix = Math.floor(10000 + Math.random() * 90000).toString();
-    return `${prefix}-${suffix}`;
-  };
 
+  const [message, setMessage] = useState<string | null>(null);
+  const [messageType, setMessageType] = useState<'success' | 'error' | null>(null);
+
+  // Add this useEffect to clear message after 5 seconds
   useEffect(() => {
-    const invoiceNumber = generateInvoiceNumber();
-    form.setValue('invoiceNumber', invoiceNumber);
-  }, [form]);
+    if (message) {
+      const timer = setTimeout(() => {
+        setMessage(null);
+        setMessageType(null);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [message]);
 
   const calculateTotal = (items: { amount: number }[]) => {
     return items.reduce((sum, item) => sum + (Number(item.amount) || 0), 0);
@@ -55,38 +56,54 @@ const AddInvoiceForm = () => {
 
   const onSubmit = async (data: InvoiceFormValues) => {
     try {
-      console.log('Invoice Form Data:', data);
-      // Add your API call here
+      const apiEndpoint = 'http://localhost/hospital_api/add_invoice.php'; // Replace with your backend URL
+      
+      const formData = {
+        hospital_number: data.patient.hospital_number,
+        total_amount: calculateTotal(data.items),
+        items: data.items,
+        status: data.status
+      };
+
+      const response = await fetch(apiEndpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const result = await response.json();
+      if (result.message === 'Invoice created successfully') {
+        setMessage('Invoice created successfully!');
+        setMessageType('success');
+        form.reset();
+      }
     } catch (error) {
       console.error('Error submitting invoice:', error);
+      setMessage('Error creating invoice. Please try again.');
+      setMessageType('error');
     }
   };
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        {/* Add message display component */}
+        {message && (
+          <div className={`fixed bottom-4 right-4 z-50 p-4 rounded-lg ${messageType === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+            {message}
+          </div>
+        )}
+
         <PatientInfoForm form={form} prefix="patient" />
         <DynamicFormItems form={form} formType="invoice" minItems={1} />
         
         <div className="grid grid-cols-2 md:grid-cols-1 gap-4">
-          <FormField
-            control={form.control}
-            name="invoiceNumber"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Invoice Number</FormLabel>
-                <FormControl>
-                  <Input 
-                    {...field} 
-                    placeholder="Enter invoice number" 
-                    readOnly 
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
           <FormField
             control={form.control}
             name="date"
@@ -120,13 +137,12 @@ const AddInvoiceForm = () => {
               </FormItem>
             )}
           />
-
         </div>
 
         <div className="flex justify-between p-4 bg-muted rounded-lg">
           <span className="font-semibold">Total Amount:</span>
           <span className="font-semibold">
-          ₦{calculateTotal(form.watch('items')).toFixed(2)}
+            ₦{calculateTotal(form.watch('items')).toFixed(2)}
           </span>
         </div>
 
