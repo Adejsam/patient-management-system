@@ -38,7 +38,7 @@ const doctorsData = [
     profilePicture: Doctor3,
     name: "Doc. Emeka Uche",
     field: "Neurology",
-    contact: "+234-701-123-4567",
+    contact: "07011234567",
     yearsOfExperience: 12,
     about: "Specialist in neurological disorders with extensive research experience.",
   },
