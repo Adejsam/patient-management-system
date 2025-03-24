@@ -20,6 +20,8 @@ const DoctorFilter: React.FC<DoctorFilterProps> = ({ filterField, onFieldChange 
           <SelectItem value="Neurology">Neurology</SelectItem>
           <SelectItem value="Family Doctor">Family Doctor</SelectItem>
           <SelectItem value="Psychiatry">Psychiatry</SelectItem>
+          <SelectItem value="Gastroenterology">Gastroenterology</SelectItem>
+          <SelectItem value="Endocrinology">Endocrinology</SelectItem>
           {/* Add more fields as needed */}
         </SelectContent>
       </Select>
