@@ -30,7 +30,7 @@ import {
   TableRow,
 } from "../../../components/ui/table";
 import { ReceiptDetailsModal } from "./reciept-detail-modal";
-import { Receipt } from "../../../../types/reciept"; // Import the Receipt type
+import { Receipt } from "./column";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -73,8 +73,8 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
       <div className="flex items-center py-4">
         <Input
           placeholder="Filter by receipt number"
-          value={(table.getColumn("receiptNumber")?.getFilterValue() as string) ?? ""}
-          onChange={(event) => table.getColumn("receiptNumber")?.setFilterValue(event.target.value)}
+          value={(table.getColumn("receipt_number")?.getFilterValue() as string) ?? ""}
+          onChange={(event) => table.getColumn("receipt_number")?.setFilterValue(event.target.value)}
           className="max-w-sm"
         />
         <DropdownMenu>

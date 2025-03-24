@@ -1,3 +1,5 @@
+"use client";
+
 import React, { JSX } from "react";
 import AdminLayout from "../../shared/layout/AdminLayout";
 import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/card";
@@ -12,10 +14,38 @@ import { FileText, Calendar, ClipboardList, Activity } from "lucide-react";
 export default function Page() {
   useTheme();
   const [isMounted, setIsMounted] = useState(false);
+  const [totalPatients, setTotalPatients] = useState(0);
+  const [totalStaff, setTotalStaff] = useState(0);
+  const [totalRevenue, setTotalRevenue] = useState(0);
 
   useEffect(() => {
     setIsMounted(true);
+    fetchMetrics();
   }, []);
+
+  const fetchMetrics = async () => {
+    try {
+      // Fetch total patients
+      const patientsResponse = await fetch("http://localhost/hospital_api/total_patients.php");
+      if (!patientsResponse.ok) throw new Error("Failed to fetch patients");
+      const patientsData = await patientsResponse.json();
+      setTotalPatients(patientsData.total_patients);
+
+      // Fetch total staff
+      const staffResponse = await fetch("http://localhost/hospital_api/total_staffs.php");
+      if (!staffResponse.ok) throw new Error("Failed to fetch staff");
+      const staffData = await staffResponse.json();
+      setTotalStaff(staffData.total_staff);
+
+      // Fetch total revenue
+      const revenueResponse = await fetch("http://localhost/hospital_api/total_revenue.php");
+      if (!revenueResponse.ok) throw new Error("Failed to fetch revenue");
+      const revenueData = await revenueResponse.json();
+      setTotalRevenue(revenueData.total_revenue);
+    } catch (error) {
+      console.error("Error fetching metrics:", error);
+    }
+  };
 
   if (!isMounted) {
     return null;
@@ -30,24 +60,24 @@ export default function Page() {
           <h1 className="text-3xl font-bold pt-7 pl-5 pb-1">
             Staff <span className="text-primary">Dashboard</span>
           </h1>
-          <h3 className="text-base pl-5 pb-7">Mange Your Patient Effectively</h3>
+          <h3 className="text-base pl-5 pb-7">Manage Your Patient Effectively</h3>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 p-5">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
-                <Wallet className="h-7 w-7  text-green-500" />
+                <Wallet className="h-7 w-7 text-green-500" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">₦45,231.89</div>
+                <div className="text-2xl font-bold">₦{totalRevenue}</div>
               </CardContent>
             </Card>
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total Appointment</CardTitle>
+                <CardTitle className="text-sm font-medium">Total staff</CardTitle>
                 <Users className="h-7 w-7 text-blue-500" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">950</div>
+                <div className="text-2xl font-bold">{totalStaff}</div>
               </CardContent>
             </Card>
             <Card>
@@ -56,7 +86,7 @@ export default function Page() {
                 <User className="h-7 w-7 text-red-500" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">70</div>
+                <div className="text-2xl font-bold">{totalPatients}</div>
               </CardContent>
             </Card>
           </div>

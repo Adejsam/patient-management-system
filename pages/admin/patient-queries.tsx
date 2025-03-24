@@ -436,7 +436,6 @@ export default function PatientQueriesAdmin() {
                           <span className="text-sm">{file.name}</span>
                           <span className="text-xs">{file.type.split("/")[0]}</span>
                           <Button
-                            variant="ghost"
                             size="sm"
                             onClick={() =>
                               handleDownloadAttachment(

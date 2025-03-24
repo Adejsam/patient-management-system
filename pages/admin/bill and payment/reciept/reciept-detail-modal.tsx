@@ -2,20 +2,22 @@ import React from 'react';
   import { Modal, ModalHeader, ModalContent, ModalFooter } from "../../../components/ui/modal";
   import { Button } from "../../../components/ui/button";
   import { useTheme } from "next-themes";
-  import { BillItem, Patient } from "../payment-forms";
+  import { BillItem} from "../payment-forms";
   import { format } from "date-fns";
   import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../components/ui/table";
   import { ScrollArea } from "../../../components/ui/scroll-area";
 
   type Receipt = {
-    id: string;
-    receiptNumber: string;
-    date: Date;
+    receipt_id: number;
+    receipt_number: string;
+    date: string;
+    total_amount: string;
+    status: "paid" | "partially_paid";
+    balance_amount: string;
+    payment_method: string;
+    hospital_number: number;
+    patient_name: string;
     items: BillItem[];
-    patient: Patient;
-    paymentMethod: string;
-    status: "paid" | "partially paid";
-    totalAmount: number;
   };
 
   interface ReceiptDetailsModalProps {
@@ -35,19 +37,15 @@ import React from 'react';
           <ModalContent className="space-y-4 flex flex-col">
             <div className="flex items-center justify-center gap-1">
               <label className={`text-sm font-bold`}>Patient Name:</label>
-              <p className={`text-sm `}>{receipt.patient.name}</p>
+              <p className={`text-sm `}>{receipt.patient_name}</p>
             </div>
             <div className="flex items-center justify-center gap-1">
-              <label className={`text-sm font-bold`}>Patient Email:</label>
-              <p className={`text-sm `}>{receipt.patient.email}</p>
-            </div>
-            <div className="flex items-center justify-center gap-1">
-              <label className={`text-sm font-bold`}>Patient Phone:</label>
-              <p className={`text-sm `}>{receipt.patient.phone}</p>
+              <label className={`text-sm font-bold`}>Patient Hospital Number:</label>
+              <p className={`text-sm `}>{receipt.hospital_number}</p>
             </div>
             <div className="flex items-center justify-center gap-1">
               <label className={`text-sm font-bold`}>Receipt Number:</label>
-              <p className={`text-sm `}>{receipt.receiptNumber}</p>
+              <p className={`text-sm `}>{receipt.receipt_number}</p>
             </div>
             <div className="flex items-center justify-center gap-1">
               <label className={`text-sm font-bold`}>Date:</label>
@@ -67,7 +65,7 @@ import React from 'react';
                     {receipt.items.map((item, index) => (
                       <TableRow key={index}>
                         <TableCell>{item.description}</TableCell>
-                        <TableCell>₦{item.amount.toFixed(2)}</TableCell>
+                        <TableCell>₦{item.amount}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
@@ -76,7 +74,7 @@ import React from 'react';
             </div>
             <div className="flex items-center justify-center gap-1">
               <label className={`text-sm font-bold `}>Payment Method:</label>
-              <p className={`text-sm `}>{receipt.paymentMethod}</p>
+              <p className={`text-sm `}>{receipt.payment_method}</p>
             </div>
             <div className="flex items-center justify-center gap-1">
               <label className={`text-sm font-bold `}>Status:</label>
@@ -84,7 +82,7 @@ import React from 'react';
             </div>
             <div className="flex items-center justify-center gap-1">
               <label className={`text-sm font-bold `}>Total Amount:</label>
-              <p className={`text-sm `}>₦{receipt.totalAmount.toFixed(2)}</p>
+              <p className={`text-sm `}>₦{receipt.total_amount}</p>
             </div>
           </ModalContent>
         </ScrollArea>

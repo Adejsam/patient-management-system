@@ -8,11 +8,10 @@ export interface Patient {
   }
   
   export interface Invoice {
-    id: string;
-    invoiceNumber: string;
+    invoiceNumber: number;
     date: Date;
     items: BillItem[];
     patient: Patient;
-    status: string;
     totalAmount: number;
+    status: "paid" | "pending" | "cancelled" ;
   }

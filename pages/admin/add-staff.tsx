@@ -170,13 +170,17 @@ export default function AddStaffPage() {
     try {
       const formData = new FormData();
       formData.append("photoUpload", file);
-  
-      const response = await axios.post("http://localhost/hospital_api/file_upload.php", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-  
+
+      const response = await axios.post(
+        "http://localhost/hospital_api/picture_upload.php",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
       if (response.data.success) {
         return response.data.fileUrl;
       } else {
@@ -216,7 +220,7 @@ export default function AddStaffPage() {
         password: values.password,
         confirmPassword: values.confirmPassword,
         role: values.role,
-        profile_picture: uploadedPhoto || null,
+        profile_picture: uploadedPhoto || "",
         license_number: values.licenseNumber || "",
         years_of_experience: values.role === "doctor" ? parseInt(values.experienceYears || "0") : 0,
         specialization: values.specialization || "",
@@ -421,7 +425,7 @@ export default function AddStaffPage() {
                               onChange={(e) => {
                                 if (e.target.files?.[0]) {
                                   field.onChange(e.target.files[0]);
-                                }else {
+                                } else {
                                   field.onChange(null);
                                 }
                               }}

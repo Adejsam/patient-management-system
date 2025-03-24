@@ -30,7 +30,8 @@ import {
   TableRow,
 } from "../../../components/ui/table";
 import { InvoiceDetailsModal } from "./invoice-detail-modal";
-import { Invoice } from "../../../../types/invoice";
+import { Invoice } from "./column";
+
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -73,8 +74,8 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
       <div className="flex items-center py-4">
         <Input
           placeholder="Filter by invoices number"
-          value={(table.getColumn("invoiceNumber")?.getFilterValue() as string) ?? ""}
-          onChange={(event) => table.getColumn("invoiceNumber")?.setFilterValue(event.target.value)}
+          value={(table.getColumn("invoice_number")?.getFilterValue() as string) ?? ""}
+          onChange={(event) => table.getColumn("invoice_number")?.setFilterValue(event.target.value)}
           className="max-w-sm"
         />
         <DropdownMenu>

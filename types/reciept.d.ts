@@ -8,7 +8,6 @@ export interface BillItem {
   }
   
   export interface Receipt {
-    id: string
     receiptNumber: string;
     date: Date;
     items: BillItem[];

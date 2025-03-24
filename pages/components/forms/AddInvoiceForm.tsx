@@ -1,7 +1,8 @@
-import React from 'react';
+import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "../../components/ui/button";
+import { Input } from "../../components/ui/input";
 import {
   Form,
   FormControl,
@@ -10,34 +11,55 @@ import {
   FormLabel,
   FormMessage,
 } from "../../components/ui/form";
-import { useState, useEffect } from 'react'; // Add useState import
-
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../../components/ui/select";
+import { useState, useEffect } from "react";
 import { Calendar } from "../../components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "../../components/ui/popover";
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "../../../lib/utils";
-import { invoiceFormSchema, type InvoiceFormValues } from '../../admin/bill and payment/payment-forms';
-import { DynamicFormItems } from '../../admin/bill and payment/DynaminFormItems';
-import { PatientInfoForm } from '../../admin/bill and payment/PatientInfoForm';
+import {
+  invoiceFormSchema,
+  type InvoiceFormValues,
+} from "../../admin/bill and payment/payment-forms";
+import { DynamicFormItems } from "../../admin/bill and payment/DynaminFormItems";
 
 const AddInvoiceForm = () => {
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    const userRole = localStorage.getItem("userRole");
+    
+    if (userRole === "billing_officer") {
+      setIsMounted(true);
+    } else {
+      // Redirect to unauthorized page if not a billing officer
+      window.location.href = "/admin/unauthorized";
+    }
+  }, []);
+
   const form = useForm<InvoiceFormValues>({
     resolver: zodResolver(invoiceFormSchema),
     defaultValues: {
-      invoiceNumber: '',
-      date: new Date(),
-      status: 'pending',
-      totalAmount: 0,
-      items: [{ description: '', amount: 0 }],
+      formType: "invoice",
+      items: [{ description: "", amount: 0 }],
       patient: {
-        hospital_number: '',
+        hospital_number: "",
       },
+      status: "pending",
+      date: new Date(),
     },
   });
-
+  
   const [message, setMessage] = useState<string | null>(null);
-  const [messageType, setMessageType] = useState<'success' | 'error' | null>(null);
+  const [messageType, setMessageType] = useState<"success" | "error" | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Add this useEffect to clear message after 5 seconds
   useEffect(() => {
@@ -56,53 +78,95 @@ const AddInvoiceForm = () => {
 
   const onSubmit = async (data: InvoiceFormValues) => {
     try {
-      const apiEndpoint = 'http://localhost/hospital_api/add_invoice.php'; // Replace with your backend URL
-      
+      setIsLoading(true);
+      console.log("Form data:", data); // Debugging
+
+      const apiEndpoint = "http://localhost/hospital_api/add_invoice.php";
+
+      // Ensure hospital_number is a number
       const formData = {
         hospital_number: data.patient.hospital_number,
         total_amount: calculateTotal(data.items),
         items: data.items,
-        status: data.status
+        status: data.status,
       };
 
       const response = await fetch(apiEndpoint, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
       });
 
+      console.log("API Response:", response); // Debugging
+
       if (!response.ok) {
-        throw new Error('Network response was not ok');
+        throw new Error("Network response was not ok");
       }
 
       const result = await response.json();
-      if (result.message === 'Invoice created successfully') {
-        setMessage('Invoice created successfully!');
-        setMessageType('success');
+      console.log("API Result:", result); // Debugging
+
+      if (result.message === "Invoice created successfully") {
+        setMessage("Invoice created successfully! Invoice ID: " + result.invoice_id);
+        setMessageType("success");
         form.reset();
       }
     } catch (error) {
-      console.error('Error submitting invoice:', error);
-      setMessage('Error creating invoice. Please try again.');
-      setMessageType('error');
+      console.error("Error submitting invoice:", error);
+      setMessage("Error creating invoice. Please try again.");
+      setMessageType("error");
+    } finally {
+      setIsLoading(false);
     }
   };
+
+  if (!isMounted) {
+    return null;
+  }
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         {/* Add message display component */}
         {message && (
-          <div className={`fixed bottom-4 right-4 z-50 p-4 rounded-lg ${messageType === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+          <div
+            className={`fixed bottom-4 right-4 z-50 p-4 rounded-lg ${
+              messageType === "success" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
+            }`}>
             {message}
           </div>
         )}
 
-        <PatientInfoForm form={form} prefix="patient" />
+        <div className="col-span-2 grid grid-cols-1 md:grid-cols-1 gap-4 border p-4 rounded-lg mb-4">
+          <FormField
+            control={form.control}
+            name="patient.hospital_number"
+            render={({ field: formField }) => (
+              <FormItem>
+                <FormLabel>
+                  Hospital Number
+                  <span className="text-destructive ml-1">*</span>
+                </FormLabel>
+                <FormControl>
+                  <Input
+                  type="text"
+                    {...formField}
+                    placeholder="Enter hospital number"
+                    className="w-full"
+                    aria-required={true}
+                    value={(formField.value as string) || ""}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
         <DynamicFormItems form={form} formType="invoice" minItems={1} />
-        
+
         <div className="grid grid-cols-2 md:grid-cols-1 gap-4">
           <FormField
             control={form.control}
@@ -137,18 +201,41 @@ const AddInvoiceForm = () => {
               </FormItem>
             )}
           />
+
+          <FormField
+            control={form.control}
+            name="status"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Status</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select status" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="paid">Paid</SelectItem>
+                    <SelectItem value="pending">Pending</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
         </div>
 
         <div className="flex justify-between p-4 bg-muted rounded-lg">
           <span className="font-semibold">Total Amount:</span>
-          <span className="font-semibold">
-            ₦{calculateTotal(form.watch('items')).toFixed(2)}
-          </span>
+          <span className="font-semibold">₦{calculateTotal(form.watch("items")).toFixed(2)}</span>
         </div>
 
-        <Button type="submit" className="w-full">Create Invoice</Button>
+        <Button type="submit" className="w-full" disabled={isLoading}>
+          {isLoading ? "Creating Invoice..." : "Create Invoice"}
+        </Button>
       </form>
     </Form>
   );
 };
+
 export default AddInvoiceForm;

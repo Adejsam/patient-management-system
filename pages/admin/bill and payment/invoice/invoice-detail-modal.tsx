@@ -9,20 +9,21 @@ import {
   TableHeader,
   TableRow,
 } from "../../../components/ui/table";
-import { BillItem, Patient } from "../payment-forms";
+import { BillItem } from "../payment-forms";
 import { useTheme } from "next-themes";
 import { format } from "date-fns";
 import { ScrollArea } from "../../../components/ui/scroll-area";
 
 type Invoice = {
-  id: string;
-  invoiceNumber: string;
-  date: Date;
-  items: BillItem[];
-  patient: Patient;
-  paymentTerms: string;
+  invoice_id: number;
+  invoice_number: string;
+  date: string;
   status: string;
-  totalAmount: number;
+  total_amount: string;
+  hospital_number: number; // Added hospital_number field
+  created_at: string; // Added created_at field
+  patient_name: string; // Changed from patient object to patient_name string
+  items: BillItem[];
 };
 
 interface InvoiceDetailsModalProps {
@@ -42,19 +43,11 @@ export const InvoiceDetailsModal: React.FC<InvoiceDetailsModalProps> = ({ invoic
         <ModalContent className="space-y-4 flex flex-col">
           <div className="flex items-center justify-center gap-1 ">
             <label className={`text-sm font-bold`}>Patient Name:</label>
-            <p className={`text-sm `}>{invoice.patient.name}</p>
-          </div>
-          <div className="flex items-center justify-center gap-1">
-            <label className={`text-sm font-bold`}>Patient Email:</label>
-            <p className={`text-sm `}>{invoice.patient.email}</p>
-          </div>
-          <div className="flex items-center justify-center gap-1">
-            <label className={`text-sm font-bold`}>Patient Name:</label>
-            <p className={`text-sm `}>{invoice.patient.phone}</p>
+            <p className={`text-sm `}>{invoice.patient_name}</p>
           </div>
           <div className="flex items-center justify-center gap-1">
             <label className={`text-sm font-bold`}>Invoice Number:</label>
-            <p className={`text-sm `}>{invoice.invoiceNumber}</p>
+            <p className={`text-sm `}>{invoice.invoice_number}</p>
           </div>
           <div className="flex items-center justify-center gap-1">
             <label className={`text-sm font-bold`}>Date:</label>
@@ -74,7 +67,7 @@ export const InvoiceDetailsModal: React.FC<InvoiceDetailsModalProps> = ({ invoic
                   {invoice.items.map((item, index) => (
                     <TableRow key={index}>
                       <TableCell>{item.description}</TableCell>
-                      <TableCell>₦{item.amount.toFixed(2)}</TableCell>
+                      <TableCell>₦{item.amount}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -87,7 +80,7 @@ export const InvoiceDetailsModal: React.FC<InvoiceDetailsModalProps> = ({ invoic
           </div>
           <div className="flex items-center justify-center gap-1">
             <label className={`text-sm font-bold `}>Total Amount:</label>
-            <p className={`text-sm `}>₦{invoice.totalAmount.toFixed(2)}</p>
+            <p className={`text-sm `}>₦{invoice.total_amount}</p>
           </div>
         </ModalContent>
       </ScrollArea>

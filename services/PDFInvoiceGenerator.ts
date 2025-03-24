@@ -4,21 +4,22 @@ import autoTable from "jspdf-autotable";
 export interface Service {
   description: string;
   amount: string;
-  quantity: number;
 }
 
 export interface CustomerInfo {
   name: string;
   address: string;
-  email: string;
+  hospital_number: string;
 }
 
 export interface InvoiceOrReceipt {
-  receiptNumber: string;
+  invoiceNumber?: string;
+  receiptNumber?: string;
   date: string;
   amount: string;
   status?: string;
   method?: string;
+  balanceAmount?: string;
   services?: Service[];
   customerInfo: CustomerInfo;
 }
@@ -45,11 +46,15 @@ interface TableOptions {
   styles: {
     fontSize: number;
     cellPadding: number;
+    lineWidth?: number;
+    lineColor?: number[];
   };
   headStyles: {
     fillColor: number[];
     textColor: number;
-    fontStyle: 'bold' | 'normal' | 'italic';
+    fontStyle: "bold" | "normal" | "italic";
+    lineWidth?: number;
+    lineColor?: number[];
   };
   margin: {
     left: number;
@@ -85,96 +90,133 @@ export class PDFInvoiceGenerator {
     }
   }
 
+  private capitalizeFirstLetter(str: string): string {
+    if (!str) return "";
+    return str
+      .split(" ")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(" ");
+  }
+
   private addCustomerInfo(doc: jsPDF, data: InvoiceOrReceipt, startY: number): number {
     let yPosition = startY;
-    
-    doc.setFontSize(12);
-    doc.setFont("helvetica", "normal");
-    
+
+    doc.setFontSize(14);
+    doc.setFont("helvetica", "bold");
+
+    // Ensure customer info has valid values
+    const customer = {
+      name: data.customerInfo.name || "N/A",
+      address: data.customerInfo.address || "N/A",
+      hospital_number: data.customerInfo.hospital_number || "N/A",
+    };
+
+    // Add each line with proper spacing
     doc.text("Bill To:", 10, yPosition);
-    yPosition += 7;
-    doc.text(data.customerInfo.name, 10, yPosition);
-    yPosition += 7;
-    doc.text(data.customerInfo.address, 10, yPosition);
-    yPosition += 7;
-    doc.text(data.customerInfo.email, 10, yPosition);
-    
+    yPosition += 10;
+
+    doc.setFont("helvetica", "normal");
+    doc.text(`Name: ${this.capitalizeFirstLetter(customer.name)}`, 10, yPosition);
+    yPosition += 8;
+
+    doc.text(`Address: ${this.capitalizeFirstLetter(customer.address)}`, 10, yPosition);
+    yPosition += 8;
+
+    doc.text(`Hospital Number: ${customer.hospital_number}`, 10, yPosition);
+    yPosition += 8;
+
     return yPosition + 15;
   }
 
-  private addDocumentDetails(doc: jsPDF, data: InvoiceOrReceipt, type: string, startY: number): number {
+  private formatAmount(amount: string): string {
+    const num = parseFloat(amount);
+    // Always show 2 decimal places for consistency
+    return num.toFixed(2);
+  }
+
+  private addDocumentDetails(
+    doc: jsPDF,
+    data: InvoiceOrReceipt,
+    type: string,
+    startY: number
+  ): number {
     let yPosition = startY;
-    
-    doc.text(`${type} Number: ${data.receiptNumber}`, 10, yPosition);
-    yPosition += 7;
+
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "bold");
+
+    // Add title
+    doc.text(`${type} Details`, 10, yPosition);
+    yPosition += 10;
+
+    doc.setFont("helvetica", "normal");
+
+    // Add document number
+    const docNumber = data.receiptNumber || data.invoiceNumber || "N/A";
+    doc.text(`${type} Number: ${docNumber}`, 10, yPosition);
+    yPosition += 8;
+
+    // Add date
     doc.text(`Date: ${data.date}`, 10, yPosition);
-    yPosition += 7;
-    
+    yPosition += 8;
+
+    // Add status if available
     if (data.status) {
-      doc.text(`Status: ${data.status}`, 10, yPosition);
-      yPosition += 7;
+      doc.text(`Status: ${this.capitalizeFirstLetter(data.status)}`, 10, yPosition);
+      yPosition += 8;
     }
+
+    // Add payment method if available
     if (data.method) {
-      doc.text(`Payment Method: ${data.method}`, 10, yPosition);
-      yPosition += 7;
+      doc.text(`Payment Method: ${this.capitalizeFirstLetter(data.method)}`, 10, yPosition);
+      yPosition += 8;
     }
-    
-    return yPosition;
+
+    // Add balance amount if available
+    if (data.balanceAmount !== undefined) {
+      doc.text(`Balance Amount: ₦${this.formatAmount(data.balanceAmount)}`, 10, yPosition);
+      yPosition += 8;
+    }
+
+    return yPosition + 10;
   }
 
   private addServicesTable(doc: jsPDF, data: InvoiceOrReceipt, startY: number): void {
     if (!data.services?.length) return;
 
-    const tableHeader = ["Description", "Quantity", "Unit Price", "Amount"];
-    const tableBody = data.services.map((service) => {
-      const unitPrice = parseFloat(service.amount.replace(/[^0-9.-]+/g, "")) / service.quantity;
-      return [
-        service.description,
-        service.quantity.toString(),
-        `$${unitPrice.toFixed(2)}`,
-        service.amount
-      ];
-    });
+    const tableHeader = [["Description", "Amount"]];
+    const tableBody = data.services
+      .filter((service) => service.description && service.amount)
+      .map((service) => [service.description, `₦${this.formatAmount(service.amount)}`]);
 
-    // Calculate total
-    const total = data.services.reduce((sum, service) => 
-      sum + parseFloat(service.amount.replace(/[^0-9.-]+/g, "")), 0
-    );
-
-    // Add empty row for spacing
-    tableBody.push(["", "", "", ""]);
+    // Calculate total amount
+    const totalAmount = data.services.reduce((sum, service) => sum + parseFloat(service.amount), 0);
 
     // Add total row
-    tableBody.push(["", "", "Total:", `$${total.toFixed(2)}`]);
+    tableBody.push(["Total", `₦${this.formatAmount(totalAmount.toFixed(2))}`]);
 
     const tableOptions: TableOptions = {
-      head: [tableHeader],
+      head: tableHeader,
       body: tableBody,
       startY: startY + 10,
       theme: "grid",
       styles: {
-        fontSize: 10,
-        cellPadding: 5
+        fontSize: 12,
+        cellPadding: 5,
+        lineWidth: 0.5,
+        lineColor: [0, 0, 0],
       },
       headStyles: {
         fillColor: [41, 128, 185],
         textColor: 255,
-        fontStyle: 'bold'
+        fontStyle: "bold",
+        lineWidth: 0.5,
+        lineColor: [0, 0, 0],
       },
       margin: {
         left: 10,
-        right: 10
+        right: 10,
       },
-      willDrawCell: function(data: CellHookData) {
-        // Style the total row
-        if (data.row.index === tableBody.length - 1) {
-          doc.setFont("helvetica", "bold");
-          // Remove borders for empty cells in total row
-          if (data.cell.text.length === 0) {
-            data.cell.styles.lineWidth = 0;
-          }
-        }
-      }
     };
 
     autoTable(doc, tableOptions);
@@ -186,7 +228,7 @@ export class PDFInvoiceGenerator {
     try {
       await this.addLogo(doc, logoSrc);
 
-      doc.setFontSize(18);
+      doc.setFontSize(20);
       doc.setFont("helvetica", "bold");
       doc.text(`${type} Details`, 105, 40, { align: "center" });
 

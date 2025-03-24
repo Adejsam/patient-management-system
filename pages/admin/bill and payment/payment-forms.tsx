@@ -11,7 +11,6 @@ export const patientSchema = z.object({
 });
 
 export const receiptFormSchema = z.object({
-  receiptNumber: z.string().min(1, "Receipt number is required"),
   date: z.date({
     required_error: "Date is required",
   }),
@@ -23,15 +22,13 @@ export const receiptFormSchema = z.object({
 });
 
 export const invoiceFormSchema = z.object({
-  invoiceNumber: z.string().min(1, "Invoice number is required"),
+  formType: z.enum(["invoice", "receipt"]).default("invoice"),
   date: z.date({
     required_error: "Date is required",
   }),
   items: z.array(billItemSchema).min(1, "At least one item is required"),
-  status: z.enum(["paid", "cancelled", "partially paid", "pending"]),
-  totalAmount: z.number().min(3, "Ammount must be more than three digits"),
   patient: patientSchema,
-  paymentTerms: z.enum(["net-15", "net-30", "net-45", "net-60"]),
+  status: z.enum(["paid", "pending", "partially paid", "cancelled"]).default("pending"),
 });
 
 export type BillItem = z.infer<typeof billItemSchema>;
