@@ -70,7 +70,7 @@ const ViewBills: React.FC = () => {
           Your <span className="text-primary">Bills</span>
         </h1>
         <h2 className="text-lg placeholder-opacity-80 pl-4 tracking-tight">View Your Pending Payments</h2>
-        <div className="p-4 my-5 w-full">
+        <div className="p-4 my-7 w-full">
           {unpaidBills.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-4 pt-4 pb-8">
               {unpaidBills.map(bill => {

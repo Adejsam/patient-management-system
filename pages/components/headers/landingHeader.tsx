@@ -35,10 +35,11 @@ export default function LandingHeader() {
   const logoSrc = resolvedTheme === "dark" ? DarkfullLogo : LightfullLogo;
 
   return (
-    <header className={`h-[60px] shadow-md w-full fixed top-0 left-0 flex items-center z-[1000] ${resolvedTheme === "dark" ? "bg-background" : "bg-white"}`}>
-      <nav
-        aria-label="Global"
-        className=" flex w-full items-center justify-between mx-10">
+    <header
+      className={`h-[60px] shadow-md w-full fixed top-0 left-0 flex items-center z-[1000] ${
+        resolvedTheme === "dark" ? "bg-background" : "bg-white"
+      }`}>
+      <nav aria-label="Global" className=" flex w-full items-center justify-between mx-10">
         <div className="flex lg:flex-1">
           <Link href="/" className="-m-1.5 p-1.5">
             <span className="sr-only">Your Company</span>
@@ -71,6 +72,9 @@ export default function LandingHeader() {
           <Link href="/data-usage" className="text-sm/6 hover:text-green-500">
             Data Usage
           </Link>
+          <Link href="/emergency" className="text-sm/6 hover:text-green-500">
+            Emergency
+          </Link>
         </PopoverGroup>
         <div className="hidden lg:flex lg:flex-1 lg:justify-end">
           <Button asChild variant={"default"}>
@@ -79,7 +83,9 @@ export default function LandingHeader() {
             </Link>
           </Button>
           <Button variant={"secondary"} asChild>
-            <Link href="/patient/register" className="text-sm/6 text-black bg-green-500 mr-5 dark:text-foreground">
+            <Link
+              href="/patient/register"
+              className="text-sm/6 text-black bg-green-500 mr-5 dark:text-foreground">
               Register
             </Link>
           </Button>
@@ -137,12 +143,16 @@ export default function LandingHeader() {
               </div>
               <div className="py-6">
                 <Button asChild>
-                  <Link href="/patient/login" className="text-sm/6 text-black mr-1 dark:text-foreground">
+                  <Link
+                    href="/patient/login"
+                    className="text-sm/6 text-black mr-1 dark:text-foreground">
                     Login
                   </Link>
                 </Button>
                 <Button variant={"secondary"} asChild>
-                  <Link href="/patient/register" className="text-sm/6 text-black bg-green-500 mr-5 dark:text-foreground">
+                  <Link
+                    href="/patient/register"
+                    className="text-sm/6 text-black bg-green-500 mr-5 dark:text-foreground">
                     Register
                   </Link>
                 </Button>

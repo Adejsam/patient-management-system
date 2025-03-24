@@ -11,6 +11,7 @@ import Header from "../components/headers/Header";
 import LightfullLogo from "../../public/assets/icons/logo-full-light.png";
 import DarkfullLogo from "../../public/assets/icons/logo-full.svg";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
+import { UpcomingAppointments } from "../components/appointment components/upcoming_appointments";
 
 export default function PatientDashboard() {
   const { resolvedTheme } = useTheme();
@@ -62,16 +63,7 @@ export default function PatientDashboard() {
 
         {/* Veiw boxes */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 py-10 px-6 md:grid-cols-1">
-          <Card className="md:w-full">
-            <CardContent className="flex items-center space-x-4 p-4">
-              <Calendar className="w-10 h-10 text-blue-500" />
-              <div>
-                <h2 className="text-lg font-semibold">Upcoming Appointment</h2>
-                <p>09/03/2025 at 11 am</p>
-                <p className="text-sm text-gray-500">Doctor James</p>
-              </div>
-            </CardContent>
-          </Card>
+          <UpcomingAppointments />
 
           <Card>
             <CardContent className="flex items-center space-x-4 p-4">

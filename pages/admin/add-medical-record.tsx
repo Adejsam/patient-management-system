@@ -138,7 +138,7 @@ export default function AddMedicalRecord() {
       <Header
         title="Add New Medical Record"
         breadcrumbLinkText="Dashboard"
-        breadcrumbLinkHref="/"
+        breadcrumbLinkHref="/admin/dashboard"
       />
       <div className="min-h-[100vh] rounded-xl bg-muted/50 relative w-[97%] mx-auto mb-5 p-6">
         <h1 className="text-3xl/9 font-bold pt-5 pb-7 mb-2 pl-4">

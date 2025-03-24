@@ -2,7 +2,6 @@
 
 import {
   // Bell,
-  UserRound,
   ChevronsUpDown,
   LogOut,
 } from "lucide-react";
@@ -22,7 +21,6 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "../components/ui/sidebar";
-import Link from "next/link";
 import { useEffect, useState } from "react";
 
 export function NavUser({}: {
@@ -147,10 +145,6 @@ export function NavUser({}: {
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <UserRound />
-                <Link href="/patient/manage-profile">Manage Profile</Link>
-              </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem>

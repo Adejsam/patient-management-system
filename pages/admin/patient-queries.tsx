@@ -311,7 +311,7 @@ export default function PatientQueriesAdmin() {
   return (
     <AdminLayout>
       <Seo title="Patient Queries Management"></Seo>
-      <Header title="Patient Queries Management" breadcrumbLinkText="Home" breadcrumbLinkHref="/" />
+      <Header title="Patient Queries Management" breadcrumbLinkText="Home" breadcrumbLinkHref="/admin/dashboard" />
       <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
         {successMessage && (
           <div className="fixed bottom-4 right-4 bg-green-100 text-green-700 p-4 rounded-md">

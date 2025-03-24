@@ -54,7 +54,7 @@ export default function Page() {
   return (
     <AdminLayout>
       <Seo title="Dashboard" />
-      <Header title="Dashboard" breadcrumbLinkText="Home" breadcrumbLinkHref="/" />
+      <Header title="Dashboard" breadcrumbLinkText="Home" breadcrumbLinkHref="/admin/dashboard" />
       <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
         <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:h-[100vh]">
           <h1 className="text-3xl font-bold pt-7 pl-5 pb-1">

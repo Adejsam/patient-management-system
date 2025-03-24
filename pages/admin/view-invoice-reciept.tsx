@@ -20,7 +20,7 @@ export default function PaymentDocumentsPage() {
   return (
     <>
       <Seo title="Payment Documents" />
-      <Header title="Payment Documents" breadcrumbLinkText="Home" breadcrumbLinkHref="/" />
+      <Header title="Payment Documents" breadcrumbLinkText="Home" breadcrumbLinkHref="/admin/dashboard" />
       <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 w-[97%] mx-auto pb-10 md-h-[100vh]">
         <div className="py-2 px-4">
           <h1 className="text-3xl font-bold mt-5 mb-2">

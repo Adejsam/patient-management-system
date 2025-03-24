@@ -23,7 +23,7 @@ export default function AddPaymentDocumentPage() {
   return (
     <>
       <Seo title="Add Receipt and Invoice" />
-      <Header title="Receipt and Invoice" breadcrumbLinkText="Home" breadcrumbLinkHref="/" />
+      <Header title="Receipt and Invoice" breadcrumbLinkText="Home" breadcrumbLinkHref="/admin/dashboard" />
       <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 w-[97%] mx-auto pb-10">
         <div className="py-2 px-7">
           <h1 className="text-3xl font-bold mt-5 mb-2">

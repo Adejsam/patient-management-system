@@ -136,6 +136,7 @@ const RegisterForm = () => {
     setIsSubmitting(true);
     setError(null);
     setRegistrationSuccess(null);
+    console.log(FormData);
 
     try {
       // Handle file upload separately if needed
