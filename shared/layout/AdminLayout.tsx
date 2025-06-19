@@ -1,6 +1,6 @@
-import { ThemeProvider } from "../../pages/components/theme-provider";
-import { AdminAppSidebar } from "../../pages/components/admin-sidebar";
-import { SidebarProvider, SidebarInset } from "../../pages/components/ui/sidebar";
+import { ThemeProvider } from "../../theme/theme-provider";
+import { AdminAppSidebar } from "../../ui/sidebar/admin-sidebar";
+import { SidebarProvider, SidebarInset } from "../../ui/sidebar";
 import React from "react";
 import LandingFooter from "../../pages/components/footers/LandingFooter";
 

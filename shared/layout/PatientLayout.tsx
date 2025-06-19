@@ -1,7 +1,7 @@
-import { ThemeProvider } from "../../pages/components/theme-provider";
-import { PatientAppSidebar } from "../../pages/components/patient-sidebar";
+import { ThemeProvider } from "../../theme/theme-provider";
+import { PatientAppSidebar } from "../../ui/sidebar/patient-sidebar";
 import LandingFooter from "../../pages/components/footers/LandingFooter";
-import { SidebarProvider, SidebarInset } from "../../pages/components/ui/sidebar";
+import { SidebarProvider, SidebarInset } from "../../ui/sidebar";
 import React from "react";
 
 const PatientLayout = ({ children }: { children: React.ReactNode }) => {

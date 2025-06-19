@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import PatientLayout from "../../shared/layout/PatientLayout";
-import Header from "../../pages/components/headers/Header";
+import Header from "../components/headers/Header";
 import Seo from "../../shared/seo/seo";
 import { useTheme } from "next-themes";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../../ui/card";
 import { generateMedicalRecordPDF } from "../../services/PDFMedicalGenerator";
 import LightfullLogo from "../../public/assets/icons/logo-full-light.png";
 import DarkfullLogo from "../../public/assets/icons/logo-full.svg";
@@ -20,8 +20,8 @@ const ViewRecord: React.FC = () => {
 
   useEffect(() => {
     setIsMounted(true);
-    const patientId = localStorage.getItem('patientId') || "";
-    
+    const patientId = localStorage.getItem("patientId") || "";
+
     if (patientId) {
       fetchMedicalRecords(patientId);
     } else {
@@ -32,7 +32,9 @@ const ViewRecord: React.FC = () => {
 
   const fetchMedicalRecords = async (patientId: string) => {
     try {
-      const response = await fetch(`http://localhost/hospital_api/get_medical_records.php?patientId=${patientId}`);
+      const response = await fetch(
+        `http://localhost/hospital_api/get_medical_records.php?patientId=${patientId}`
+      );
       const data = await response.json();
 
       if (data.success) {
@@ -65,7 +67,7 @@ const ViewRecord: React.FC = () => {
 
   if (!isMounted) return null;
 
-  const logoSrc = resolvedTheme === 'dark' ? DarkfullLogo : LightfullLogo;
+  const logoSrc = resolvedTheme === "dark" ? DarkfullLogo : LightfullLogo;
 
   return (
     <PatientLayout>
@@ -92,9 +94,11 @@ const ViewRecord: React.FC = () => {
                   className="w-[400px] py-5 mb-5 md:w-full hover:shadow-lg transition-shadow duration-200">
                   <CardHeader>
                     <Image src={logoSrc} alt="logo" height={200} width={200} className="pb-3" />
-                    <CardTitle className="text-xl font-bold">{record.medicalRecord.visit_date}</CardTitle>
+                    <CardTitle className="text-xl font-bold">
+                      {record.medicalRecord.visit_date}
+                    </CardTitle>
                     <CardDescription>
-                    {`Doc  ${record.medicalRecord.doctor} - ${record.medicalRecord.field}`}
+                      {`Doc  ${record.medicalRecord.doctor} - ${record.medicalRecord.field}`}
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
@@ -106,7 +110,9 @@ const ViewRecord: React.FC = () => {
                         </div>
                         <div>
                           <strong className="block text-sm font-medium mb-1">Date of Birth:</strong>
-                          <p className="p-2 rounded-md bg-muted/50">{record.patientInfo.dateOfBirth}</p>
+                          <p className="p-2 rounded-md bg-muted/50">
+                            {record.patientInfo.dateOfBirth}
+                          </p>
                         </div>
                         <div>
                           <strong className="block text-sm font-medium mb-1">Gender:</strong>
@@ -114,7 +120,9 @@ const ViewRecord: React.FC = () => {
                         </div>
                         <div>
                           <strong className="block text-sm font-medium mb-1">Contact:</strong>
-                          <p className="p-2 rounded-md bg-muted/50">{record.patientInfo.phoneNumber}</p>
+                          <p className="p-2 rounded-md bg-muted/50">
+                            {record.patientInfo.phoneNumber}
+                          </p>
                         </div>
                       </div>
 
@@ -138,38 +146,52 @@ const ViewRecord: React.FC = () => {
                           <div>
                             <strong className="block text-sm font-medium mb-1">Vital Signs:</strong>
                             <div className="p-2 rounded-md bg-muted/50">
-                              <p className="mb-1">Temperature: {record.medicalRecord.temperature}</p>
+                              <p className="mb-1">
+                                Temperature: {record.medicalRecord.temperature}
+                              </p>
                               <p className="mb-1">Weight: {record.medicalRecord.weight}</p>
                               <p className="mb-1">Heart Rate: {record.medicalRecord.heart_rate}</p>
-                              <p className="mb-1">Blood Pressure: {record.medicalRecord.blood_pressure}</p>
+                              <p className="mb-1">
+                                Blood Pressure: {record.medicalRecord.blood_pressure}
+                              </p>
                             </div>
                           </div>
 
                           <div>
                             <strong className="block text-sm font-medium mb-1">Symptoms:</strong>
-                            <p className="p-2 rounded-md bg-muted/50">{record.medicalRecord.symptoms}</p>
+                            <p className="p-2 rounded-md bg-muted/50">
+                              {record.medicalRecord.symptoms}
+                            </p>
                           </div>
 
                           <div>
                             <strong className="block text-sm font-medium mb-1">Allergies:</strong>
-                            <p className="p-2 rounded-md bg-muted/50">{record.medicalRecord.allergies}</p>
+                            <p className="p-2 rounded-md bg-muted/50">
+                              {record.medicalRecord.allergies}
+                            </p>
                           </div>
 
                           <div>
                             <strong className="block text-sm font-medium mb-1">Diagnosis:</strong>
-                            <p className="p-2 rounded-md bg-muted/50">{record.medicalRecord.diagnosis}</p>
+                            <p className="p-2 rounded-md bg-muted/50">
+                              {record.medicalRecord.diagnosis}
+                            </p>
                           </div>
 
                           <div>
                             <strong className="block text-sm font-medium mb-1">Lab Tests:</strong>
-                            <p className="p-2 rounded-md bg-muted/50">{record.medicalRecord.lab_tests}</p>
+                            <p className="p-2 rounded-md bg-muted/50">
+                              {record.medicalRecord.lab_tests}
+                            </p>
                           </div>
 
                           <div>
                             <strong className="block text-sm font-medium mb-1">
                               Lab Test Results:
                             </strong>
-                            <p className="p-2 rounded-md bg-muted/50">{record.medicalRecord.lab_test_results}</p>
+                            <p className="p-2 rounded-md bg-muted/50">
+                              {record.medicalRecord.lab_test_results}
+                            </p>
                           </div>
 
                           <div>
@@ -184,7 +206,9 @@ const ViewRecord: React.FC = () => {
                           </div>
 
                           <div>
-                            <strong className="block text-sm font-medium mb-1">Doctor Notes:</strong>
+                            <strong className="block text-sm font-medium mb-1">
+                              Doctor Notes:
+                            </strong>
                             <p className="p-2 rounded-md bg-muted/50 whitespace-pre-wrap">
                               {record.medicalRecord.doctor_notes}
                             </p>

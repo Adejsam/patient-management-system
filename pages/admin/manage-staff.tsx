@@ -12,8 +12,8 @@ import {
   getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { Button } from "../components/ui/button";
-import { Input } from "../components/ui/input";
+import { Button } from "../../ui/button";
+import { Input } from "../../ui/input";
 import {
   Table,
   TableBody,
@@ -21,15 +21,15 @@ import {
   TableHeader,
   TableCell,
   TableRow,
-} from "../components/ui/table";
+} from "../../ui/table";
 import AdminLayout from "../../shared/layout/AdminLayout";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { Staff } from "../../types/staff";
-import { StaffDetailsModal } from "./manage users/view-staff-details";
+import { StaffDetailsModal } from "../../admin components/users/view-staff-details";
 import Header from "../components/headers/Header";
 import Seo from "../../shared/seo/seo";
-import { EditStaffModal } from "./manage users/edit-staff-modal";
+import { EditStaffModal } from "../../admin components/users/edit-staff-modal";
 
 export default function ManageStaffPage() {
   const [searchTerm, setSearchTerm] = React.useState("");
@@ -158,7 +158,11 @@ export default function ManageStaffPage() {
   return (
     <AdminLayout>
       <Seo title="Manage staff"></Seo>
-      <Header title="Manage staff" breadcrumbLinkText="Home" breadcrumbLinkHref="/admin/dashboard" />
+      <Header
+        title="Manage staff"
+        breadcrumbLinkText="Home"
+        breadcrumbLinkHref="/admin/dashboard"
+      />
       <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
         <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 w-full mx-auto max-w-7xl">
           <h1 className="text-3xl/9 font-bold mt-5 mb-2 pl-5 pt-5">

@@ -11,7 +11,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { ChevronsRight } from "lucide-react";
 import { useTheme } from "next-themes";
-import { Button } from "./components/ui/button";
+import { Button } from "../ui/button";
 import AppointmentImage from "../public/assets/images/Appointment image.png";
 import BillImage from "../public/assets/images/bill handling image.png";
 import RecordsImage from "../public/assets/images/patient record image.png";
@@ -65,15 +65,13 @@ export default function HomePage() {
           <h1
             className={`text-5xl md:text-center font-bold mb-4 ${
               resolvedTheme === "dark" ? "text-white" : "text-black"
-            }`}
-          >
+            }`}>
             Welcome 👋 to <span className="text-primary">Your Patient Management System</span>
           </h1>
           <p
             className={`text-lg mb-4 md:text-center ${
               resolvedTheme === "dark" ? "text-white" : "text-black"
-            }`}
-          >
+            }`}>
             CarePulse is designed to streamline your healthcare operations, making it easier to
             manage patient records, appointments, bills and communication. Join us today and
             experience the future of healthcare management.
@@ -102,16 +100,14 @@ export default function HomePage() {
             <div
               className={`mx-auto max-w-[70%] lg:text-center md:max-w-full md:px-10 ${
                 resolvedTheme === "dark" ? "text-white" : "text-black"
-              }`}
-            >
+              }`}>
               <p className="mt-2 text-4xl font-semibold tracking-tight text-pretty text-primary sm:text-5xl lg:text-balance">
                 Everything you need to manage your patients
               </p>
               <p
                 className={`mt-6 text-lg/8 ${
                   resolvedTheme === "dark" ? "text-gray-300" : "text-gray-600"
-                }`}
-              >
+                }`}>
                 Our system provides all the tools you need to efficiently manage patient care, from
                 scheduling appointments to maintaining secure patient records.
               </p>
@@ -123,8 +119,7 @@ export default function HomePage() {
                     <dt
                       className={`text-lg/6 font-semibold ${
                         resolvedTheme === "dark" ? "text-white" : "text-gray-900"
-                      }`}
-                    >
+                      }`}>
                       <div className="absolute top-0 left-0 flex size-10 items-center justify-center rounded-lg bg-primary">
                         <feature.icon aria-hidden="true" className="size-6 text-white" />
                       </div>
@@ -133,8 +128,7 @@ export default function HomePage() {
                     <dd
                       className={`mt-2 text-base/7 ${
                         resolvedTheme === "dark" ? "text-gray-300" : "text-gray-600"
-                      }`}
-                    >
+                      }`}>
                       {feature.description}
                     </dd>
                   </div>
@@ -155,15 +149,13 @@ export default function HomePage() {
             <h2
               className={`text-2xl font-bold md:text-center ${
                 resolvedTheme === "dark" ? "text-white" : "text-gray-900"
-              }`}
-            >
+              }`}>
               Appointment Scheduling
             </h2>
             <p
               className={`my-5 w-[85%] md:w-full text-base/7 md:text-center ${
                 resolvedTheme === "dark" ? "text-gray-300" : "text-gray-600"
-              }`}
-            >
+              }`}>
               Easily schedule and manage patient appointments with our intuitive calendar interface.
               Set reminders, manage cancellations, and reschedule effortlessly.
             </p>
@@ -200,15 +192,13 @@ export default function HomePage() {
             <h2
               className={`text-2xl font-bold md:text-center ${
                 resolvedTheme === "dark" ? "text-white" : "text-gray-900"
-              }`}
-            >
+              }`}>
               Easy Access to Patient Records
             </h2>
             <p
               className={`my-5 w-[85%] md:w-full text-base/7 md:text-center ${
                 resolvedTheme === "dark" ? "text-gray-300" : "text-gray-600"
-              }`}
-            >
+              }`}>
               Securely store and access patient records, including medical history and treatments.
               Ensure all patient information is easily retrievable and up-to-date.
             </p>
@@ -227,15 +217,13 @@ export default function HomePage() {
             <h2
               className={`text-2xl font-bold md:text-center ${
                 resolvedTheme === "dark" ? "text-white" : "text-gray-900"
-              }`}
-            >
+              }`}>
               Bill Handling
             </h2>
             <p
               className={`my-5 w-[85%] md:w-full text-base/7 md:text-center ${
                 resolvedTheme === "dark" ? "text-gray-300" : "text-gray-600"
-              }`}
-            >
+              }`}>
               Effectively handle patient billing with our all-inclusive billing system. Create
               invoices and oversee payments to avoid future claim discrepancies.
             </p>

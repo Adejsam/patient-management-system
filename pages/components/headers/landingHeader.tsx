@@ -4,10 +4,10 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import { Dialog, DialogPanel, PopoverGroup } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
-import { ModeToggle } from "../ui/modeToggle";
+import { ModeToggle } from "../../../ui/modeToggle";
 import LightfullLogo from "../../../public/assets/icons/logo-full-light.png";
 import DarkfullLogo from "../../../public/assets/icons/logo-full.svg";
-import { Button } from "../ui/button";
+import { Button } from "../../../ui/button";
 import Link from "next/link";
 import { useTheme } from "next-themes";
 

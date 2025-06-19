@@ -56,7 +56,7 @@ const RegisterPage = () => {
 };
 
 RegisterPage.getLayout = (page: React.ReactElement) => {
-  return <AuthLayout>{page}</AuthLayout>
-}
+  return <AuthLayout>{page}</AuthLayout>;
+};
 
 export default RegisterPage;

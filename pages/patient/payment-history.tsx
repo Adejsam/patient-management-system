@@ -5,8 +5,8 @@ import Seo from "../../shared/seo/seo";
 import Header from "../components/headers/Header";
 import LightLogo from "../../public/assets/icons/logo-full-light.png";
 import DarkLogo from "../../public/assets/icons/logo-full.svg";
-import { Button } from "../components/ui/button";
-import { Card, CardContent } from "../components/ui/card";
+import { Button } from "../../ui/button";
+import { Card, CardContent } from "../../ui/card";
 import { Printer, Download } from "lucide-react";
 import { PDFInvoiceGenerator } from "../../services/PDFInvoiceGenerator";
 import axios from "axios";
@@ -73,7 +73,7 @@ export default function BillingPage() {
   useEffect(() => {
     setIsMounted(true);
     // Get hospital number from local storage
-    const storedHospitalNumber = localStorage.getItem('hospitalNumber');
+    const storedHospitalNumber = localStorage.getItem("hospitalNumber");
     setHospitalNumber(storedHospitalNumber || "");
 
     const fetchInvoices = async () => {
@@ -86,7 +86,7 @@ export default function BillingPage() {
           customerInfo: {
             name: response.data.patient.name,
             address: response.data.patient.address,
-            hospital_number: response.data.patient.hospital_number
+            hospital_number: response.data.patient.hospital_number,
           },
           date: invoice.invoice_date,
           amount: invoice.total_amount,
@@ -112,7 +112,7 @@ export default function BillingPage() {
           customerInfo: {
             name: response.data.patient.name,
             address: response.data.patient.address,
-            hospital_number: response.data.patient.hospital_number
+            hospital_number: response.data.patient.hospital_number,
           },
           date: receipt.receipt_date,
           amount: receipt.total_amount,

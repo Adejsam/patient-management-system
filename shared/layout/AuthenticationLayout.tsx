@@ -1,5 +1,5 @@
 import React from "react";
-import { ThemeProvider } from "../../pages/components/theme-provider";
+import { ThemeProvider } from "../../theme/theme-provider";
 
 const AuthLayout = ({ children }: { children: React.ReactNode }) => {
   return (

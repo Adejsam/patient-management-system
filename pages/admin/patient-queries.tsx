@@ -12,8 +12,8 @@ import {
   getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { Button } from "../components/ui/button";
-import { Input } from "../components/ui/input";
+import { Button } from "../../ui/button";
+import { Input } from "../../ui/input";
 import {
   Table,
   TableBody,
@@ -21,20 +21,20 @@ import {
   TableHeader,
   TableCell,
   TableRow,
-} from "../components/ui/table";
+} from "../../ui/table";
 import AdminLayout from "../../shared/layout/AdminLayout";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import Header from "../components/headers/Header";
 import Seo from "../../shared/seo/seo";
-import Textarea from "../components/ui/Textarea";
+import Textarea from "../../ui/Textarea";
 import {
   Select,
   SelectGroup,
   SelectContent,
   SelectItem,
   SelectTrigger,
-} from "../components/ui/select";
+} from "../../ui/select";
 import { SelectValue } from "@radix-ui/react-select";
 
 interface Complaint {
@@ -270,18 +270,18 @@ export default function PatientQueriesAdmin() {
   const handleDownloadAttachment = async (complaintId: string, attachmentId: string) => {
     try {
       const formData = new FormData();
-      formData.append('complaintId', complaintId);
+      formData.append("complaintId", complaintId);
       if (attachmentId) {
-        formData.append('attachmentId', attachmentId);
+        formData.append("attachmentId", attachmentId);
       }
-  
-      const response = await fetch('http://localhost/hospital_api/download_attachment.php', {
-        method: 'POST',
+
+      const response = await fetch("http://localhost/hospital_api/download_attachment.php", {
+        method: "POST",
         body: formData,
       });
-  
+
       // Check if the response is JSON (error case)
-      if (response.headers.get('Content-Type') === 'application/json') {
+      if (response.headers.get("Content-Type") === "application/json") {
         const data = await response.json();
         if (!data.success) {
           throw new Error(data.message);
@@ -290,19 +290,23 @@ export default function PatientQueriesAdmin() {
         // Handle file download
         const blob = await response.blob();
         const downloadUrl = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
+        const a = document.createElement("a");
         a.href = downloadUrl;
-        a.download = response.headers.get('Content-Disposition')?.split('filename="')[1]?.split('"')[0] || '';
+        a.download =
+          response.headers.get("Content-Disposition")?.split('filename="')[1]?.split('"')[0] || "";
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
         window.URL.revokeObjectURL(downloadUrl);
       }
     } catch (error) {
-      console.error('Error:', error instanceof Error ? error.message : 'Failed to download attachment');
+      console.error(
+        "Error:",
+        error instanceof Error ? error.message : "Failed to download attachment"
+      );
       // Show error to user
     }
-  }
+  };
 
   if (!isMounted) {
     return null;
@@ -311,7 +315,11 @@ export default function PatientQueriesAdmin() {
   return (
     <AdminLayout>
       <Seo title="Patient Queries Management"></Seo>
-      <Header title="Patient Queries Management" breadcrumbLinkText="Home" breadcrumbLinkHref="/admin/dashboard" />
+      <Header
+        title="Patient Queries Management"
+        breadcrumbLinkText="Home"
+        breadcrumbLinkHref="/admin/dashboard"
+      />
       <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
         {successMessage && (
           <div className="fixed bottom-4 right-4 bg-green-100 text-green-700 p-4 rounded-md">
@@ -438,11 +446,7 @@ export default function PatientQueriesAdmin() {
                           <Button
                             size="sm"
                             onClick={() =>
-                              handleDownloadAttachment(
-                                expandedComplaint!,
-                                file.attachmentId,
-                                
-                              )
+                              handleDownloadAttachment(expandedComplaint!, file.attachmentId)
                             }>
                             Download
                           </Button>

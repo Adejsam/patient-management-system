@@ -2,13 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { useTheme } from "next-themes";
-import { Button } from "./components/ui/button";
+import { Button } from "../ui/button";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import AuthLayout from "../shared/layout/AuthenticationLayout";
 import Seo from "../shared/seo/seo";
 import { z } from "zod";
-import { Input } from "./components/ui/input";
-import { Label } from "./components/ui/label";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
 import { useSearchParams } from "next/navigation";
 
 const passwordSchema = z
@@ -70,16 +70,20 @@ const PasswordChangePage = () => {
     try {
       passwordSchema.parse(formData);
 
-      const response = await fetch(process.env.NEXT_PUBLIC_PASSWORD_RESET_API || "http://localhost/hospital_api/new_password.php", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          reset_token: resetToken,
-          new_password: formData.newPassword,
-        }),
-      });
+      const response = await fetch(
+        process.env.NEXT_PUBLIC_PASSWORD_RESET_API ||
+          "http://localhost/hospital_api/new_password.php",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            reset_token: resetToken,
+            new_password: formData.newPassword,
+          }),
+        }
+      );
 
       const data = await response.json();
 

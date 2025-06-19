@@ -1,19 +1,12 @@
 "use client";
 
 import React, { useState } from "react";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "../../components/ui/form";
-import { Input } from "../../components/ui/input";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../../../ui/form";
+import { Input } from "../../../ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Button } from "../../components/ui/button";
+import { Button } from "../../../ui/button";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
@@ -70,7 +63,7 @@ const AdminLoginForm = () => {
         localStorage.setItem("user", JSON.stringify(data.user_id));
         localStorage.setItem("userRole", data.role);
         localStorage.setItem("userData", JSON.stringify(data.user_data));
-        console.log(localStorage);
+        
         // Set cookies with appropriate options
         document.cookie = `user=${data.user_id}; path=/`;
         document.cookie = `userRole=${data.role}; path=/`;
@@ -96,7 +89,7 @@ const AdminLoginForm = () => {
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
-  console.log(localStorage);
+  
   return (
     <Form {...form}>
       {error && (

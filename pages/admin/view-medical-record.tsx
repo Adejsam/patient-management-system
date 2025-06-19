@@ -5,7 +5,7 @@ import { useTheme } from "next-themes";
 import MedicalRecords from "./medical record/RecordTable";
 import AdminLayout from "../../shared/layout/AdminLayout";
 import Seo from "../../shared/seo/seo";
-import Header from "../../pages/components/headers/Header";
+import Header from "../components/headers/Header";
 
 const MedicalRecordPage = () => {
   useTheme();
@@ -22,7 +22,11 @@ const MedicalRecordPage = () => {
   return (
     <div>
       <Seo title="Medical Record" />
-      <Header title="Medical Records" breadcrumbLinkText="Home" breadcrumbLinkHref="/admin/dashboard" />
+      <Header
+        title="Medical Records"
+        breadcrumbLinkText="Home"
+        breadcrumbLinkHref="/admin/dashboard"
+      />
       <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
         <div className="min-h-fit flex-1 rounded-xl bg-muted/50 ">
           <h1 className="text-3xl/9 font-bold mt-5 mb-2 pl-4">

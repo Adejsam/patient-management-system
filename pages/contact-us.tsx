@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Checkbox } from "./components/ui/checkbox";
+import { Checkbox } from "../ui/checkbox";
 import LandingLayout from "../shared/layout/LandingLayout";
 import { useTheme } from "next-themes";
 import { useForm } from "react-hook-form";
@@ -15,10 +15,10 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "./components/ui/form";
-import { Input } from "./components/ui/input";
-import Textarea from "./components/ui/Textarea";
-import { Button } from "./components/ui/button";
+} from "../ui/form";
+import { Input } from "../ui/input";
+import Textarea from "../ui/Textarea";
+import { Button } from "../ui/button";
 import Seo from "../shared/seo/seo";
 
 const formSchema = z.object({
@@ -71,7 +71,8 @@ export default function ContactUs() {
           Contact Form
         </h2>
         <p className={`mt-2 text-lg/8 ${textColor}`}>
-        Please complete the form below, and our team will respond to your inquiry as soon as possible.
+          Please complete the form below, and our team will respond to your inquiry as soon as
+          possible.
         </p>
       </div>
       <Form {...form}>

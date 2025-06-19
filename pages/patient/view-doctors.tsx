@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import PatientLayout from "../../shared/layout/PatientLayout";
-import Header from "../../pages/components/headers/Header";
+import Header from "../components/headers/Header";
 import Seo from "../../shared/seo/seo";
 import DoctorCard from "./doctor/DoctorCard";
 import DoctorFilter from "./doctor/DoctorFilter";
@@ -23,8 +23,9 @@ const doctorsData = [
     name: "Doc. Zainab Ogunsanya",
     field: "Cardiology",
     contact: "08134567289",
-    yearsOfExperience:4,
-    about: "I is a dedicated cardiologist specializing in the prevention, diagnosis, and treatment of heart diseases, providing expert care with a patient-centered approach.",
+    yearsOfExperience: 4,
+    about:
+      "I is a dedicated cardiologist specializing in the prevention, diagnosis, and treatment of heart diseases, providing expert care with a patient-centered approach.",
   },
   {
     profilePicture: Doctor1,
@@ -32,7 +33,8 @@ const doctorsData = [
     field: "Dermatology",
     contact: "07034562789",
     yearsOfExperience: 6,
-    about: "I am a skilled neurologist specializing in the diagnosis and treatment of brain, nerve, and spinal disorders, committed to delivering expert and compassionate care.",
+    about:
+      "I am a skilled neurologist specializing in the diagnosis and treatment of brain, nerve, and spinal disorders, committed to delivering expert and compassionate care.",
   },
   {
     profilePicture: Doctor3,
@@ -56,7 +58,8 @@ const doctorsData = [
     field: "Family Doctor",
     contact: "07034562789",
     yearsOfExperience: 7,
-    about: "Compassionate and experienced family doctor dedicated to providing personalized, comprehensive healthcare for patients of all ages.",
+    about:
+      "Compassionate and experienced family doctor dedicated to providing personalized, comprehensive healthcare for patients of all ages.",
   },
   {
     profilePicture: Doctor6,
@@ -80,7 +83,8 @@ const doctorsData = [
     field: "Cardiology",
     contact: "08092637839",
     yearsOfExperience: 6,
-    about: "I am dedicated cardiologist specializing in the prevention, diagnosis, and treatment of heart diseases, providing expert care with a patient-centered approach.",
+    about:
+      "I am dedicated cardiologist specializing in the prevention, diagnosis, and treatment of heart diseases, providing expert care with a patient-centered approach.",
   },
   {
     profilePicture: Doctor10,
@@ -100,7 +104,6 @@ const doctorsData = [
   },
   // Add more doctor data as needed
 ];
-
 
 const ViewDoctors: React.FC = () => {
   useTheme();

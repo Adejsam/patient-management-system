@@ -2,13 +2,13 @@
 
 import React, { JSX } from "react";
 import AdminLayout from "../../shared/layout/AdminLayout";
-import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent } from "../../ui/card";
 import Seo from "../../shared/seo/seo";
 import { User, Users, Wallet } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useTheme } from "next-themes";
 import Header from "../components/headers/Header";
-import { Button } from "../components/ui/button";
+import { Button } from "../../ui/button";
 import { FileText, Calendar, ClipboardList, Activity } from "lucide-react";
 
 export default function Page() {

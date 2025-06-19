@@ -1,14 +1,12 @@
 import React, { useEffect, useState } from "react";
 import AdminLayout from "../../shared/layout/AdminLayout";
 import Header from "../components/headers/Header";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../ui/tabs";
+import { Card, CardContent, CardHeader, CardTitle } from "../../ui/card";
 import Seo from "../../shared/seo/seo";
 import { useTheme } from "next-themes";
 import AddInvoiceForm from "../components/forms/AddInvoiceForm";
 import AddReceiptForm from "../components/forms/AddRecieptForm";
-
-
 
 export default function AddPaymentDocumentPage() {
   const [mounted, setMounted] = useState(false);
@@ -23,7 +21,11 @@ export default function AddPaymentDocumentPage() {
   return (
     <>
       <Seo title="Add Receipt and Invoice" />
-      <Header title="Receipt and Invoice" breadcrumbLinkText="Home" breadcrumbLinkHref="/admin/dashboard" />
+      <Header
+        title="Receipt and Invoice"
+        breadcrumbLinkText="Home"
+        breadcrumbLinkHref="/admin/dashboard"
+      />
       <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 w-[97%] mx-auto pb-10">
         <div className="py-2 px-7">
           <h1 className="text-3xl font-bold mt-5 mb-2">
@@ -48,7 +50,7 @@ export default function AddPaymentDocumentPage() {
                 <TabsContent value="receipt">
                   <AddReceiptForm />
                 </TabsContent>
-                    
+
                 <TabsContent value="invoice">
                   <AddInvoiceForm />
                 </TabsContent>

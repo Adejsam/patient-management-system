@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
 import PatientLayout from "../../shared/layout/PatientLayout";
-import { Button } from "../components/ui/button";
+import { Button } from "../../ui/button";
 import {
   Card,
   CardContent,
@@ -9,14 +9,14 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "../components/ui/card";
+} from "../../ui/card";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "../components/ui/accordion";
-import { Badge } from "../components/ui/badge";
+} from "../../ui/accordion";
+import { Badge } from "../../ui/badge";
 import { toast } from "sonner";
 import Seo from "../../shared/seo/seo";
 import Header from "../components/headers/Header";
@@ -79,7 +79,9 @@ export default function ComplaintHistory() {
         throw new Error("Patient ID not found");
       }
 
-      const response = await fetch(`http://localhost/hospital_api/patient_complaint.php?patientId=${patientId}`);
+      const response = await fetch(
+        `http://localhost/hospital_api/patient_complaint.php?patientId=${patientId}`
+      );
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -218,9 +220,7 @@ export default function ComplaintHistory() {
 
                             {complaint.response ? (
                               <div className="bg-muted p-4 rounded-md">
-                                <p className="text-muted-foreground">
-                                  {complaint.response}
-                                </p>
+                                <p className="text-muted-foreground">{complaint.response}</p>
                               </div>
                             ) : (
                               <div className="bg-muted p-4 rounded-md">

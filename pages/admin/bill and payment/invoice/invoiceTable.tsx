@@ -1,7 +1,6 @@
-import { DataTable } from "./data-table";
-import { Invoice, columns } from "./column";
+import { DataTable } from "../../../../admin components/bills and payment/invoice/data-table";
+import { Invoice, columns } from "../../../../admin components/bills and payment/invoice/column";
 import { useEffect, useState } from "react";
-
 
 interface ApiResponse {
   success: boolean;

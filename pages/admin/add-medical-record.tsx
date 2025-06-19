@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import AdminLayout from "../../shared/layout/AdminLayout";
-import Header from "../../pages/components/headers/Header";
+import Header from "../components/headers/Header";
 import Seo from "../../shared/seo/seo";
 import { useTheme } from "next-themes";
 import {
@@ -12,10 +12,10 @@ import {
   FormLabel,
   FormControl,
   FormMessage,
-} from "../components/ui/form";
-import { Input } from "../components/ui/input";
-import { Button } from "../components/ui/button";
-import Textarea from "../components/ui/Textarea";
+} from "../../ui/form";
+import { Input } from "../../ui/input";
+import { Button } from "../../ui/button";
+import Textarea from "../../ui/Textarea";
 import { z } from "zod";
 
 const medicationSchema = z.object({
@@ -97,7 +97,7 @@ export default function AddMedicalRecord() {
       alert("Please enter a valid hospital number.");
       return;
     }
-    const formattedDate = new Date(data.date).toISOString().split('T')[0];
+    const formattedDate = new Date(data.date).toISOString().split("T")[0];
     try {
       const response = await fetch("http://localhost/hospital_api/add_medical_records.php", {
         method: "POST",
@@ -121,14 +121,14 @@ export default function AddMedicalRecord() {
           setSuccess("Medical record added successfully!");
         }, 2000);
         setError(null);
-          form.reset()
+        form.reset();
       } else {
         setError(result.message || "Error adding medical record");
       }
     } catch (error) {
       console.error("Error submitting form:", error);
       alert("Error submitting form. Please try again.");
-    }finally{
+    } finally {
     }
   };
 

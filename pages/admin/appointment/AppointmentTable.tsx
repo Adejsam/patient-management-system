@@ -1,7 +1,6 @@
-import { columns } from "./column";
-import { DataTable } from "./data-table";
+import { columns } from "../../../admin components/appointments/column";
+import { DataTable } from "../../../admin components/appointments/data-table";
 import { useEffect, useState } from "react";
-
 
 interface Appointment {
   appointment_id: string;
@@ -32,7 +31,7 @@ function getData(): Promise<Appointment[]> {
       // Convert datetime string to Date object
       return data.appointments.map((appointment: Appointment) => ({
         ...appointment,
-        appointment_datetime: new Date(appointment.appointment_datetime)
+        appointment_datetime: new Date(appointment.appointment_datetime),
       }));
     });
 }

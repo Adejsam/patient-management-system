@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import LightfullLogo from "../public/assets/icons/logo-full-light.png";
@@ -10,8 +9,8 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import AuthLayout from "../shared/layout/AuthenticationLayout";
-import { Input } from "./components/ui/input";
-import { Label } from "./components/ui/label";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
 
 const schema = z.object({
   email: z.string().email("Invalid email format").min(1, "Email is required"),
@@ -20,7 +19,12 @@ const schema = z.object({
 const ForgotPassPage = () => {
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
-  const { register, handleSubmit, formState: { errors }, reset } = useForm({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm({
     resolver: zodResolver(schema),
     defaultValues: {
       email: "",
@@ -64,9 +68,8 @@ const ForgotPassPage = () => {
       setTimeout(() => setSuccess(""), 5000);
       reset();
     } catch (err) {
-      const errorMessage = err instanceof Error 
-        ? err.message 
-        : 'Failed to send reset email. Please try again.';
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to send reset email. Please try again.";
       setError(errorMessage);
     } finally {
       setLoading(false);
@@ -117,11 +120,10 @@ const ForgotPassPage = () => {
                 {error && (
                   <div className="p-2 bg-red-50 rounded-md text-red-600 mb-4">
                     {error}
-                    <button 
-                      type="button" 
+                    <button
+                      type="button"
                       onClick={() => setError("")}
-                      className="ml-2 text-red-500 hover:text-red-700"
-                    >
+                      className="ml-2 text-red-500 hover:text-red-700">
                       ×
                     </button>
                   </div>
@@ -129,11 +131,10 @@ const ForgotPassPage = () => {
                 {success && (
                   <div className="p-2 bg-green-50 rounded-md text-green-600 mb-4">
                     {success}
-                    <button 
-                      type="button" 
+                    <button
+                      type="button"
                       onClick={() => setSuccess("")}
-                      className="ml-2 text-green-500 hover:text-green-700"
-                    >
+                      className="ml-2 text-green-500 hover:text-green-700">
                       ×
                     </button>
                   </div>
@@ -141,8 +142,7 @@ const ForgotPassPage = () => {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full py-2 px-4 bg-primary text-white rounded-md hover:bg-primary/80 disabled:bg-gray-400"
-                >
+                  className="w-full py-2 px-4 bg-primary text-white rounded-md hover:bg-primary/80 disabled:bg-gray-400">
                   {loading ? "Sending..." : "Reset Password"}
                 </button>
               </form>

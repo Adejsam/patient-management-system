@@ -1,6 +1,12 @@
 import React from "react";
 import Image, { StaticImageData } from "next/image";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../../components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "../../../ui/card";
 import { useTheme } from "next-themes";
 
 interface DoctorCardProps {
@@ -12,12 +18,25 @@ interface DoctorCardProps {
   about: string;
 }
 
-const DoctorCard: React.FC<DoctorCardProps> = ({ profilePicture, name, field, contact, yearsOfExperience, about }) => {
-useTheme();
+const DoctorCard: React.FC<DoctorCardProps> = ({
+  profilePicture,
+  name,
+  field,
+  contact,
+  yearsOfExperience,
+  about,
+}) => {
+  useTheme();
   return (
     <Card className="shadow-md w-72 mb-4 md:w-full">
       <CardHeader>
-        <Image src={profilePicture} alt={`${name}'s profile`} width={200} height={200} className="w-full h-[200px] mx-auto object-cover object-top" />
+        <Image
+          src={profilePicture}
+          alt={`${name}'s profile`}
+          width={200}
+          height={200}
+          className="w-full h-[200px] mx-auto object-cover object-top"
+        />
         <CardTitle className="text-xl font-bold mt-4">{name}</CardTitle>
         <CardDescription className="text-foreground">{field}</CardDescription>
       </CardHeader>

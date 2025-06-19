@@ -5,15 +5,15 @@ import { useTheme } from "next-themes";
 import PatientLayout from "../../shared/layout/PatientLayout";
 import Seo from "../../shared/seo/seo";
 import Header from "../components/headers/Header";
-import { Button } from "../components/ui/button";
-import { Input } from "../components/ui/input";
+import { Button } from "../../ui/button";
+import { Input } from "../../ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../components/ui/select";
+} from "../../ui/select";
 
 const ManageProfile = () => {
   useTheme();
@@ -100,13 +100,13 @@ const ManageProfile = () => {
                   className="w-full p-2 border rounded"
                 />
               ) : (
-                <Input 
-                type="text"
-                name="firstName"
-                value={userInfo.firstName}
-                onChange={handleChange}
-                className="w-full p-2 border rounded"
-                disabled
+                <Input
+                  type="text"
+                  name="firstName"
+                  value={userInfo.firstName}
+                  onChange={handleChange}
+                  className="w-full p-2 border rounded"
+                  disabled
                 />
               )}
             </div>
@@ -121,8 +121,8 @@ const ManageProfile = () => {
                   className="w-full p-2 border rounded"
                 />
               ) : (
-                <Input 
-                type="text"
+                <Input
+                  type="text"
                   name="middleName"
                   value={userInfo.middleName}
                   onChange={handleChange}
@@ -144,8 +144,8 @@ const ManageProfile = () => {
                   className="w-full p-2 border rounded"
                 />
               ) : (
-                <Input 
-                type="text"
+                <Input
+                  type="text"
                   name="lastName"
                   value={userInfo.lastName}
                   onChange={handleChange}
@@ -165,13 +165,13 @@ const ManageProfile = () => {
                   className="w-full p-2 border rounded"
                 />
               ) : (
-                <Input 
-                type="date"
-                name="dateOfBirth"
-                value={userInfo.dateOfBirth}
-                onChange={handleChange}
-                className="w-full p-2 border rounded"
-                disabled
+                <Input
+                  type="date"
+                  name="dateOfBirth"
+                  value={userInfo.dateOfBirth}
+                  onChange={handleChange}
+                  className="w-full p-2 border rounded"
+                  disabled
                 />
               )}
             </div>
@@ -196,7 +196,8 @@ const ManageProfile = () => {
               ) : (
                 <Select
                   onValueChange={(value) => handleSelectChange("gender", value)}
-                  defaultValue={userInfo.gender} disabled>
+                  defaultValue={userInfo.gender}
+                  disabled>
                   <SelectTrigger>
                     <SelectValue placeholder="Select gender" />
                   </SelectTrigger>
@@ -228,7 +229,8 @@ const ManageProfile = () => {
               ) : (
                 <Select
                   onValueChange={(value) => handleSelectChange("maritalStatus", value)}
-                  defaultValue={userInfo.maritalStatus} disabled>
+                  defaultValue={userInfo.maritalStatus}
+                  disabled>
                   <SelectTrigger>
                     <SelectValue placeholder="Select marital status" />
                   </SelectTrigger>
@@ -483,7 +485,7 @@ const ManageProfile = () => {
                 className="w-full p-2 border rounded"
               />
             ) : (
-                <Input
+              <Input
                 type="text"
                 name="emergencyContact.phoneNumber"
                 value={userInfo.emergencyContact.phoneNumber}
@@ -522,7 +524,8 @@ const ManageProfile = () => {
               ) : (
                 <Select
                   onValueChange={(value) => handleSelectChange("bloodGroup", value)}
-                  defaultValue={userInfo.bloodGroup} disabled>
+                  defaultValue={userInfo.bloodGroup}
+                  disabled>
                   <SelectTrigger>
                     <SelectValue placeholder="Select blood group" />
                   </SelectTrigger>
@@ -572,7 +575,7 @@ const ManageProfile = () => {
                 className="w-full p-2 border rounded"
               />
             ) : (
-                <Input
+              <Input
                 type="text"
                 name="preExistingConditions"
                 value={userInfo.preExistingConditions}
@@ -593,7 +596,7 @@ const ManageProfile = () => {
                 className="w-full p-2 border rounded"
               />
             ) : (
-                <Input
+              <Input
                 type="text"
                 name="primaryPhysician"
                 value={userInfo.primaryPhysician}

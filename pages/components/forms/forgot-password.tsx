@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import React, { useState } from 'react'
+import React, { useState } from "react";
 import {
   Form,
   FormControl,
@@ -9,13 +9,13 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "../../components/ui/form";
-import { Input } from "../../components/ui/input";
+} from "../../../ui/form";
+import { Input } from "../../../ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Button } from "../../components/ui/button";
-import { toast } from 'sonner';
+import { Button } from "../../../ui/button";
+import { toast } from "sonner";
 
 const FormSchema = z.object({
   email: z.string().email({
@@ -36,26 +36,25 @@ const ForgotPasswordForm = () => {
   async function onSubmit(values: z.infer<typeof FormSchema>) {
     try {
       setIsLoading(true);
-      const response = await fetch('/api/auth/forgot-password', {
-        method: 'POST',
+      const response = await fetch("/api/auth/forgot-password", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(values),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to send reset email');
+        throw new Error(errorData.message || "Failed to send reset email");
       }
 
       toast.success("Password reset instructions have been sent to your email.");
       form.reset();
     } catch (err: unknown) {
-      const errorMessage = err instanceof Error 
-        ? err.message 
-        : 'Failed to send reset email. Please try again.';
-      
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to send reset email. Please try again.";
+
       toast.error(errorMessage);
     } finally {
       setIsLoading(false);
@@ -72,25 +71,19 @@ const ForgotPasswordForm = () => {
             <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input 
-                  placeholder="example@example.com" 
+                <Input
+                  placeholder="example@example.com"
                   type="email"
                   disabled={isLoading}
-                  {...field} 
+                  {...field}
                 />
               </FormControl>
-              <FormDescription>
-                Enter your email address to reset your password.
-              </FormDescription>
+              <FormDescription>Enter your email address to reset your password.</FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
-        <Button 
-          type="submit" 
-          className="w-full"
-          disabled={isLoading}
-        >
+        <Button type="submit" className="w-full" disabled={isLoading}>
           {isLoading ? "Sending..." : "Reset Password"}
         </Button>
       </form>

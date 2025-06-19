@@ -4,9 +4,9 @@ import { z } from "zod";
 import AdminLayout from "../../shared/layout/AdminLayout";
 import Header from "../components/headers/Header";
 import Seo from "../../shared/seo/seo";
-import { Button } from "../components/ui/button";
-import { Input } from "../components/ui/input";
-import Textarea from "../components/ui/Textarea";
+import { Button } from "../../ui/button";
+import { Input } from "../..//ui/input";
+import Textarea from "../../ui/Textarea";
 import {
   Form,
   FormField,
@@ -14,14 +14,14 @@ import {
   FormLabel,
   FormMessage,
   FormControl,
-} from "../components/ui/form";
+} from "../../ui/form";
 import {
   Select,
   SelectItem,
   SelectTrigger,
   SelectValue,
   SelectContent,
-} from "../components/ui/select";
+} from "../../ui/select";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";

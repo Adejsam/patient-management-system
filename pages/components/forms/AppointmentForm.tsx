@@ -1,29 +1,16 @@
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { Button } from "../../components/ui/button";
+import { Button } from "../../../ui/button";
 import { CalendarIcon, CircleAlert } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "../../../lib/utils";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../../components/ui/select";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "../../components/ui/form";
-import { Popover, PopoverContent, PopoverTrigger } from "../../components/ui/popover";
-import { Input } from "../../components/ui/input";
-import { Calendar } from "../../components/ui/calendar";
-import Textarea from "../../components/ui/Textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../../ui/select";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../../../ui/form";
+import { Popover, PopoverContent, PopoverTrigger } from "../../../ui/popover";
+import { Input } from "../../../ui/input";
+import { Calendar } from "../../../ui/calendar";
+import Textarea from "../../../ui/Textarea";
 import { useRouter } from "next/router";
 import { toast } from "sonner";
 import { useState } from "react";
@@ -111,16 +98,16 @@ const AppointmentForm = () => {
         throw new Error(response.message);
       }
     } catch (submitError) {
-      const errorMessage = submitError instanceof Error 
-        ? submitError.message 
-        : "Failed to book appointment. Please try again.";
+      const errorMessage =
+        submitError instanceof Error
+          ? submitError.message
+          : "Failed to book appointment. Please try again.";
       toast.error(errorMessage);
       setErrorMessage(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
   };
-
 
   const isDateInRange = (date: Date) => {
     const currentDate = new Date();
@@ -133,17 +120,13 @@ const AppointmentForm = () => {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 mx-7 my-7 pb-6">
-      {errorMessage && (
+        {errorMessage && (
           <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-md">
             <div className="flex items-center">
               <CircleAlert className="h-5 w-5 text-red-500 mr-2" />
               <p className="text-red-600">{errorMessage}</p>
             </div>
-            <Button 
-              variant="ghost" 
-              className="mt-2" 
-              onClick={() => setErrorMessage("")}
-            >
+            <Button variant="ghost" className="mt-2" onClick={() => setErrorMessage("")}>
               Dismiss
             </Button>
           </div>

@@ -1,30 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "../../components/ui/button";
-import { Input } from "../../components/ui/input";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "../../components/ui/form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../../components/ui/select";
-import { Calendar } from "../../components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "../../components/ui/popover";
+import { Button } from "../../../ui/button";
+import { Input } from "../../../ui/input";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../../../ui/form";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../../ui/select";
+import { Calendar } from "../../../ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "../../../ui/popover";
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "../../../lib/utils";
-import { receiptFormSchema, ReceiptFormValues } from "../../admin/bill and payment/payment-form"; // fixed import path
-import { DynamicFormItems } from "../../admin/bill and payment/DynaminFormItems";
+import {
+  receiptFormSchema,
+  ReceiptFormValues,
+} from "../../../admin components/bills and payment/payment-form"; // fixed import path
+import { DynamicFormItems } from "../../../admin components/bills and payment/DynaminFormItems";
 
 const AddReceiptForm = () => {
   const [isMounted, setIsMounted] = useState(false);

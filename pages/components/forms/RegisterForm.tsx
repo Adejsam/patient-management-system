@@ -2,25 +2,12 @@ import React, { useState } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { Button } from "../../components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../../components/ui/select";
+import { Button } from "../../../ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../../ui/select";
 import Link from "next/link";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "../../components/ui/form";
-import { Input } from "../../components/ui/input";
-import { Checkbox } from "../../components/ui/checkbox";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../../../ui/form";
+import { Input } from "../../../ui/input";
+import { Checkbox } from "../../../ui/checkbox";
 
 const formSchema = z
   .object({
@@ -136,7 +123,7 @@ const RegisterForm = () => {
     setIsSubmitting(true);
     setError(null);
     setRegistrationSuccess(null);
-    console.log(FormData);
+    
 
     try {
       // Handle file upload separately if needed

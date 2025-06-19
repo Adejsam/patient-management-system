@@ -11,7 +11,7 @@ export default function Page() {
 
   useEffect(() => {
     setMounted(true);
-    console.log(localStorage)
+    console.log(localStorage);
   }, []);
 
   if (!mounted) {

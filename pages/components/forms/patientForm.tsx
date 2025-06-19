@@ -6,16 +6,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "../../components/ui/form";
-import { Input } from "../../components/ui/input";
-import { Button } from "../../components/ui/button";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../../../ui/form";
+import { Input } from "../../../ui/input";
+import { Button } from "../../../ui/button";
 
 const formSchema = z.object({
   hospitalNumber: z
@@ -81,12 +74,11 @@ export default function PatientForm() {
         localStorage.setItem("hospitalNumber", data.hospitalNumber);
         localStorage.setItem("patientInfo", JSON.stringify(data.patient));
         localStorage.setItem("patientId", data.patientId);
-        
-      
+
         // Set cookies with appropriate options
         document.cookie = `user=${data.user_id}; path=/`;
         document.cookie = `userRole=${data.role}; path=/`;
-      
+
         setShowSuccessMessage(true);
         setTimeout(() => {
           router.push(`/patient/dashboard/`);
@@ -103,7 +95,7 @@ export default function PatientForm() {
       setIsLoading(false);
     }
   };
-  console.log(localStorage);
+
   return (
     <Form {...form}>
       {error && (

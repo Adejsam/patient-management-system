@@ -4,10 +4,10 @@ import React, { useEffect, useState } from "react";
 import { useTheme } from "next-themes";
 import PatientLayout from "../../shared/layout/PatientLayout";
 import Seo from "../../shared/seo/seo";
-import Header from "../../pages/components/headers/Header";
+import Header from "../components/headers/Header";
 import { Loader2, AlertCircle, User, Calendar, FileText, Mail } from "lucide-react";
-import { Badge } from "../components/ui/badge";
-import { Button } from "../components/ui/button";
+import { Badge } from "../../ui/badge";
+import { Button } from "../../ui/button";
 import Link from "next/link";
 
 interface Appointment {
@@ -118,8 +118,7 @@ const AppointmentHistoryPage = () => {
                 return (
                   <div
                     key={appointment.appointment_id}
-                    className="bg-card rounded-xl p-6 shadow-sm transition-all hover:shadow-md"
-                  >
+                    className="bg-card rounded-xl p-6 shadow-sm transition-all hover:shadow-md">
                     <div className="flex justify-between items-start mb-4">
                       <div>
                         <h3 className="text-xl font-semibold">{formattedDate}</h3>
@@ -133,8 +132,7 @@ const AppointmentHistoryPage = () => {
                             : appointment.status === "confirmed"
                             ? "bg-green-100 text-green-800"
                             : "bg-red-100 text-red-800"
-                        }`}
-                      >
+                        }`}>
                         {appointment.status}
                       </Badge>
                     </div>

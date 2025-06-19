@@ -1,13 +1,13 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
+import React, { useEffect, useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
 import LightfullLogo from "../../public/assets/icons/logo-full-light.png";
 import DarkfullLogo from "../../public/assets/icons/logo-full.svg";
-import { useTheme } from 'next-themes';
-import AdminForm from '../components/forms/adminForm';
-import AuthLayout from '../../shared/layout/AuthenticationLayout';
+import { useTheme } from "next-themes";
+import AdminForm from "../components/forms/adminForm";
+import AuthLayout from "../../shared/layout/AuthenticationLayout";
 
 const LoginPage = () => {
   const { resolvedTheme } = useTheme();
@@ -24,7 +24,7 @@ const LoginPage = () => {
   const logoSrc = resolvedTheme === "dark" ? DarkfullLogo : LightfullLogo;
 
   return (
-    <main className='h-auto w-full bg-dark-300 flex md:flex-col sm:h-[100vh]'>
+    <main className="h-auto w-full bg-dark-300 flex md:flex-col sm:h-[100vh]">
       <div className="w-1/2 my-10 px-12 bg-dark-300 md:w-full sm:px-5 sm:my-auto">
         <div className="w-full ">
           <Image
@@ -41,7 +41,6 @@ const LoginPage = () => {
         </div>
 
         <div className="w-full pt-10 ">
-          
           <AdminForm />
 
           <p className="mt-7 text-center text-sm/6 text-gray-500">
@@ -51,14 +50,11 @@ const LoginPage = () => {
           </p>
 
           <div className="text-14-regular mt-20 flex justify-between">
-            <p className="text-dark-600 justify-items-end xl:text-left">
-              © 2025 CarePluse
-            </p>
-            
+            <p className="text-dark-600 justify-items-end xl:text-left">© 2025 CarePluse</p>
           </div>
         </div>
       </div>
-      <div className='w-1/2 h-auto md:w-full sm:hidden'>
+      <div className="w-1/2 h-auto md:w-full sm:hidden">
         <Image
           src="/assets/images/onboarding-img.png"
           height={1000}
@@ -69,8 +65,8 @@ const LoginPage = () => {
       </div>
     </main>
   );
-}
+};
 LoginPage.getLayout = (page: React.ReactElement) => {
-  return <AuthLayout>{page}</AuthLayout>
-}
+  return <AuthLayout>{page}</AuthLayout>;
+};
 export default LoginPage;

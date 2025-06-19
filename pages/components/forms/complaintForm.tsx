@@ -2,17 +2,10 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useState } from "react";
-import { Button } from "../../components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "../../components/ui/form";
-import Textarea from "../../components/ui/Textarea";
-import { Input } from "../../components/ui/input";
+import { Button } from "../../../ui/button";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../../../ui/form";
+import Textarea from "../../../ui/Textarea";
+import { Input } from "../../../ui/input";
 
 const complaintFormSchema = z.object({
   complaintType: z.string({

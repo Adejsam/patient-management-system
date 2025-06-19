@@ -1,41 +1,28 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "../../components/ui/button";
-import { Input } from "../../components/ui/input";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "../../components/ui/form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../../components/ui/select";
+import { Button } from "../../../ui/button";
+import { Input } from "../../../ui/input";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../../../ui/form";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../../ui/select";
 import { useState, useEffect } from "react";
-import { Calendar } from "../../components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "../../components/ui/popover";
+import { Calendar } from "../../../ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "../../../ui/popover";
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "../../../lib/utils";
 import {
   invoiceFormSchema,
   type InvoiceFormValues,
-} from "../../admin/bill and payment/payment-forms";
-import { DynamicFormItems } from "../../admin/bill and payment/DynaminFormItems";
+} from "../../../admin components/bills and payment/payment-forms";
+import { DynamicFormItems } from "../../../admin components/bills and payment/DynaminFormItems";
 
 const AddInvoiceForm = () => {
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
     const userRole = localStorage.getItem("userRole");
-    
+
     if (userRole === "billing_officer") {
       setIsMounted(true);
     } else {
@@ -56,7 +43,7 @@ const AddInvoiceForm = () => {
       date: new Date(),
     },
   });
-  
+
   const [message, setMessage] = useState<string | null>(null);
   const [messageType, setMessageType] = useState<"success" | "error" | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -79,7 +66,7 @@ const AddInvoiceForm = () => {
   const onSubmit = async (data: InvoiceFormValues) => {
     try {
       setIsLoading(true);
-      console.log("Form data:", data); // Debugging
+      
 
       const apiEndpoint = "http://localhost/hospital_api/add_invoice.php";
 
@@ -99,14 +86,11 @@ const AddInvoiceForm = () => {
         body: JSON.stringify(formData),
       });
 
-      console.log("API Response:", response); // Debugging
-
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
 
       const result = await response.json();
-      console.log("API Result:", result); // Debugging
 
       if (result.message === "Invoice created successfully") {
         setMessage("Invoice created successfully! Invoice ID: " + result.invoice_id);
@@ -151,7 +135,7 @@ const AddInvoiceForm = () => {
                 </FormLabel>
                 <FormControl>
                   <Input
-                  type="text"
+                    type="text"
                     {...formField}
                     placeholder="Enter hospital number"
                     className="w-full"
@@ -164,7 +148,7 @@ const AddInvoiceForm = () => {
             )}
           />
         </div>
-        
+
         {/* FIX: Remove formType prop */}
         <DynamicFormItems<InvoiceFormValues> form={form} minItems={1} />
 

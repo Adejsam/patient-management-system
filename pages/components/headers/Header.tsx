@@ -6,10 +6,10 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "../../components/ui/breadcrumb";
-import { Separator } from "../../components/ui/separator";
-import { SidebarTrigger } from "../../components/ui/sidebar";
-import { ModeToggle } from "../../components/ui/modeToggle";
+} from "../../../ui/breadcrumb";
+import { Separator } from "../../../ui/separator";
+import { SidebarTrigger } from "../../../ui/sidebar";
+import { ModeToggle } from "../../../ui/modeToggle";
 
 interface HeaderProps {
   title: string;
@@ -26,7 +26,9 @@ const Header: React.FC<HeaderProps> = ({ title, breadcrumbLinkText, breadcrumbLi
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem className="md:block">
-              <BreadcrumbLink className="sm:hidden"  href={breadcrumbLinkHref}>{breadcrumbLinkText}</BreadcrumbLink>
+              <BreadcrumbLink className="sm:hidden" href={breadcrumbLinkHref}>
+                {breadcrumbLinkText}
+              </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator className="md:block" />
             <BreadcrumbItem>

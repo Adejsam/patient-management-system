@@ -3,15 +3,15 @@ import { useTheme } from "next-themes";
 import Image from "next/image";
 import Link from "next/link";
 import { Calendar, Stethoscope, Wallet } from "lucide-react";
-import { Card, CardContent } from "../components/ui/card";
-import { Button } from "../components/ui/button";
+import { Card, CardContent } from "../..//ui/card";
+import { Button } from "../../ui/button";
 import PatientLayout from "../../shared/layout/PatientLayout";
 import Seo from "../../shared/seo/seo";
 import Header from "../components/headers/Header";
 import LightfullLogo from "../../public/assets/icons/logo-full-light.png";
 import DarkfullLogo from "../../public/assets/icons/logo-full.svg";
-import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
-import { UpcomingAppointments } from "../components/appointment components/upcoming_appointments";
+import { Avatar, AvatarFallback, AvatarImage } from "../../ui/avatar";
+import { UpcomingAppointments } from "../../ui/components/upcoming_appointments";
 
 export default function PatientDashboard() {
   const { resolvedTheme } = useTheme();
@@ -25,7 +25,7 @@ export default function PatientDashboard() {
     return null;
   }
 
-  const hospitalNumber = localStorage.getItem("hospitalNumber")
+  const hospitalNumber = localStorage.getItem("hospitalNumber");
   const patientData = JSON.parse(localStorage.getItem("patientInfo") || "{}");
   const firstName = patientData.firstName;
   const lastName = patientData.lastName;
@@ -94,7 +94,8 @@ export default function PatientDashboard() {
 
         <div className="flex justify-center items-center">
           {/* Virtual card component */}
-          <div className={`shadow-custom rounded-lg p-6 w-full max-w-md m-4 relative overflow-hidden`}>
+          <div
+            className={`shadow-custom rounded-lg p-6 w-full max-w-md m-4 relative overflow-hidden`}>
             <div className="flex justify-between items-center mb-6">
               <Image
                 src={logoSrc}
@@ -126,9 +127,7 @@ export default function PatientDashboard() {
               </Avatar>
 
               <div className="ml-5 pt-1">
-                <h3 className="font-semibold text-lg mb-2 capitalize">
-                  {fullName}
-                </h3>
+                <h3 className="font-semibold text-lg mb-2 capitalize">{fullName}</h3>
                 <div className="space-y-1.5">
                   <div className="flex items-center">
                     <Calendar className="h-4 w-4 mr-2" />
@@ -173,9 +172,7 @@ export default function PatientDashboard() {
                   </svg>
                 </div>
                 <div>
-                  <p className="text-xs  mb-0.5">
-                    Residential Address
-                  </p>
+                  <p className="text-xs  mb-0.5">Residential Address</p>
                   <p className="text-sm">{address}</p>
                 </div>
               </div>

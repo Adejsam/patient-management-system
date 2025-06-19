@@ -12,8 +12,8 @@ import {
   getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { Button } from "../components/ui/button";
-import { Input } from "../components/ui/input";
+import { Button } from "../../ui/button";
+import { Input } from "../../ui/input";
 import {
   Table,
   TableBody,
@@ -21,15 +21,15 @@ import {
   TableHeader,
   TableCell,
   TableRow,
-} from "../components/ui/table";
+} from "../../ui/table";
 import { Patient } from "../../types/patient";
 import Header from "../components/headers/Header";
 import Seo from "../../shared/seo/seo";
 import AdminLayout from "../../shared/layout/AdminLayout";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
-import { PatientDetailsModal } from "./manage users/view-pateint-details";
-import { EditPatientModal } from "./manage users/edit-patient-modal";
+import { PatientDetailsModal } from "../../admin components/users/view-pateint-details";
+import { EditPatientModal } from "../../admin components/users/edit-patient-modal";
 
 export default function ManagePatientsPage() {
   const [searchTerm, setSearchTerm] = React.useState("");
@@ -48,11 +48,10 @@ export default function ManagePatientsPage() {
 
   useEffect(() => {
     const fetchPatients = async () => {
-      
       try {
         const response = await fetch("http://localhost/hospital_api/get_patients.php");
         const data = await response.json();
-        console.log(localStorage)
+        console.log(localStorage);
 
         if (data.success && data.patients) {
           setPatients(data.patients);
@@ -137,7 +136,6 @@ export default function ManagePatientsPage() {
         patient.first_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         patient.last_name?.toLowerCase().includes(searchTerm.toLowerCase())
     );
-
   }, [searchTerm, patients]);
   const table = useReactTable({
     data: filteredData,
@@ -166,7 +164,11 @@ export default function ManagePatientsPage() {
   return (
     <AdminLayout>
       <Seo title="Manage Patients" />
-      <Header title="Manage Patients" breadcrumbLinkText="Home" breadcrumbLinkHref="/admin/dashboard" />
+      <Header
+        title="Manage Patients"
+        breadcrumbLinkText="Home"
+        breadcrumbLinkHref="/admin/dashboard"
+      />
       <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
         <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 w-[97%] mx-auto md:min-h-min">
           <h1 className="text-3xl/9 font-bold mt-5 mb-2 pl-5 pt-5">
@@ -192,7 +194,7 @@ export default function ManagePatientsPage() {
               <Table>
                 <TableHeader>
                   {table.getHeaderGroups().map((headerGroup) => (
-                    <TableRow key={headerGroup.id} >
+                    <TableRow key={headerGroup.id}>
                       {headerGroup.headers.map((header) => (
                         <TableHead key={header.id}>
                           {header.isPlaceholder

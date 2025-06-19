@@ -1,5 +1,5 @@
-import { DataTable } from "./data-table";
-import { Receipt, columns } from "./column";
+import { DataTable } from "../../../../admin components/bills and payment/receipt/data-table";
+import { Receipt, columns } from "../../../../admin components/bills and payment/receipt/column";
 import { useEffect, useState } from "react";
 
 interface ApiResponse {
