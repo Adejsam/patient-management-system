@@ -23,38 +23,35 @@ import { Popover, PopoverContent, PopoverTrigger } from "../../components/ui/pop
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "../../../lib/utils";
-import {
-  receiptFormSchema,
-  type ReceiptFormValues,
-} from "../../admin/bill and payment/payment-forms";
+import { receiptFormSchema, ReceiptFormValues } from "../../admin/bill and payment/payment-form"; // fixed import path
 import { DynamicFormItems } from "../../admin/bill and payment/DynaminFormItems";
 
 const AddReceiptForm = () => {
+  const [isMounted, setIsMounted] = useState(false);
 
-    const [isMounted, setIsMounted] = useState(false);
-  
-    useEffect(() => {
-      const userRole = localStorage.getItem("userRole");
-      
-      if (userRole === "billing_officer") {
-        setIsMounted(true);
-      } else {
-        // Redirect to unauthorized page if not a billing officer
-        window.location.href = "/admin/unauthorized";
-      }
-    }, []);
+  useEffect(() => {
+    const userRole = localStorage.getItem("userRole");
+
+    if (userRole === "billing_officer") {
+      setIsMounted(true);
+    } else {
+      // Redirect to unauthorized page if not a billing officer
+      window.location.href = "/admin/unauthorized";
+    }
+  }, []);
 
   const form = useForm<ReceiptFormValues>({
     resolver: zodResolver(receiptFormSchema),
     defaultValues: {
       items: [{ description: "", amount: 0 }],
       status: "paid",
-      balanceAmount: 0.00,
+      balanceAmount: 0.0,
       paymentMethod: "cash",
       patient: {
         hospital_number: "",
       },
       date: new Date(),
+      // receiptNumber: "", // optional, can be omitted or left as is
     },
   });
 
@@ -88,7 +85,7 @@ const AddReceiptForm = () => {
         payment_method: data.paymentMethod,
         items: data.items,
         status: data.status,
-        balance_amount: data.balanceAmount || 0.00,
+        balance_amount: data.balanceAmount || 0.0,
       };
 
       const response = await fetch(apiEndpoint, {
@@ -130,8 +127,7 @@ const AddReceiptForm = () => {
           <div
             className={`fixed bottom-4 right-4 z-50 p-4 rounded-lg ${
               messageType === "success" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
-            }`}
-          >
+            }`}>
             {message}
           </div>
         )}
@@ -162,7 +158,7 @@ const AddReceiptForm = () => {
           />
         </div>
 
-        <DynamicFormItems form={form} formType="receipt" minItems={1} />
+        <DynamicFormItems<ReceiptFormValues> form={form} minItems={1} />
 
         <div className="grid grid-cols-2 md:grid-cols-1 gap-4">
           <FormField
@@ -179,8 +175,7 @@ const AddReceiptForm = () => {
                         className={cn(
                           "w-full justify-start text-left font-normal",
                           !field.value && "text-muted-foreground"
-                        )}
-                      >
+                        )}>
                         <CalendarIcon className="mr-2 h-4 w-4" />
                         {field.value ? format(field.value, "PPP") : "Select date"}
                       </Button>
@@ -189,7 +184,13 @@ const AddReceiptForm = () => {
                   <PopoverContent className="w-auto p-0" align="start">
                     <Calendar
                       mode="single"
-                      selected={field.value}
+                      selected={
+                        field.value instanceof Date
+                          ? field.value
+                          : field.value
+                          ? new Date(field.value)
+                          : undefined
+                      }
                       onSelect={field.onChange}
                       initialFocus
                     />
@@ -214,8 +215,9 @@ const AddReceiptForm = () => {
                   </FormControl>
                   <SelectContent>
                     <SelectItem value="cash">Cash</SelectItem>
-                    <SelectItem value="card">Card</SelectItem>
+                    <SelectItem value="credit-card">Credit Card</SelectItem>
                     <SelectItem value="bank-transfer">Bank Transfer</SelectItem>
+                    <SelectItem value="card">Card</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />

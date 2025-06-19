@@ -164,8 +164,9 @@ const AddInvoiceForm = () => {
             )}
           />
         </div>
-
-        <DynamicFormItems form={form} formType="invoice" minItems={1} />
+        
+        {/* FIX: Remove formType prop */}
+        <DynamicFormItems<InvoiceFormValues> form={form} minItems={1} />
 
         <div className="grid grid-cols-2 md:grid-cols-1 gap-4">
           <FormField
