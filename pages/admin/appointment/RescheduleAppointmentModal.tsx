@@ -15,7 +15,6 @@ import { Popover, PopoverContent, PopoverTrigger } from "../../components/ui/pop
 import { CalendarIcon } from "lucide-react";
 import { format, addDays, addHours, isAfter, isBefore, parseISO } from "date-fns";
 import { cn } from "../../../lib/utils";
-import { toast } from "sonner";
 
 interface RescheduleAppointmentModalProps {
   appointment: Appointment;
