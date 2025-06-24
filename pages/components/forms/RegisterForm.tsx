@@ -391,7 +391,6 @@ const RegisterForm = () => {
               <FormLabel>Email</FormLabel>
               <FormControl>
                 <Input
-                  type="email"
                   {...field}
                   placeholder="example@gmail.com"
                   disabled={isSubmitting}
@@ -626,7 +625,7 @@ const RegisterForm = () => {
             <FormItem className="flex-1 min-w-[250px]">
               <FormLabel>Password</FormLabel>
               <FormControl>
-                <Input type="password" {...field} placeholder="********" disabled={isSubmitting} />
+                <Input {...field} disabled={isSubmitting} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -641,9 +640,7 @@ const RegisterForm = () => {
                 <FormLabel>Confirm Password</FormLabel>
                 <FormControl>
                   <Input
-                    type="password"
                     {...field}
-                    placeholder="*********"
                     disabled={isSubmitting}
                   />
                 </FormControl>

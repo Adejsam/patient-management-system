@@ -9,10 +9,12 @@ const PatientLayout = ({ children }: { children: React.ReactNode }) => {
     <div suppressHydrationWarning>
       <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
         <SidebarProvider>
-          <PatientAppSidebar />
-          <SidebarInset>
-            <main>{children}</main>
-          </SidebarInset>
+          <div className="flex min-h-screen w-full">
+            <PatientAppSidebar />
+            <SidebarInset className="flex-1 flex flex-col md:ml-64">
+              <main className="flex-1 flex flex-col sm:p-4 md:p-6">{children}</main>
+            </SidebarInset>
+          </div>
         </SidebarProvider>
         <LandingFooter />
       </ThemeProvider>

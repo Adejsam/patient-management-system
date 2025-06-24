@@ -73,7 +73,6 @@ const ForgotPasswordForm = () => {
               <FormControl>
                 <Input
                   placeholder="example@example.com"
-                  type="email"
                   disabled={isLoading}
                   {...field}
                 />

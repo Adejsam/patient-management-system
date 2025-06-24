@@ -3,19 +3,12 @@
 import React, { useState, useEffect } from "react";
 import { Checkbox } from "../ui/checkbox";
 import LandingLayout from "../shared/layout/LandingLayout";
-import { useTheme } from "next-themes";
+// import { useTheme } from "next-themes";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "../ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
 import { Input } from "../ui/input";
 import Textarea from "../ui/Textarea";
 import { Button } from "../ui/button";
@@ -38,7 +31,7 @@ const formSchema = z.object({
 type FormData = z.infer<typeof formSchema>;
 
 export default function ContactUs() {
-  const { resolvedTheme } = useTheme();
+  // const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -56,21 +49,15 @@ export default function ContactUs() {
     console.log(data);
   };
 
-  const bgColor = resolvedTheme === "dark" ? "bg-background" : "bg-white";
-  const textColor = resolvedTheme === "dark" ? "text-white" : "text-black";
-
   return (
-    <div className={`isolate ${bgColor} px-6 py-24 sm:py-32 lg:px-8`}>
+    <div className="bg-background px-6 py-24 sm:py-32 lg:px-8 mx-auto">
       <Seo title="Contact Us"></Seo>
-      <div
-        aria-hidden="true"
-        className="absolute inset-x-0 top-[-10rem] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[-20rem]"></div>
-      <div className="mx-auto max-w-2xl mt-10 text-center">
+      <div className="max-w-2xl mt-10 text-cente">
         <h2
-          className={`text-4xl text-green-500 font-semibold tracking-tight text-balance sm:text-5xl`}>
+          className={`text-4xl text-center text-green-500 font-semibold tracking-tight text-balance sm:text-5xl`}>
           Contact Form
         </h2>
-        <p className={`mt-2 text-lg/8 ${textColor}`}>
+        <p className={`mt-2 text-center text-lg/8 text-foreground`}>
           Please complete the form below, and our team will respond to your inquiry as soon as
           possible.
         </p>

@@ -36,7 +36,7 @@ export default function LandingHeader() {
 
   return (
     <header
-      className={`h-[60px] shadow-md w-full fixed top-0 left-0 flex items-center z-[1000] ${
+      className={`h-[60px] shadow-md w-full fixed top-0 left-0 flex items-center z-20 ${
         resolvedTheme === "dark" ? "bg-background" : "bg-white"
       }`}>
       <nav aria-label="Global" className=" flex w-full items-center justify-between mx-10">
@@ -78,14 +78,14 @@ export default function LandingHeader() {
         </PopoverGroup>
         <div className="hidden lg:flex lg:flex-1 lg:justify-end">
           <Button asChild variant={"default"}>
-            <Link href="/patient/login" className="text-sm/6 text-black mr-1 dark:text-foreground">
+            <Link href="/patient/login" className="text-sm/6 mr-1 text-foreground">
               Login
             </Link>
           </Button>
           <Button variant={"secondary"} asChild>
             <Link
               href="/patient/register"
-              className="text-sm/6 text-black bg-green-500 mr-5 dark:text-foreground">
+              className={`text-sm/6 border border-primary mr-5 hover:bg-primary hover:text-white ${ resolvedTheme === "dark" ? "hover:text-black" : ""}`}>
               Register
             </Link>
           </Button>

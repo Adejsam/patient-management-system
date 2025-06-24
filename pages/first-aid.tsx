@@ -63,10 +63,9 @@ const FirstAidGuide = () => {
   ];
 
   return (
-    <main>
-      <Seo title="First Aid Guide"></Seo>
-      <div className="min-h-screen bg-gradient-to-br bg-backgroundr">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16">
+      <div className="min-h-screen bg-gradient-to-br bg-background w-full">
+        <Seo title="First Aid Guide"></Seo>
+        <div className="mx-auto px-4 sm:px-6 lg:px-8 mt-16">
           <div className="text-center py-16">
             <h1 className={`text-5xl font-bold text-primary mb-6`}>First Aid Guide</h1>
             <p className={`text-xl text-foreground-300 mb-12`}>
@@ -74,7 +73,7 @@ const FirstAidGuide = () => {
             </p>
 
             {/* Key First Aid Steps Section */}
-            <div className="bg-background rounded-2xl shadow-lg p-12 mb-16">
+            <div className="bg-background rounded-2xl p-12 mb-16">
               <h2 className={`text-3xl font-bold text-primary mb-8`}>Key First Aid Steps</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {firstAidSteps.map((step) => (
@@ -87,7 +86,7 @@ const FirstAidGuide = () => {
             </div>
 
             {/* Common Injuries Section */}
-            <div className="bg-background rounded-2xl shadow-lg p-12 mb-16">
+            <div className="bg-background rounded-2xl  p-12 mb-16">
               <h2 className={`text-3xl font-bold text-primary pb-10`}>
                 Common Injuries and Conditions
               </h2>
@@ -109,7 +108,7 @@ const FirstAidGuide = () => {
             </div>
 
             {/* Emergency Contacts Section */}
-            <div className="bg-background rounded-2xl shadow-lg p-12 mb-16">
+            <div className="bg-background rounded-2xl p-12 mb-16">
               <h2 className={`text-3xl font-bold text-primary mb-8`}>Emergency Contacts</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div className="p-6 border-2 rounded-xl border-border">
@@ -155,7 +154,7 @@ const FirstAidGuide = () => {
             </div>
 
             {/* When to Seek Professional Help Section */}
-            <div className="bg-background rounded-2xl shadow-lg p-12">
+            <div className="bg-background rounded-2xl p-12">
               <h2 className={`text-3xl font-bold text-primary mb-8`}>
                 When to Seek Professional Help
               </h2>
@@ -177,7 +176,6 @@ const FirstAidGuide = () => {
           </div>
         </div>
       </div>
-    </main>
   );
 };
 
