@@ -122,37 +122,37 @@ export default function LandingHeader() {
               <div className="space-y-2 py-6">
                 <Link
                   href="/"
-                  className="-mx-3 block rounded-lg px-3 py-2 text-base/7 hover:bg-green-500">
+                  className="-mx-3 block rounded-lg px-3 py-2 text-base/7 active:bg-primary">
                   Home
                 </Link>
                 <Link
-                  href="/conatact-us"
-                  className="-mx-3 block rounded-lg px-3 py-2 text-base/7 hover:bg-green-500">
+                  href="/contact-us"
+                  className="-mx-3 block rounded-lg px-3 py-2 text-base/7 active:bg-primary">
                   Contact Us
                 </Link>
                 <Link
                   href="/data-usage"
-                  className="-mx-3 block rounded-lg px-3 py-2 text-base/7 hover:bg-green-500">
+                  className="-mx-3 block rounded-lg px-3 py-2 text-base/7 active:bg-primary">
                   Data Usage
                 </Link>
                 <Link
-                  href="#"
-                  className="-mx-3 block rounded-lg px-3 py-2 text-base/7 hover:bg-green-500">
-                  Company
+                  href="/emergency"
+                  className="-mx-3 block rounded-lg px-3 py-2 text-base/7 active:bg-primary">
+                  Emergency
                 </Link>
               </div>
               <div className="py-6">
                 <Button asChild>
                   <Link
                     href="/patient/login"
-                    className="text-sm/6 text-black mr-1 dark:text-foreground">
+                    className="text-sm/6 text-foreground mr-1 dark:text-foreground ">
                     Login
                   </Link>
                 </Button>
                 <Button variant={"secondary"} asChild>
                   <Link
                     href="/patient/register"
-                    className="text-sm/6 text-black bg-green-500 mr-5 dark:text-foreground">
+                    className="text-sm/6 text-foreground border border-primary mr-5 dark:text-foreground">
                     Register
                   </Link>
                 </Button>

@@ -76,9 +76,11 @@ const config = {
   		},
   		screens: {
   			sm: {
-  				max: '700px'
+				min: '0px',
+  				max: '768px'
   			},
   			md: {
+				min: '769px',
   				max: '1024px'
   			},
   			lg: {

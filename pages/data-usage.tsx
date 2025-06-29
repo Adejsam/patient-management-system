@@ -22,7 +22,7 @@ const DataUsagePage = () => {
         resolvedTheme === "dark" ? "bg-background text-white" : "bg-white text-black"
       }`}>
         <Seo title="Data Usage Page"></Seo>
-      <div className="container mx-auto px-12 pt-[100px]">
+      <div className="w-full px-12 pt-[100px]">
         <h1 className="text-4xl font-bold mt-10 mb-14 text-center text-primary">Data Usage</h1>
         <section className="mb-8">
           <h2 className="text-xl font-semibold mb-4">Overview</h2>

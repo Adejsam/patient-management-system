@@ -117,11 +117,11 @@ export default function ComplaintHistory() {
   function getStatusBadgeColor(status: ComplaintStatus) {
     switch (status) {
       case "replied":
-        return "bg-green-500 hover:bg-green-600";
+        return "bg-green-500 hover:bg-green-600 p-1";
       case "unreplied":
-        return "bg-red-500 hover:bg-red-600";
+        return "bg-red-500 hover:bg-red-600 p-1";
       default:
-        return "bg-gray-500 hover:bg-gray-600";
+        return "bg-gray-500 hover:bg-gray-600 p-1";
     }
   }
 
@@ -139,7 +139,7 @@ export default function ComplaintHistory() {
     <PatientLayout>
       <Seo title="Complaint History"></Seo>
       <Header title="Complaint History" breadcrumbLinkText="Home" breadcrumbLinkHref="/" />
-      <div className="min-h-[100vh] rounded-xl bg-muted/50 relative w-[97%] mx-auto mb-5">
+      <div className="min-h-[100vh] rounded-xl bg-muted/50 relative w-[97%] mx-auto pb-[50px]">
         <h1 className="text-3xl font-bold pt-7 mb-2 pl-4">
           Your <span className="text-primary">Complaint History</span>
         </h1>
@@ -244,7 +244,7 @@ export default function ComplaintHistory() {
         )}
 
         {/* New complaint button */}
-        <div className="mt-8 flex justify-center">
+        <div className="mt-8 flex justify-center ">
           <Button onClick={() => (window.location.href = "/patient/lodge-complaint")}>
             Submit New Complaint
           </Button>

@@ -174,12 +174,12 @@ export default function PatientForm() {
         <Button
           type="submit"
           disabled={isLoading}
-          className="w-full bg-green-500 hover:bg-green-600 text-white relative"
+          className="w-full py-[8px] bg-primary hover:bg-primary/90 text-white relative"
           aria-disabled={isLoading}
           role="button">
           {isLoading && (
             <div className="absolute inset-0 flex items-center justify-center">
-              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
+              <div className="animate-spin rounded-full h-6 w-6 py-[8px] border-b-2 border-white"></div>
             </div>
           )}
           {!isLoading && "Sign in"}

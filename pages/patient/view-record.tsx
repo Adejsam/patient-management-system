@@ -12,14 +12,14 @@ import { MedicalRecordData } from "../../types/medical";
 
 const ViewRecord: React.FC = () => {
   const { resolvedTheme } = useTheme();
-  const [isMounted, setIsMounted] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const [expandedRecords, setExpandedRecords] = useState<number[]>([]);
   const [medicalRecords, setMedicalRecords] = useState<MedicalRecordData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    setIsMounted(true);
+    setMounted(true);
     const patientId = localStorage.getItem("patientId") || "";
 
     if (patientId) {
@@ -65,9 +65,11 @@ const ViewRecord: React.FC = () => {
     }
   };
 
-  if (!isMounted) return null;
+  if (!mounted) {
+    return null;
+  }
 
-  const logoSrc = resolvedTheme === "dark" ? DarkfullLogo : LightfullLogo;
+  const logoSrc = resolvedTheme === "dark" ? LightfullLogo: DarkfullLogo;
 
   return (
     <PatientLayout>

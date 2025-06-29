@@ -1,5 +1,3 @@
-"use client";
-
 import * as React from "react";
 import {
   BookOpen,
@@ -10,27 +8,20 @@ import {
   BriefcaseMedical,
 } from "lucide-react";
 import { useTheme } from "next-themes";
-import { NavMain } from "./nav-main";
-import { NavUser } from "./nav-user";
+import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail } from "../sidebar";
 import Image from "next/image";
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarHeader,
-  SidebarRail,
-} from "../../ui/sidebar";
 import LightfullLogo from "../../public/assets/icons/logo-full-light.png";
 import DarkfullLogo from "../../public/assets/icons/logo-full.svg";
-import { useEffect, useState } from "react";
 import Link from "next/link";
+import { NavMain } from "./nav-main";
+import { NavUser } from "./nav-user";
 
 // This is sample data.
 const data = {
   user: {
-    name: "shadcn",
+    name: "carepulse",
     email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
+    avatar: "",
   },
   navMain: [
     {
@@ -112,28 +103,30 @@ const data = {
   ],
 };
 
-export function PatientAppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export function PatientAppSidebar(props: React.ComponentProps<typeof Sidebar>) {
   const { resolvedTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
+  const [mounted, setMounted] = React.useState(false);
 
-  useEffect(() => {
+  React.useEffect(() => {
     setMounted(true);
   }, []);
 
-  if (!mounted) {
-    return null;
-  }
-
+  // Always render the sidebar content, only delay the logo
   const logoSrc = resolvedTheme === "dark" ? DarkfullLogo : LightfullLogo;
 
   return (
-    <Sidebar
-      collapsible="icon"
-      className="relative w-64 min-w-[16rem] max-w-[16rem] h-auto bg-background sm:static"
-      {...props}>
+    <Sidebar collapsible="offcanvas" className="bg-background"  {...props}>
       <SidebarHeader>
         <Link href="/patient/dashboard">
-          <Image src={logoSrc} alt="logo" width={150} height={150} className="pt-2" />
+          {/* Only delay the logo until mounted to avoid hydration mismatch */}
+          <Image
+            src={mounted ? logoSrc : LightfullLogo}
+            alt="logo"
+            width={150}
+            height={150}
+            className="pt-2"
+            priority
+          />
         </Link>
       </SidebarHeader>
       <SidebarContent>

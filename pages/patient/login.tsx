@@ -24,8 +24,8 @@ const LoginPage = () => {
   const logoSrc = resolvedTheme === "dark" ? DarkfullLogo : LightfullLogo;
 
   return (
-    <main className="h-auto w-full bg-dark-300 flex md:flex-col sm:h-[100vh]">
-      <div className="w-1/2 my-10 px-12 bg-dark-300 md:w-full sm:px-5 sm:my-auto">
+    <main className="h-auto w-full bg-dark-300 flex md:flex-col sm:h-[100vh] ">
+      <div className="w-1/2 my-10 px-12 bg-dark-300 md:w-full sm:px-5 sm:my-auto sm:w-full">
         <div className="w-full ">
           <Image
             alt="Your Company"

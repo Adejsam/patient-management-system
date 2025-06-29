@@ -24,9 +24,9 @@ const RegisterPage = () => {
   const LogoSrc = resolvedTheme === "dark" ? DarkFullIcon : LightFulIcon;
 
   return (
-    <div className="flex h-screen max-h-screen w-full md:flex-col">
-      <div className="remove-scrollbar container px-12 w-[65%] md:w-full ">
-        <div className="sub-container max-w-[860px] flex-1 flex-col mt-10">
+    <div className="flex h-screen max-h-screen w-full ">
+      <div className="remove-scrollbar px-12 w-[65%] md:w-full sm:w-full">
+        <div className="sub-container max-w-[860px] flex-1 flex-col mt-10 md:w-full sm:w-full">
           <Image
             src={LogoSrc}
             height={100}
@@ -42,7 +42,7 @@ const RegisterPage = () => {
         </div>
       </div>
 
-      <div className="w-[35%] md:w-full sm:hidden">
+      <div className="w-[35%] md:hidden sm:hidden">
         <Image
           src={RegisterImage}
           height={1000}
