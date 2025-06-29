@@ -29,12 +29,6 @@ const data = {
       url: "/patient/dashboard",
       icon: LayoutDashboard,
       isActive: true,
-      items: [
-        {
-          title: "Overview",
-          url: "/patient/dashboard",
-        },
-      ],
     },
     {
       title: "Doctors",

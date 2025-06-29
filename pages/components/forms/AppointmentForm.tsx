@@ -165,7 +165,7 @@ const AppointmentForm = () => {
             control={form.control}
             name="appointmentDate"
             render={({ field }) => (
-              <FormItem className="flex flex-col min-w-[250px] flex-1 pt-[8px]">
+              <FormItem className="flex flex-col min-w-[250px] flex-1">
                 <FormLabel>Appointment Date</FormLabel>
                 <Popover>
                   <PopoverTrigger asChild>
@@ -215,7 +215,7 @@ const AppointmentForm = () => {
                           hour < 12 ? "AM" : "PM"
                         }`;
                         return (
-                          <SelectItem key={time} value={time}>
+                          <SelectItem key={time} value={time} >
                             {time}
                           </SelectItem>
                         );

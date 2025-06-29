@@ -20,7 +20,7 @@ const MedicalRecordPage = () => {
   }
 
   return (
-    <div>
+    <AdminLayout>
       <Seo title="Medical Record" />
       <Header
         title="Medical Records"
@@ -38,12 +38,8 @@ const MedicalRecordPage = () => {
           <MedicalRecords />
         </div>
       </div>
-    </div>
+    </AdminLayout>
   );
-};
-
-MedicalRecordPage.getLayout = (page: React.ReactElement) => {
-  return <AdminLayout>{page}</AdminLayout>;
 };
 
 export default MedicalRecordPage;

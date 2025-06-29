@@ -28,14 +28,14 @@ const DoctorCard: React.FC<DoctorCardProps> = ({
 }) => {
   useTheme();
   return (
-    <Card className="shadow-md w-72 mb-4 md:w-full">
+    <Card className="shadow-md w-72 mb-4 md:w-full sm:w-full">
       <CardHeader>
         <Image
           src={profilePicture}
           alt={`${name}'s profile`}
           width={200}
           height={200}
-          className="w-full h-[200px] mx-auto object-cover object-top"
+          className="w-full h-[200px] mx-auto object-cover object-top  md:h-[300px] sm:h-[400px]"
         />
         <CardTitle className="text-xl font-bold mt-4">{name}</CardTitle>
         <CardDescription className="text-foreground">{field}</CardDescription>

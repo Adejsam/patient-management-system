@@ -118,6 +118,7 @@ const AdminLoginForm = () => {
                   type="email"
                   disabled={isLoading}
                   {...field}
+                  className="text-white"
                 />
               </FormControl>
               <FormMessage />
@@ -136,6 +137,7 @@ const AdminLoginForm = () => {
                     placeholder="Enter your password"
                     type={showPassword ? "text" : "password"}
                     disabled={isLoading}
+                    className="text-white"
                     {...field}
                     onChange={(e) => {
                       field.onChange(e);

@@ -4,6 +4,7 @@ import { ChevronRight, type LucideIcon } from "lucide-react";
 
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../../ui/collapsible";
 import {
+  SidebarGroup,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -27,6 +28,7 @@ export function NavMain({
   }[];
 }) {
   return (
+    <SidebarGroup>
       <SidebarMenu>
         {items.map((item) => (
           <Collapsible
@@ -34,9 +36,9 @@ export function NavMain({
             asChild
             defaultOpen={item.isActive}
             className="group/collapsible">
-            <SidebarMenuItem>
+            <SidebarMenuItem >
               <CollapsibleTrigger asChild>
-                <SidebarMenuButton tooltip={item.title}>
+                <SidebarMenuButton tooltip={item.title} >
                   {item.icon && <item.icon />}
                   <span>{item.title}</span>
                   <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
@@ -45,8 +47,8 @@ export function NavMain({
               <CollapsibleContent>
                 <SidebarMenuSub>
                   {item.items?.map((subItem) => (
-                    <SidebarMenuSubItem key={subItem.title}>
-                      <SidebarMenuSubButton asChild>
+                    <SidebarMenuSubItem key={subItem.title} >
+                      <SidebarMenuSubButton asChild >
                         <a href={subItem.url}>
                           <span>{subItem.title}</span>
                         </a>
@@ -59,5 +61,6 @@ export function NavMain({
           </Collapsible>
         ))}
       </SidebarMenu>
+    </SidebarGroup>
   );
 }

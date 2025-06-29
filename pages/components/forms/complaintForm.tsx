@@ -184,7 +184,7 @@ export default function LodgeComplaintForm() {
               <FormItem>
                 <FormLabel>Date of Incident</FormLabel>
                 <FormControl>
-                  <Input type="date" {...field} />
+                  <Input type="date" {...field} className="text-muted-foreground"/>
                 </FormControl>
                 <FormMessage />
               </FormItem>

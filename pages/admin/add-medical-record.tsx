@@ -177,6 +177,7 @@ export default function AddMedicalRecord() {
                       <FormControl>
                         <Input
                           type="date"
+                          className="text-muted-foreground"
                           {...field}
                           min={new Date().toISOString().split("T")[0]}
                         />

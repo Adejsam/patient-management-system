@@ -20,7 +20,7 @@ const AppointmentPage = () => {
   }
 
   return (
-    <div>
+    <AdminLayout>
       <Seo title="Appointments" />
       <Header
         title="Appointments"
@@ -38,12 +38,8 @@ const AppointmentPage = () => {
           <Appointments />
         </div>
       </div>
-    </div>
+    </AdminLayout>
   );
-};
-
-AppointmentPage.getLayout = (page: React.ReactElement) => {
-  return <AdminLayout>{page}</AdminLayout>;
 };
 
 export default AppointmentPage;

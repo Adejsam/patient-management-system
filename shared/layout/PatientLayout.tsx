@@ -14,8 +14,17 @@ const MainContent = ({ children }: { children: React.ReactNode }) => {
       {/* Sidebar must NOT be wrapped in any extra divs */}
       <PatientAppSidebar />
       {/* Main content with responsive margin */}
-      <SidebarInset style={{ marginLeft: sidebarWidth }}>
-        <main>{children}</main>
+      <SidebarInset
+        style={{ marginLeft: sidebarWidth }}
+        className="flex-1 flex flex-col min-h-0"
+      >
+        {/* 
+          Ensure main fills all available space.
+          Use min-h-0 and flex-1 to allow proper stretching in flexbox layouts.
+        */}
+        <main className="flex-1 flex flex-col  min-h-0 w-full">
+          {children}
+        </main>
       </SidebarInset>
     </>
   );
@@ -23,15 +32,25 @@ const MainContent = ({ children }: { children: React.ReactNode }) => {
 
 const PatientLayout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div suppressHydrationWarning>
-      <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+    <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+      <div
+        suppressHydrationWarning
+        className="flex flex-col min-h-screen w-full"
+        style={{ minHeight: "100dvh" }} // for mobile browsers supporting dynamic viewport units
+      >
         {/* SidebarProvider must directly wrap MainContent */}
         <SidebarProvider defaultOpen={true}>
-          <MainContent>{children}</MainContent>
+          {/* 
+            This flex container allows sidebar and main content to stretch.
+            Use min-h-0 and flex-1 to ensure children can grow to fill the space.
+          */}
+          <div className="flex flex-1 min-h-0 w-full">
+            <MainContent>{children}</MainContent>
+          </div>
         </SidebarProvider>
         <LandingFooter />
-      </ThemeProvider>
-    </div>
+      </div>
+    </ThemeProvider>
   );
 };
 

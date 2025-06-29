@@ -124,7 +124,7 @@ const AppointmentHistoryPage = () => {
                     </div>
                     <Badge
                       variant="outline"
-                      className={`text-sm ${
+                      className={`text-sm p-1 ${
                         appointment.status === "pending"
                           ? "bg-yellow-100 text-yellow-800"
                           : appointment.status === "confirmed"

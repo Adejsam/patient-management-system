@@ -23,7 +23,7 @@ export default function LodgeComplaintPage() {
       <Seo title="Lodge a Complaint" />
       <Header title="Lodge a Complaint" breadcrumbLinkText="Home" breadcrumbLinkHref="/" />
 
-      <div className="h-fit rounded-xl bg-muted/50 w-[97%] mx-auto mb-5 pb-10">
+      <div className="h-[100vh] rounded-xl bg-muted/50 w-[97%] mx-auto mb-5 pb-10">
         <h1 className="text-3xl font-bold pt-7 mb-2 pl-6">
           Lodge a <span className="text-primary">Complaint</span>
         </h1>

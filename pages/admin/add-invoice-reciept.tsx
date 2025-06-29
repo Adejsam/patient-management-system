@@ -42,7 +42,7 @@ export default function AddPaymentDocumentPage() {
             </CardHeader>
             <CardContent>
               <Tabs defaultValue="receipt" className="w-full">
-                <TabsList className="grid w-full grid-cols-2">
+                <TabsList className="grid w-full grid-cols-2 gap-5">
                   <TabsTrigger value="receipt">Add Receipt</TabsTrigger>
                   <TabsTrigger value="invoice">Add Invoice</TabsTrigger>
                 </TabsList>

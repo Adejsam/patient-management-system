@@ -43,8 +43,15 @@ export default function ManagePatientsPage() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [patients, setPatients] = useState<Patient[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [hasMounted, setHasMounted] = useState(false);
 
   useTheme();
+
+ 
+  React.useEffect(() => {
+    setHasMounted(true);
+  }, []);
+
 
   useEffect(() => {
     const fetchPatients = async () => {
@@ -65,6 +72,7 @@ export default function ManagePatientsPage() {
 
     fetchPatients();
   }, []);
+  
 
   const columns: ColumnDef<Patient>[] = [
     {
@@ -160,6 +168,10 @@ export default function ManagePatientsPage() {
       },
     },
   });
+
+  if (!hasMounted) {
+    return null; 
+  }
 
   return (
     <AdminLayout>

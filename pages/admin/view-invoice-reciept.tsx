@@ -18,7 +18,7 @@ export default function PaymentDocumentsPage() {
   if (!mounted) return null;
 
   return (
-    <>
+    <AdminLayout>
       <Seo title="Payment Documents" />
       <Header
         title="Payment Documents"
@@ -36,7 +36,7 @@ export default function PaymentDocumentsPage() {
         </div>
         <main className="flex-1 py-6 px-4">
           <Tabs defaultValue="invoice" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
+            <TabsList className="grid w-full grid-cols-2 ">
               <TabsTrigger value="invoice">Invoices</TabsTrigger>
               <TabsTrigger value="receipt">Receipts</TabsTrigger>
             </TabsList>
@@ -51,10 +51,6 @@ export default function PaymentDocumentsPage() {
           </Tabs>
         </main>
       </div>
-    </>
+    </AdminLayout>
   );
 }
-
-PaymentDocumentsPage.getLayout = (page: React.ReactElement) => {
-  return <AdminLayout>{page}</AdminLayout>;
-};

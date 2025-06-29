@@ -9,7 +9,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "../../ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -106,11 +105,11 @@ export function NavUser({}: {
                 <AvatarImage src={userData.userProfilePic} alt={userData.userFisrtName} />
                 <AvatarFallback className="rounded-lg">CP</AvatarFallback>
               </Avatar>
-              <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold">
+              <div className="grid flex-1 text-left text-[16px] leading-tight">
+                <span className="truncate">
                   {userData.firstName} {userData.userFisrtName}
                 </span>
-                <span className="truncate text-xs">
+                <span className="truncate text-[16px]">
                   {userData.email} {userData.userEmail}
                 </span>
               </div>
@@ -118,7 +117,7 @@ export function NavUser({}: {
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
-            className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
+            className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg p-3"
             side={isMobile ? "bottom" : "right"}
             align="end"
             sideOffset={4}>
@@ -128,24 +127,20 @@ export function NavUser({}: {
                   <AvatarImage src={userData.profilePic} alt={userData.firstName} />
                   <AvatarFallback className="rounded-lg">CP</AvatarFallback>
                 </Avatar>
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">
+                <div className="grid flex-1 text-left text-[16px] leading-tight">
+                  <span className="truncate">
                     {userData.firstName} {userData.userFisrtName}
                   </span>
-                  <span className="truncate text-xs">
+                  <span className="truncate text-[16px]">
                     {userData.email} {userData.userEmail}
                   </span>
                 </div>
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuGroup></DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <button onClick={logout} className="inline-flex items-center gap-[5px]">
+            <DropdownMenuItem onClick={logout}>
                 <LogOut />
                 Log out
-              </button>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

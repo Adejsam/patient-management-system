@@ -29,7 +29,7 @@ const data = {
   navMain: [
     {
       title: "Dashboard",
-      url: "#",
+      url: "/admin/dashboard",
       icon: LayoutDashboard,
       isActive: true,
       items: [
@@ -128,7 +128,7 @@ export function AdminAppSidebar({ ...props }: React.ComponentProps<typeof Sideba
   const logoSrc = resolvedTheme === "dark" ? DarkfullLogo : LightfullLogo;
 
   return (
-    <Sidebar collapsible="icon" {...props}>
+    <Sidebar collapsible="offcanvas" className="bg-background" {...props}>
       <SidebarHeader>
         <Link href="/admin/dashboard"><Image src={logoSrc} alt="logo" width={150} height={150} className="pt-2" /></Link>
       </SidebarHeader>
