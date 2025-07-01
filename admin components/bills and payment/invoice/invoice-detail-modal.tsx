@@ -28,7 +28,7 @@ export const InvoiceDetailsModal: React.FC<InvoiceDetailsModalProps> = ({ invoic
   useTheme();
 
   return (
-    <Modal isOpen onClose={onClose} className="flex justify-center items-center">
+    <Modal isOpen onClose={onClose} className="flex justify-center items-center ">
       <ModalHeader className="text-center">
         <span className="text-primary">Invoice Details</span>
       </ModalHeader>

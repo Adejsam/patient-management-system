@@ -19,7 +19,7 @@ export default function AddPaymentDocumentPage() {
   if (!mounted) return null;
 
   return (
-    <>
+    <AdminLayout>
       <Seo title="Add Receipt and Invoice" />
       <Header
         title="Receipt and Invoice"
@@ -59,10 +59,7 @@ export default function AddPaymentDocumentPage() {
           </Card>
         </main>
       </div>
-    </>
+    </AdminLayout>
   );
 }
 
-AddPaymentDocumentPage.getLayout = (page: React.ReactElement) => {
-  return <AdminLayout>{page}</AdminLayout>;
-};

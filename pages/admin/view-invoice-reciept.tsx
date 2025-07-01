@@ -25,7 +25,7 @@ export default function PaymentDocumentsPage() {
         breadcrumbLinkText="Home"
         breadcrumbLinkHref="/admin/dashboard"
       />
-      <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 w-[97%] mx-auto pb-10 md-h-[100vh]">
+      <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 w-[97%] mx-auto pb-10 md-h-[100vh] sm:h-[100vh]">
         <div className="py-2 px-4">
           <h1 className="text-3xl font-bold mt-5 mb-2">
             Payment <span className="text-primary">Documents</span>
@@ -34,11 +34,11 @@ export default function PaymentDocumentsPage() {
             View and manage your invoices and receipts
           </h2>
         </div>
-        <main className="flex-1 py-6 px-4">
+        <div className="flex-1 py-6 px-4">
           <Tabs defaultValue="invoice" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 ">
-              <TabsTrigger value="invoice">Invoices</TabsTrigger>
-              <TabsTrigger value="receipt">Receipts</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-2 gap-2">
+              <TabsTrigger value="invoice" className="hover:text-primary">Invoices</TabsTrigger>
+              <TabsTrigger value="receipt" className="hover:text-primary">Receipts</TabsTrigger>
             </TabsList>
 
             <TabsContent value="invoice">
@@ -49,7 +49,7 @@ export default function PaymentDocumentsPage() {
               <ReceiptTable />
             </TabsContent>
           </Tabs>
-        </main>
+        </div>
       </div>
     </AdminLayout>
   );

@@ -163,8 +163,7 @@ export default function ManageStaffPage() {
         breadcrumbLinkText="Home"
         breadcrumbLinkHref="/admin/dashboard"
       />
-      <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-        <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 w-full mx-auto max-w-7xl">
+        <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 w-[97%] mx-auto  md:h-[100vh] sm:h-[100vh]">
           <h1 className="text-3xl/9 font-bold mt-5 mb-2 pl-5 pt-5">
             Manage <span className="text-primary">Staff</span>
           </h1>
@@ -255,7 +254,6 @@ export default function ManageStaffPage() {
               />
             )}
           </div>
-        </div>
       </div>
     </AdminLayout>
   );

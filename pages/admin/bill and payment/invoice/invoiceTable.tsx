@@ -38,7 +38,7 @@ export default function Invoices() {
   }, []);
 
   return (
-    <div className="container mx-auto py-5">
+    <div className="p-5">
       <h1 className="text-2xl font-bold mb-4">Invoices</h1>
       {loading ? (
         <div className="text-center text-gray-500">Loading...</div>

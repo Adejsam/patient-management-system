@@ -63,7 +63,7 @@ export default function Appointments() {
   }
 
   return (
-    <div className="container mx-auto p-5">
+    <div className="p-5">
       <DataTable columns={columns} data={data} />
     </div>
   );

@@ -34,9 +34,8 @@ export default function UnauthorizedPage() {
         breadcrumbLinkHref="/admin/dashboard"
       />
 
-      <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-        <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 w-[97%] mx-auto flex items-center justify-center">
-          <div className="max-w-md w-full space-y-8 text-center p-8">
+         <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 w-[97%] mx-auto  md:h-[100vh] sm:h-[100vh]">
+          <div className="h-[100vh] w-full space-y-4 flex flex-col items-center justify-center">
             <div className="flex flex-col items-center">
               <div className="bg-red-100 dark:bg-red-900/20 p-3 rounded-full">
                 <ShieldAlert className="h-12 w-12 text-red-600 dark:text-red-400" />
@@ -45,15 +44,15 @@ export default function UnauthorizedPage() {
             </div>
 
             <div className="">
-              <p className="text-gray-600 dark:text-gray-300 text-lg">
+              <p className="text-gray-600  text-lg">
                 You don&apos;t have permission to access this page.
               </p>
-              <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+              <p className="mt-2 text-sm text-gray-500 ">
                 If you believe this is an error, please contact your administrator.
               </p>
             </div>
 
-            <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="mt-8 flex flex-row gap-4 ">
               <Button
                 variant="outline"
                 className="flex items-center gap-2"
@@ -63,7 +62,7 @@ export default function UnauthorizedPage() {
               </Button>
 
               <Link href="/admin/dashboard" passHref>
-                <Button className="">
+                <Button >
                   <Home className="h-4 w-4" />
                   Return to Home
                 </Button>
@@ -77,7 +76,6 @@ export default function UnauthorizedPage() {
             </div>
           </div>
         </div>
-      </div>
     </AdminLayout>
   );
 }

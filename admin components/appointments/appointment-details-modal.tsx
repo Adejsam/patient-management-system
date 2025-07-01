@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../ui/dialog";
+// import { Modal, ModalHeader, ModalFooter, ModalContent } from "../../ui/modal";
 import { Appointment } from "./column";
 import { Button } from "../../ui/button";
 import { Mail, User, FileText, CalendarIcon, Clock, Briefcase, CircleEllipsis } from "lucide-react";

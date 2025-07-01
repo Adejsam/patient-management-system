@@ -79,7 +79,7 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
   };
 
   return (
-    <div>
+    <div className="space-y-4">
       <div className="flex items-center justify-between py-4 space-x-4">
         <Input
           placeholder="Filter names..."
@@ -89,52 +89,51 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
         />
 
         {/* Status Filter Dropdown */}
-        <div>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="capitalize">
-                Filter by Status
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              {["pending", "confirmed", "rejected", "cancelled", "completed"].map((status) => (
-                <DropdownMenuItem
-                  key={status}
-                  onClick={() => updateStatusFilter(status)}
-                  className="capitalize">
-                  {status}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" className="capitalize">
+              Filter by Status
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            {["pending", "confirmed", "rejected", "cancelled", "completed"].map((status) => (
+              <DropdownMenuItem
+                key={status}
+                onClick={() => updateStatusFilter(status)}
+                className="capitalize">
+                {status}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
 
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="ml-auto">
-                Columns
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              {table
-                .getAllColumns()
-                .filter((column) => column.getCanHide())
-                .map((column) => {
-                  return (
-                    <DropdownMenuCheckboxItem
-                      key={column.id}
-                      className="capitalize"
-                      checked={column.getIsVisible()}
-                      onCheckedChange={(value) => column.toggleVisibility(!!value)}>
-                      {column.id}
-                    </DropdownMenuCheckboxItem>
-                  );
-                })}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" className="ml-auto">
+              Columns
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            {table
+              .getAllColumns()
+              .filter((column) => column.getCanHide())
+              .map((column) => {
+                return (
+                  <DropdownMenuCheckboxItem
+                    key={column.id}
+                    className="capitalize"
+                    checked={column.getIsVisible()}
+                    onCheckedChange={(value) => column.toggleVisibility(!!value)}>
+                    {column.id}
+                  </DropdownMenuCheckboxItem>
+                );
+              })}
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
-      <div className="rounded-md border">
-        <Table>
+
+      <div className="rounded-md border overflow-x-auto m-4">
+        <Table className="">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
@@ -171,6 +170,7 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
           </TableBody>
         </Table>
       </div>
+
       <div className="flex items-center justify-end space-x-2 py-4">
         <Button
           variant="outline"

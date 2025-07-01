@@ -277,6 +277,7 @@ const ActionsCell = ({ appointment }: { appointment: Appointment }) => {
             Reschedule
           </DropdownMenuItem>
         </DropdownMenuContent>
+
       </DropdownMenu>
       {selectedAppointment && (
         <AppointmentDetailsModal
@@ -284,6 +285,7 @@ const ActionsCell = ({ appointment }: { appointment: Appointment }) => {
           onClose={() => setSelectedAppointment(null)}
         />
       )}
+
       {rescheduleAppointment && (
         <RescheduleAppointmentModal
           appointment={rescheduleAppointment}
@@ -292,6 +294,7 @@ const ActionsCell = ({ appointment }: { appointment: Appointment }) => {
           isOpen={true}
         />
       )}
+      
       {message && (
         <div
           className={`fixed bottom-4 right-4 p-3 rounded ${
@@ -385,7 +388,7 @@ export const columns: ColumnDef<Appointment>[] = [
           pending: "bg-yellow-100 text-yellow-800",
           confirmed: "bg-green-100 text-green-800",
           rejected: "bg-red-100 text-red-800",
-          cancelled: "bg-gray-200 text-gray-800",
+          cancelled: "bg-gray-100 text-gray-800",
           completed: "bg-blue-100 text-blue-800",
         }[status.toLowerCase()] || "bg-gray-100 text-gray-800";
 

@@ -14,14 +14,7 @@ import {
 } from "@tanstack/react-table";
 import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
-import {
-  Table,
-  TableBody,
-  TableHead,
-  TableHeader,
-  TableCell,
-  TableRow,
-} from "../../ui/table";
+import { Table, TableBody, TableHead, TableHeader, TableCell, TableRow } from "../../ui/table";
 import { Patient } from "../../types/patient";
 import Header from "../components/headers/Header";
 import Seo from "../../shared/seo/seo";
@@ -47,11 +40,9 @@ export default function ManagePatientsPage() {
 
   useTheme();
 
- 
   React.useEffect(() => {
     setHasMounted(true);
   }, []);
-
 
   useEffect(() => {
     const fetchPatients = async () => {
@@ -72,7 +63,6 @@ export default function ManagePatientsPage() {
 
     fetchPatients();
   }, []);
-  
 
   const columns: ColumnDef<Patient>[] = [
     {
@@ -170,7 +160,7 @@ export default function ManagePatientsPage() {
   });
 
   if (!hasMounted) {
-    return null; 
+    return null;
   }
 
   return (
@@ -181,104 +171,102 @@ export default function ManagePatientsPage() {
         breadcrumbLinkText="Home"
         breadcrumbLinkHref="/admin/dashboard"
       />
-      <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-        <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 w-[97%] mx-auto md:min-h-min">
-          <h1 className="text-3xl/9 font-bold mt-5 mb-2 pl-5 pt-5">
-            Manage <span className="text-primary"> Patient</span>
-          </h1>
-          <h2 className="text-lg placeholder-opacity-80 pl-5 tracking-tight pb-5">
-            View All patient data
-          </h2>
+      <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 w-[97%] mx-auto  md:h-[100vh] sm:h-[100vh]">
+        <h1 className="text-3xl/9 font-bold mt-5 mb-2 pl-5 pt-5">
+          Manage <span className="text-primary"> Patient</span>
+        </h1>
+        <h2 className="text-lg placeholder-opacity-80 pl-5 tracking-tight pb-5">
+          View All patient data
+        </h2>
 
-          <div className="flex items-center py-4 m-4">
-            <Input
-              placeholder="Search by Patient Name..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="max-w-sm"
-            />
-          </div>
+        <div className="flex items-center py-4 m-4">
+          <Input
+            placeholder="Search by Patient Name..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="max-w-sm"
+          />
+        </div>
 
-          {isLoading ? (
-            <div className="text-center p-4">Loading patients...</div>
-          ) : (
-            <div className="rounded-md border m-4">
-              <Table>
-                <TableHeader>
-                  {table.getHeaderGroups().map((headerGroup) => (
-                    <TableRow key={headerGroup.id}>
-                      {headerGroup.headers.map((header) => (
-                        <TableHead key={header.id}>
-                          {header.isPlaceholder
-                            ? null
-                            : flexRender(header.column.columnDef.header, header.getContext())}
-                        </TableHead>
+        {isLoading ? (
+          <div className="text-center p-4">Loading patients...</div>
+        ) : (
+          <div className="rounded-md border m-4 overflow-x-auto">
+            <Table>
+              <TableHeader>
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <TableRow key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => (
+                      <TableHead key={header.id}>
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(header.column.columnDef.header, header.getContext())}
+                      </TableHead>
+                    ))}
+                  </TableRow>
+                ))}
+              </TableHeader>
+              <TableBody>
+                {table.getRowModel().rows?.length ? (
+                  table.getRowModel().rows.map((row) => (
+                    <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
+                      {row.getVisibleCells().map((cell) => (
+                        <TableCell key={cell.id} className="capitalize">
+                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        </TableCell>
                       ))}
                     </TableRow>
-                  ))}
-                </TableHeader>
-                <TableBody>
-                  {table.getRowModel().rows?.length ? (
-                    table.getRowModel().rows.map((row) => (
-                      <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
-                        {row.getVisibleCells().map((cell) => (
-                          <TableCell key={cell.id} className="capitalize">
-                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                          </TableCell>
-                        ))}
-                      </TableRow>
-                    ))
-                  ) : (
-                    <TableRow>
-                      <TableCell colSpan={columns.length} className="h-24 text-center">
-                        No results.
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </div>
-          )}
-
-          <div className="flex items-center justify-end space-x-2 py-4">
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={() => table.previousPage()}
-              disabled={!table.getCanPreviousPage()}>
-              Previous
-            </Button>
-            <Button size="sm" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
-              Next
-            </Button>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={columns.length} className="h-24 text-center">
+                      No results.
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
           </div>
-          {isModalOpen && selectedPatient && (
-            <PatientDetailsModal
-              patient={selectedPatient}
-              onClose={() => {
-                setIsModalOpen(false);
-                setSelectedPatient(null);
-              }}
-            />
-          )}
-          {isEditModalOpen && selectedPatientForEdit && (
-            <EditPatientModal
-              patient={selectedPatientForEdit}
-              onClose={() => {
-                setIsEditModalOpen(false);
-                setSelectedPatientForEdit(null);
-              }}
-              onUpdate={(updatedPatient) => {
-                // Handle the updated patient data
-                console.log("Updated Patient:", updatedPatient);
-                setIsEditModalOpen(false);
-                setSelectedPatientForEdit(null);
-              }}
-              isOpen={isEditModalOpen}
-              onOpenChange={(open) => setIsEditModalOpen(open)}
-            />
-          )}
+        )}
+
+        <div className="flex items-center justify-end space-x-2 py-4">
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}>
+            Previous
+          </Button>
+          <Button size="sm" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
+            Next
+          </Button>
         </div>
+        {isModalOpen && selectedPatient && (
+          <PatientDetailsModal
+            patient={selectedPatient}
+            onClose={() => {
+              setIsModalOpen(false);
+              setSelectedPatient(null);
+            }}
+          />
+        )}
+        {isEditModalOpen && selectedPatientForEdit && (
+          <EditPatientModal
+            patient={selectedPatientForEdit}
+            onClose={() => {
+              setIsEditModalOpen(false);
+              setSelectedPatientForEdit(null);
+            }}
+            onUpdate={(updatedPatient) => {
+              // Handle the updated patient data
+              console.log("Updated Patient:", updatedPatient);
+              setIsEditModalOpen(false);
+              setSelectedPatientForEdit(null);
+            }}
+            isOpen={isEditModalOpen}
+            onOpenChange={(open) => setIsEditModalOpen(open)}
+          />
+        )}
       </div>
     </AdminLayout>
   );

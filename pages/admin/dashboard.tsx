@@ -55,8 +55,7 @@ export default function Page() {
     <AdminLayout>
       <Seo title="Dashboard" />
       <Header title="Dashboard" breadcrumbLinkText="Home" breadcrumbLinkHref="/admin/dashboard" />
-      <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-        <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:h-[100vh]">
+        <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 w-[97%] mx-auto  md:h-[100vh] sm:h-[100vh]">
           <h1 className="text-3xl font-bold pt-7 pl-5 pb-1">
             Staff <span className="text-primary">Dashboard</span>
           </h1>
@@ -118,7 +117,6 @@ export default function Page() {
             />
           </div>
         </div>
-      </div>
     </AdminLayout>
   );
 }

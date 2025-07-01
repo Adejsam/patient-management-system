@@ -14,27 +14,14 @@ import {
 } from "@tanstack/react-table";
 import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
-import {
-  Table,
-  TableBody,
-  TableHead,
-  TableHeader,
-  TableCell,
-  TableRow,
-} from "../../ui/table";
+import { Table, TableBody, TableHead, TableHeader, TableCell, TableRow } from "../../ui/table";
 import AdminLayout from "../../shared/layout/AdminLayout";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import Header from "../components/headers/Header";
 import Seo from "../../shared/seo/seo";
 import Textarea from "../../ui/Textarea";
-import {
-  Select,
-  SelectGroup,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-} from "../../ui/select";
+import { Select, SelectGroup, SelectContent, SelectItem, SelectTrigger } from "../../ui/select";
 import { SelectValue } from "@radix-ui/react-select";
 
 interface Complaint {
@@ -320,7 +307,8 @@ export default function PatientQueriesAdmin() {
         breadcrumbLinkText="Home"
         breadcrumbLinkHref="/admin/dashboard"
       />
-      <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+
+      <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 w-[97%] mx-auto  md:h-[100vh] sm:h-[100vh]">
         {successMessage && (
           <div className="fixed bottom-4 right-4 bg-green-100 text-green-700 p-4 rounded-md">
             {successMessage}
@@ -331,172 +319,169 @@ export default function PatientQueriesAdmin() {
             {errorMessage}
           </div>
         )}
-        <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 w-full mx-auto max-w-7xl md:h-[100vh]">
-          <h1 className="text-3xl/9 font-bold mt-5 mb-2 pl-5 pt-5">
-            Manage <span className="text-primary">Patient Queries</span>
-          </h1>
-          <h2 className="text-lg placeholder-opacity-80 pl-5 tracking-tight pb-5">
-            View All patient queries
-          </h2>
+        <h1 className="text-3xl/9 font-bold mt-5 mb-2 pl-5 pt-5">
+          Manage <span className="text-primary">Patient Queries</span>
+        </h1>
+        <h2 className="text-lg placeholder-opacity-80 pl-5 tracking-tight pb-5">
+          View All patient queries
+        </h2>
 
-          <div className="flex item-center justify-between gap-4 w-full p-4">
-            <div className="w-4/5">
-              <Input
-                placeholder="Search by patient name or subject..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-2/5"
-              />
-            </div>
-
-            <div className="w-[20%] ">
-              <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectItem value="all">All Statuses</SelectItem>
-                    <SelectItem value="replied">Replied</SelectItem>
-                    <SelectItem value="unreplied">Unreplied</SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            </div>
+        <div className="flex item-center justify-between gap-4 w-full p-4">
+          <div className="w-4/5">
+            <Input
+              placeholder="Search by patient name or subject..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-2/5"
+            />
           </div>
 
-          <div className="rounded-md border m-4 overflow-x-auto">
-            <Table>
-              <TableHeader>
-                {table.getHeaderGroups().map((headerGroup) => (
-                  <TableRow key={headerGroup.id}>
-                    {headerGroup.headers.map((header) => (
-                      <TableHead key={header.id} className="min-w-[120px] md:min-w-[150px]">
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(header.column.columnDef.header, header.getContext())}
-                      </TableHead>
+          <div className="w-[20%] ">
+            <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value)}>
+              <SelectTrigger>
+                <SelectValue placeholder="Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectItem value="all">All Statuses</SelectItem>
+                  <SelectItem value="replied">Replied</SelectItem>
+                  <SelectItem value="unreplied">Unreplied</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
+        <div className="rounded-md border m-4 overflow-x-auto">
+          <Table>
+            <TableHeader>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => (
+                    <TableHead key={header.id} className="min-w-[120px] md:min-w-[150px]">
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(header.column.columnDef.header, header.getContext())}
+                    </TableHead>
+                  ))}
+                </TableRow>
+              ))}
+            </TableHeader>
+            <TableBody>
+              {table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && "selected"}
+                    className="">
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id} className="py-3 px-4">
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </TableCell>
                     ))}
                   </TableRow>
-                ))}
-              </TableHeader>
-              <TableBody>
-                {table.getRowModel().rows?.length ? (
-                  table.getRowModel().rows.map((row) => (
-                    <TableRow
-                      key={row.id}
-                      data-state={row.getIsSelected() && "selected"}
-                      className="">
-                      {row.getVisibleCells().map((cell) => (
-                        <TableCell key={cell.id} className="py-3 px-4">
-                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                        </TableCell>
-                      ))}
-                    </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell colSpan={columns.length} className="h-24 text-center">
-                      No results.
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </div>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={columns.length} className="h-24 text-center">
+                    No results.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
 
-          {expandedComplaint && (
-            <div className="mt-4 p-4 border mx-5">
-              <h3 className="font-medium mb-2 text-center text-primary">Query Details:</h3>
-              <div className="space-y-4">
-                <div>
-                  <h4 className="font-medium">Complaint Type:</h4>
-                  <p className="">
-                    {complaints.find((c) => c.complaintId === expandedComplaint)?.complaintType}
-                  </p>
-                </div>
-                <div>
-                  <h4 className="font-medium">Status:</h4>
-                  <div className="flex items-center gap-2">
-                    {getStatusIcon(
-                      complaints.find((c) => c.complaintId === expandedComplaint)?.status as
-                        | "unreplied"
-                        | "replied"
-                    )}
-                  </div>
-                </div>
-                <div>
-                  <h4 className="font-medium">Description :</h4>
-                  <p className="">
-                    {complaints.find((c) => c.complaintId === expandedComplaint)?.description}
-                  </p>
-                </div>
-                <div>
-                  <h4 className="font-medium">Attachments:</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {complaints.find((c) => c.complaintId === expandedComplaint)?.attachments
-                      ?.length ? (
-                      Array.from(
-                        complaints.find((c) => c.complaintId === expandedComplaint)?.attachments ??
-                          []
-                      ).map((file, index) => (
-                        <div key={index} className="flex items-center gap-2">
-                          <span className="text-sm">{file.name}</span>
-                          <span className="text-xs">{file.type.split("/")[0]}</span>
-                          <Button
-                            size="sm"
-                            onClick={() =>
-                              handleDownloadAttachment(expandedComplaint!, file.attachmentId)
-                            }>
-                            Download
-                          </Button>
-                        </div>
-                      ))
-                    ) : (
-                      <p className="">No attachments</p>
-                    )}
-                  </div>
-                </div>
-
-                <div className="mt-4">
-                  <h4 className="font-medium">Response:</h4>
-                  {complaints.find((c) => c.complaintId === expandedComplaint)?.status ===
-                  "replied" ? (
-                    <p className="mt-3">
-                      {complaints.find((c) => c.complaintId === expandedComplaint)?.response}
-                    </p>
-                  ) : (
-                    <>
-                      <Textarea
-                        className="min-h-[100px] w-full"
-                        value={response}
-                        onChange={(e) => setResponse(e.target.value)}
-                      />
-                      <Button
-                        onClick={() => handleResponseSubmit(expandedComplaint)}
-                        className="mt-5 w-full"
-                        disabled={response.trim() === ""}>
-                        Submit Response
-                      </Button>
-                    </>
+        {expandedComplaint && (
+          <div className="mt-4 p-4 border mx-5">
+            <h3 className="font-medium mb-2 text-center text-primary">Query Details:</h3>
+            <div className="space-y-4">
+              <div>
+                <h4 className="font-medium">Complaint Type:</h4>
+                <p className="">
+                  {complaints.find((c) => c.complaintId === expandedComplaint)?.complaintType}
+                </p>
+              </div>
+              <div>
+                <h4 className="font-medium">Status:</h4>
+                <div className="flex items-center gap-2">
+                  {getStatusIcon(
+                    complaints.find((c) => c.complaintId === expandedComplaint)?.status as
+                      | "unreplied"
+                      | "replied"
                   )}
                 </div>
               </div>
-            </div>
-          )}
+              <div>
+                <h4 className="font-medium">Description :</h4>
+                <p className="">
+                  {complaints.find((c) => c.complaintId === expandedComplaint)?.description}
+                </p>
+              </div>
+              <div>
+                <h4 className="font-medium">Attachments:</h4>
+                <div className="flex flex-wrap gap-2">
+                  {complaints.find((c) => c.complaintId === expandedComplaint)?.attachments
+                    ?.length ? (
+                    Array.from(
+                      complaints.find((c) => c.complaintId === expandedComplaint)?.attachments ?? []
+                    ).map((file, index) => (
+                      <div key={index} className="flex items-center gap-2">
+                        <span className="text-sm">{file.name}</span>
+                        <span className="text-xs">{file.type.split("/")[0]}</span>
+                        <Button
+                          size="sm"
+                          onClick={() =>
+                            handleDownloadAttachment(expandedComplaint!, file.attachmentId)
+                          }>
+                          Download
+                        </Button>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="">No attachments</p>
+                  )}
+                </div>
+              </div>
 
-          <div className="flex items-center justify-end space-x-2 py-4 px-4 flex-wrap">
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={() => table.previousPage()}
-              disabled={!table.getCanPreviousPage()}>
-              Previous
-            </Button>
-            <Button size="sm" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
-              Next
-            </Button>
+              <div className="mt-4">
+                <h4 className="font-medium">Response:</h4>
+                {complaints.find((c) => c.complaintId === expandedComplaint)?.status ===
+                "replied" ? (
+                  <p className="mt-3">
+                    {complaints.find((c) => c.complaintId === expandedComplaint)?.response}
+                  </p>
+                ) : (
+                  <>
+                    <Textarea
+                      className="min-h-[100px] w-full"
+                      value={response}
+                      onChange={(e) => setResponse(e.target.value)}
+                    />
+                    <Button
+                      onClick={() => handleResponseSubmit(expandedComplaint)}
+                      className="mt-5 w-full"
+                      disabled={response.trim() === ""}>
+                      Submit Response
+                    </Button>
+                  </>
+                )}
+              </div>
+            </div>
           </div>
+        )}
+
+        <div className="flex items-center justify-end space-x-2 py-4 px-4 flex-wrap">
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}>
+            Previous
+          </Button>
+          <Button size="sm" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
+            Next
+          </Button>
         </div>
       </div>
     </AdminLayout>

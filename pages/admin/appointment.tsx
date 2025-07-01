@@ -27,8 +27,7 @@ const AppointmentPage = () => {
         breadcrumbLinkText="Home"
         breadcrumbLinkHref="/admin/dashboard"
       />
-      <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-        <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 w-[97%] mx-auto ">
+        <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 w-[97%] mx-auto  md:h-[100vh] sm:h-[100vh]">
           <h1 className="text-3xl/9 font-bold mt-5 mb-2 pl-4">
             Manage <span className="text-primary"> Appointment</span>
           </h1>
@@ -37,7 +36,6 @@ const AppointmentPage = () => {
           </h2>
           <Appointments />
         </div>
-      </div>
     </AdminLayout>
   );
 };

@@ -51,7 +51,7 @@ export const Modal: React.FC<ModalProps> = ({
       className={`fixed inset-0 z-50 w-full bg-opacity-50 ${className || ""}`}
       onClick={handleOutsideClick}>
       <div
-        className={` w-[40%] rounded-xl border bg-card text-card-foreground shadow `}>
+        className={` w-[50%] rounded-xl border bg-card text-card-foreground shadow `}>
         {children}
       </div>
     </div>
