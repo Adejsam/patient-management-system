@@ -28,12 +28,12 @@ export const InvoiceDetailsModal: React.FC<InvoiceDetailsModalProps> = ({ invoic
   useTheme();
 
   return (
-    <Modal isOpen onClose={onClose} className="flex justify-center items-center ">
+    <Modal isOpen onClose={onClose} className="flex justify-center items-center p-10">
       <ModalHeader className="text-center">
         <span className="text-primary">Invoice Details</span>
       </ModalHeader>
-      <ScrollArea>
-        <ModalContent className="space-y-4 flex flex-col">
+      <ScrollArea className="max-h-[60vh]">
+        <ModalContent className="space-y-4 flex flex-col ">
           <div className="flex items-center justify-center gap-1 ">
             <label className={`text-sm font-bold`}>Patient Name:</label>
             <p className={`text-sm `}>{invoice.patient_name}</p>

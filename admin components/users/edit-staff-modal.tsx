@@ -1,31 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Modal, ModalHeader, ModalContent, ModalFooter } from "../../ui/modal";
+import { useTheme } from "next-themes";
 import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
 import { Label } from "../../ui/label";
-import { useTheme } from "next-themes";
 import { Staff } from "../../types/staff";
-import { ScrollArea } from "../../ui/scroll-area";
-
-interface EditorData {
-  editorRole: string;
-  editorId: string;
-}
-
-interface FormState {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  phoneNumber: string;
-  role: "doctor" | "billingOfficer" | "pharmacist" | "receptionist" | "admin";
-  profilePicture?: File;
-  licenseNumber?: string;
-  specialization?: string;
-  yearsExperience?: number;
-  about?: string;
-  password?: string;
-}
 
 interface EditStaffModalProps {
   staff: Staff;
@@ -36,31 +14,38 @@ interface EditStaffModalProps {
 }
 
 export const EditStaffModal: React.FC<EditStaffModalProps> = (props) => {
-  const { staff, onClose, onUpdate, isOpen, onOpenChange } = props;
   useTheme();
-
+  const { staff } = props;
   const [isMounted, setIsMounted] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [formState, setFormState] = useState<FormState>({
-    id: staff.user_id,
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formState, setFormState] = useState({
     firstName: staff.firstName,
     lastName: staff.lastName,
     email: staff.email,
     phoneNumber: staff.phoneNumber,
     role: staff.role,
-    yearsExperience: staff.yearsExperience ? parseInt(staff.yearsExperience) : undefined,
-    about: staff.about,
-    licenseNumber: staff.licenseNumber,
-    specialization: staff.specialization,
+    licenseNumber: staff.licenseNumber || "",
+    specialization: staff.specialization || "",
+    yearsExperience: staff.yearsExperience ? staff.yearsExperience.toString() : "",
+    about: staff.about || "",
+    password: "",
   });
 
-  const [editorData, setEditorData] = useState<EditorData | null>(null);
+  // Add state for editor credentials
+  const [editorRole, setEditorRole] = useState<string>("admin");
+  const [editorId, setEditorId] = useState<string>("");
 
   useEffect(() => {
     setIsMounted(true);
-  }, []);
+    if (props.isOpen) {
+      document.body.style.overflow = "hidden";
+    }
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [props.isOpen]);
 
   useEffect(() => {
     const fetchEditorData = async () => {
@@ -77,10 +62,8 @@ export const EditStaffModal: React.FC<EditStaffModalProps> = (props) => {
           throw new Error("Invalid user data in localStorage");
         }
 
-        setEditorData({
-          editorRole: userRole,
-          editorId: parsedUserData.user_id,
-        });
+        setEditorRole(userRole);
+        setEditorId(parsedUserData.user_id.toString());
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to fetch editor data");
       }
@@ -89,69 +72,94 @@ export const EditStaffModal: React.FC<EditStaffModalProps> = (props) => {
     fetchEditorData();
   }, []);
 
-  if (!isMounted) {
+  if (!isMounted || !props.isOpen) {
     return null;
   }
 
-  const handleUpdate = async () => {
+  const validateForm = () => {
+    const errors = {
+      firstName: "",
+      lastName: "",
+      email: "",
+      phoneNumber: "",
+    };
+
+    if (!formState.firstName.trim()) errors.firstName = "First name is required";
+    if (!formState.lastName.trim()) errors.lastName = "Last name is required";
+    if (!formState.email.trim()) errors.email = "Email is required";
+    if (!formState.phoneNumber.trim()) errors.phoneNumber = "Phone number is required";
+
+    return errors;
+  };
+
+  const handleApiUpdate = async (updatedStaff: Staff) => {
     try {
-      if (!editorData) {
-        throw new Error("Editor data not available");
-      }
-
-      setIsSubmitting(true);
-      setError(null);
-      setSuccessMessage(null);
-
-      // Construct the API payload without the 'role' field in 'fields'
-      const payload = {
-        editorRole: editorData.editorRole,
-        editorId: editorData.editorId,
-        targetUserId: staff.user_id,
-        targetRole: formState.role,
-        fields: {
-          firstName: formState.firstName,
-          lastName: formState.lastName,
-          email: formState.email,
-          phoneNumber: formState.phoneNumber,
-          licenseNumber: formState.licenseNumber,
-          specialization: formState.specialization,
-          yearsExperience: formState.yearsExperience?.toString(),
-          about: formState.about,
-          password: formState.password,
-        },
-      };
-
-      // Send the update request
       const response = await fetch("http://localhost/hospital_api/edit_user.php", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({
+          editorRole: editorRole,
+          editorId: editorId,
+          targetUserId: staff.user_id,
+          targetRole: formState.role,
+          fields: {
+            firstName: updatedStaff.firstName,
+            lastName: updatedStaff.lastName,
+            email: updatedStaff.email,
+            phoneNumber: updatedStaff.phoneNumber,
+            licenseNumber: updatedStaff.licenseNumber,
+            specialization: updatedStaff.specialization,
+            yearsExperience: updatedStaff.yearsExperience,
+            about: updatedStaff.about,
+            password: formState.password || undefined,
+          },
+        }),
       });
 
       if (!response.ok) {
-        throw new Error("Failed to update staff");
+        const data = await response.json();
+        setError(data.message || "Failed to update staff");
+        return;
       }
 
       const data = await response.json();
       if (data.success) {
+        props.onUpdate(updatedStaff);
         setSuccessMessage("Staff updated successfully");
         setError(null);
-
-        // Close modal after 1 second
         setTimeout(() => {
-          onUpdate(staff); // Refresh the staff data
-          onClose();
-        }, 1000);
+          props.onClose();
+        }, 1500);
       } else {
         setError(data.message || "Failed to update staff");
       }
+    } catch (error) {
+      setError(error instanceof Error ? error.message : "Failed to update staff");
+    }
+  };
+
+  const handleUpdate = async () => {
+    try {
+      setIsSubmitting(true);
+      setError(null);
+
+      const errors = validateForm();
+      if (Object.values(errors).some((err) => err !== "")) {
+        setError("Please correct the form errors");
+        return;
+      }
+
+      const updatedStaff: Staff = {
+        ...staff,
+        ...formState,
+        yearsExperience: formState.yearsExperience ? formState.yearsExperience : undefined,
+      };
+
+      await handleApiUpdate(updatedStaff);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Failed to update staff";
-      setError(errorMessage);
-      console.error("Error updating staff:", errorMessage);
+      setError(err instanceof Error ? err.message : "Failed to update staff");
     } finally {
       setIsSubmitting(false);
     }
@@ -161,30 +169,36 @@ export const EditStaffModal: React.FC<EditStaffModalProps> = (props) => {
     const { name, value } = e.target;
     setFormState((prev) => ({
       ...prev,
-      [name]: name === "yearsExperience" ? parseInt(value) : value,
+      [name]: value,
     }));
     setError(null);
   };
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onOpenChange={onOpenChange}
-      onClose={onClose}
-      className="flex justify-center items-center">
-      <ModalHeader className="text-sm text-center">
-        <span className="text-primary">Edit</span> Staff Information
-        {successMessage && (
-          <div className="mt-2 p-2 text-center bg-green-100 text-green-700 rounded">
-            {successMessage}
-          </div>
-        )}
-        {error && (
-          <div className="mt-2 p-2 bg-red-100 text-center text-red-700 rounded">{error}</div>
-        )}
-      </ModalHeader>
-      <ScrollArea>
-        <ModalContent className="max-h-[70vh]">
+    <div
+      className="custom-modal-overlay"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) {
+          props.onClose();
+          props.onOpenChange(false);
+        }
+      }}
+    >
+      <div className="custom-modal-container bg-muted">
+        <div className="custom-modal-header text-foreground">
+          <span className="text-primary">Edit</span> Staff Information
+          {error && (
+            <div className="mt-2 p-2 bg-red-100 text-base text-red-700 rounded text-center">
+              {error}
+            </div>
+          )}
+          {successMessage && (
+            <div className="mt-2 p-2 bg-green-100 text-base text-green-700 rounded text-center">
+              {successMessage}
+            </div>
+          )}
+        </div>
+        <div className="custom-modal-content">
           <div className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
@@ -239,7 +253,7 @@ export const EditStaffModal: React.FC<EditStaffModalProps> = (props) => {
                   <Label>Medical License Number</Label>
                   <Input
                     name="licenseNumber"
-                    value={formState.licenseNumber || ""}
+                    value={formState.licenseNumber}
                     onChange={handleInputChange}
                     className="w-full"
                     placeholder="MED123456"
@@ -251,7 +265,7 @@ export const EditStaffModal: React.FC<EditStaffModalProps> = (props) => {
                   <Input
                     name="yearsExperience"
                     type="number"
-                    value={formState.yearsExperience?.toString() || ""}
+                    value={formState.yearsExperience}
                     onChange={handleInputChange}
                     className="w-full"
                     placeholder="Years of experience"
@@ -262,7 +276,7 @@ export const EditStaffModal: React.FC<EditStaffModalProps> = (props) => {
                   <Label>Specialization</Label>
                   <Input
                     name="specialization"
-                    value={formState.specialization || ""}
+                    value={formState.specialization}
                     onChange={handleInputChange}
                     className="w-full"
                     placeholder="Internal Medicine"
@@ -273,7 +287,7 @@ export const EditStaffModal: React.FC<EditStaffModalProps> = (props) => {
                   <Label>About</Label>
                   <Input
                     name="about"
-                    value={formState.about || ""}
+                    value={formState.about}
                     onChange={handleInputChange}
                     className="w-full"
                     placeholder="Brief description about this Doctor"
@@ -286,7 +300,7 @@ export const EditStaffModal: React.FC<EditStaffModalProps> = (props) => {
                 <Label>Pharmacy License Number</Label>
                 <Input
                   name="licenseNumber"
-                  value={formState.licenseNumber || ""}
+                  value={formState.licenseNumber}
                   onChange={handleInputChange}
                   className="w-full"
                   placeholder="PHAR12345"
@@ -299,23 +313,82 @@ export const EditStaffModal: React.FC<EditStaffModalProps> = (props) => {
               <Input
                 name="password"
                 type="password"
-                value={formState.password || ""}
+                value={formState.password}
                 onChange={handleInputChange}
                 className="w-full"
                 placeholder="Enter new password (leave blank to keep current password)"
               />
             </div>
           </div>
-        </ModalContent>
-      </ScrollArea>
-      <ModalFooter className="flex justify-end">
-        <Button variant="outline" onClick={onClose} disabled={isSubmitting} className="mr-4">
-          Cancel
-        </Button>
-        <Button onClick={handleUpdate} disabled={isSubmitting || !!error}>
-          Update Staff
-        </Button>
-      </ModalFooter>
-    </Modal>
+        </div>
+        <div className="custom-modal-footer">
+          <Button
+            variant="outline"
+            className="mr-4"
+            onClick={props.onClose}
+            disabled={isSubmitting}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="default"
+            onClick={handleUpdate}
+            disabled={isSubmitting || !!error}
+          >
+            Update Staff
+          </Button>
+        </div>
+      </div>
+      <style>{`
+        .custom-modal-overlay {
+          position: fixed;
+          inset: 0;
+          z-index: 1000;
+          background: rgba(0,0,0,0.4);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .custom-modal-container {
+          border-radius: 1rem;
+          box-shadow: 0 2px 16px rgba(0,0,0,0.15);
+          width: 100%;
+          max-width: 700px;
+          max-height: 90vh;
+          display: flex;
+          flex-direction: column;
+        }
+        .custom-modal-header {
+          padding: 1rem 1.5rem;
+          border-bottom: 1px solid #eee;
+          font-size: 1.25rem;
+          font-weight: 600;
+        }
+        .custom-modal-content {
+          flex: 1 1 0%;
+          min-height: 0;
+          overflow-y: auto;
+          padding: 1.5rem;
+        }
+        .custom-modal-footer {
+          padding: 1rem 1.5rem;
+          border-top: 1px solid #eee;
+          display: flex;
+          justify-content: flex-end;
+        }
+        @media (max-width: 768px) {
+          .custom-modal-container {
+            max-width: 98vw;
+            padding: 0;
+          }
+          .custom-modal-content {
+            padding: 1rem;
+          }
+          .custom-modal-header, .custom-modal-footer {
+            padding: 1rem;
+          }
+        }
+      `}</style>
+    </div>
   );
 };

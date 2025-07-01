@@ -34,6 +34,7 @@ const ActionsCell = ({ appointment }: { appointment: Appointment }) => {
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
   const [rescheduleAppointment, setRescheduleAppointment] = useState<Appointment | null>(null);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+    const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
 
   // Add this function to handle message clearing
   const clearMessage = () => {
@@ -282,7 +283,15 @@ const ActionsCell = ({ appointment }: { appointment: Appointment }) => {
       {selectedAppointment && (
         <AppointmentDetailsModal
           appointment={selectedAppointment}
-          onClose={() => setSelectedAppointment(null)}
+          isOpen={isDetailsModalOpen}
+          onOpenChange={(open) => {
+            setIsDetailsModalOpen(open);
+            if (!open) setSelectedAppointment(null);
+          }}
+          onClose={() => {
+            setIsDetailsModalOpen(false);
+            setSelectedAppointment(null);
+          }}
         />
       )}
 
@@ -389,7 +398,7 @@ export const columns: ColumnDef<Appointment>[] = [
           confirmed: "bg-green-100 text-green-800",
           rejected: "bg-red-100 text-red-800",
           cancelled: "bg-gray-100 text-gray-800",
-          completed: "bg-blue-100 text-blue-800",
+          completed: "",
         }[status.toLowerCase()] || "bg-gray-100 text-gray-800";
 
       return (

@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { useTheme } from "next-themes";
 
 interface ModalProps {
   isOpen: boolean;
@@ -16,7 +15,6 @@ export const Modal: React.FC<ModalProps> = ({
   children,
   className,
 }) => {
-  useTheme();
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
@@ -48,10 +46,10 @@ export const Modal: React.FC<ModalProps> = ({
 
   return (
     <div
-      className={`fixed inset-0 z-50 w-full bg-opacity-50 ${className || ""}`}
+      className={`fixed inset-0 z-50 w-full bg-opacity-50 flex items-center justify-center ${className || ""}`}
       onClick={handleOutsideClick}>
       <div
-        className={` w-[50%] rounded-xl border bg-card text-card-foreground shadow `}>
+        className={` w-full max-w-2xl max-h-[90vh] my-8 rounded-xl border bg-card text-card-foreground shadow flex flex-col min-h-0`}>
         {children}
       </div>
     </div>
@@ -64,7 +62,7 @@ interface ModalContentProps {
 }
 
 export const ModalContent: React.FC<ModalContentProps> = React.memo(({ children, className = "" }) => {
-  return <div className={`flex-1 overflow-y-auto p-4 ${className}`}>{children}</div>;
+  return <div className={`flex-1 min-h-0 p-4 ${className}`}>{children}</div>;
 });
 
 interface ModalHeaderProps {
@@ -73,13 +71,10 @@ interface ModalHeaderProps {
 }
 
 export const ModalHeader: React.FC<ModalHeaderProps> = React.memo(({ children, className = "" }) => {
-  const { theme } = useTheme();
   return (
     <div className={`p-4 border-b ${className}`}>
       <h2
-        className={`text-lg font-semibold ${
-          theme === "dark" ? "text-foreground" : "text-foreground"
-        }`}>
+        className="text-lg font-semibold text-foreground">
         {children}
       </h2>
     </div>
@@ -92,10 +87,10 @@ interface ModalFooterProps {
 }
 
 export const ModalFooter: React.FC<ModalFooterProps> = React.memo(({ children, className = "" }) => {
-  const { theme } = useTheme();
+
   return (
     <div className={`p-4 border-t ${className}`}>
-      <div className={`${theme === "dark" ? "text-foreground" : "text-foreground"}`}>
+      <div className="text-foreground">
         {children}
       </div>
     </div>

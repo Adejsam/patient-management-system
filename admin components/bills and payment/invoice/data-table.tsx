@@ -21,14 +21,7 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "../../../ui/dropdown-menu";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "../../../ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../ui/table";
 import { InvoiceDetailsModal } from "./invoice-detail-modal";
 import { Invoice } from "./column";
 
@@ -149,11 +142,7 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
           disabled={!table.getCanPreviousPage()}>
           Previous
         </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}>
+        <Button size="sm" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
           Next
         </Button>
       </div>

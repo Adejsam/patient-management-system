@@ -1,17 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Modal, ModalHeader, ModalContent, ModalFooter } from "../../ui/modal";
-import { Button } from "../../ui/button";
-import { Calendar } from "../../ui/calendar";
-import { Input } from "../../ui/input";
-import Textarea from "../../ui/Textarea";
-import { Label } from "../../ui/label";
-import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover";
-import { CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
-import { cn } from "../../lib/utils";
-import { useTheme } from "next-themes";
 import { MedicalRecordData } from "../../types/medical";
-import { ScrollArea } from "../../ui/scroll-area";
+import { useTheme } from "next-themes";
+import { Button } from "../../ui/button";
 
 interface EditRecordModalProps {
   record: MedicalRecordData;
@@ -52,7 +42,13 @@ export const EditRecordModal: React.FC<EditRecordModalProps> = (props) => {
 
   useEffect(() => {
     setIsMounted(true);
-  }, []);
+    if (props.isOpen) {
+      document.body.style.overflow = "hidden";
+    }
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [props.isOpen]);
 
   useEffect(() => {
     const fetchEditorData = async () => {
@@ -79,7 +75,7 @@ export const EditRecordModal: React.FC<EditRecordModalProps> = (props) => {
     fetchEditorData();
   }, []);
 
-  if (!isMounted) {
+  if (!isMounted || !props.isOpen) {
     return null;
   }
 
@@ -216,8 +212,6 @@ export const EditRecordModal: React.FC<EditRecordModalProps> = (props) => {
         setError(data.message || "Failed to update record");
       }
     } catch (error) {
-      console.error("Error updating record:", error);
-      console.log(error);
       setError(error instanceof Error ? error.message : "Failed to update record");
     }
   };
@@ -277,233 +271,243 @@ export const EditRecordModal: React.FC<EditRecordModalProps> = (props) => {
     }
   };
 
-  console.log(formState);
-
+  // Custom modal and scrollable content styles
   return (
-    <Modal
-      isOpen={props.isOpen}
-      onOpenChange={props.onOpenChange}
-      onClose={props.onClose}
-      className="flex justify-center items-center">
-      <ModalHeader>
-        <span className="text-primary">Edit</span> Medical Record
-        {error && (
-          <div className="my-1 p-2 bg-red-100 text-base text-red-700 rounded text-center">
-            {error}
-          </div>
-        )}
-        {successMessage && (
-          <div className="my-1 p-2 bg-green-100 text-base text-green-700 rounded text-center">
-            {successMessage}
-          </div>
-        )}
-      </ModalHeader>
-      <ScrollArea>
-        <ModalContent className="max-h-[70vh]">
+    <div
+      className="custom-modal-overlay"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) {
+          props.onClose();
+          props.onOpenChange(false);
+        }
+      }}
+    >
+      <div className="custom-modal-container bg-muted">
+        <div className="custom-modal-header text-foreground">
+          <span className="text-primary">Edit</span> Medical Record
+          {error && (
+            <div className="mt-2 p-2 bg-red-100 text-base text-red-700 rounded text-center">
+              {error}
+            </div>
+          )}
+          {successMessage && (
+            <div className="mt-2 p-2 bg-green-100 text-base text-green-700 rounded text-center">
+              {successMessage}
+            </div>
+          )}
+        </div>
+        <div className="custom-modal-content">
           <div className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label>Visit Date</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant={"outline"}
-                      className={cn(
-                        "w-full pl-3 text-left font-normal",
-                        !visitDate && "text-muted-foreground"
-                      )}>
-                      {visitDate ? format(visitDate, "PPP") : <span>Select date</span>}
-                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={visitDate}
-                      onSelect={(date) => setVisitDate(date || new Date())}
-                      disabled={(date) => date < new Date()}
-                    />
-                  </PopoverContent>
-                </Popover>
+                <label className="font-semibold block mb-1">Visit Date</label>
+                <input
+                  type="date"
+                  className="h-9 w-full rounded-md border border-input px-3 py-1 text-sm text-foreground shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring md:text-sm"
+                  value={visitDate.toISOString().slice(0, 10)}
+                  onChange={(e) => setVisitDate(new Date(e.target.value))}
+                />
               </div>
-
               <div className="space-y-2">
-                <Label>Vital Signs</Label>
+                <label className="font-semibold block mb-1 ">Vital Signs</label>
                 <div className="grid grid-cols-2 gap-2">
-                  <Input
+                  <input
                     value={formState.temperature}
-                    onChange={(e) => {
-                      setFormState({ ...formState, temperature: e.target.value });
-                      setError(null);
-                    }}
-                    className="w-full"
+                    onChange={(e) => setFormState({ ...formState, temperature: e.target.value })}
+                    className="h- w-full rounded-md border border-input px-3 py-1 text-sm text-foreground shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring md:text-sm"
                     type="text"
-                    pattern="^\d*\.?\d*$"
                     placeholder="Temperature (e.g., 36.8)"
                   />
-                  <Input
+                  <input
                     value={formState.weight}
-                    onChange={(e) => {
-                      setFormState({ ...formState, weight: e.target.value });
-                      setError(null);
-                    }}
-                    className="w-full"
+                    onChange={(e) => setFormState({ ...formState, weight: e.target.value })}
+                    className="h-9 w-full rounded-md border border-input px-3 py-1 text-sm text-foreground shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring md:text-sm"
                     type="text"
-                    pattern="^\d*\.?\d*$"
                     placeholder="Weight (e.g., 75.5)"
                   />
-                  <Input
+                  <input
                     value={formState.heartRate}
-                    onChange={(e) => {
-                      setFormState({ ...formState, heartRate: e.target.value });
-                      setError(null);
-                    }}
-                    className="w-full"
+                    onChange={(e) => setFormState({ ...formState, heartRate: e.target.value })}
+                    className="h-9 w-full rounded-md border border-input px-3 py-1 text-sm text-foreground shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring md:text-sm"
                     type="text"
-                    pattern="^\d*$"
                     placeholder="Heart Rate (e.g., 72)"
                   />
-                  <Input
+                  <input
                     value={formState.bloodPressure}
-                    onChange={(e) => {
-                      setFormState({ ...formState, bloodPressure: e.target.value });
-                      setError(null);
-                    }}
-                    className="w-full"
+                    onChange={(e) => setFormState({ ...formState, bloodPressure: e.target.value })}
+                    className="h-9 w-full rounded-md border border-input px-3 py-1 text-sm text-foreground shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring md:text-sm"
                     type="text"
                     placeholder="Blood Pressure (e.g., 120/80)"
                   />
                 </div>
               </div>
-
               <div className="space-y-2">
-                <Label>Symptoms</Label>
-                <Textarea
+                <label className="font-semibold block mb-1 ">Symptoms</label>
+                <textarea
                   value={formState.symptoms}
                   placeholder="head ache"
-                  onChange={(e) => {
-                    setFormState({ ...formState, symptoms: e.target.value });
-                    setError(null);
-                  }}
-                  className="w-full"
+                  onChange={(e) => setFormState({ ...formState, symptoms: e.target.value })}
+                  className="h-9 w-full rounded-md border border-input px-3 py-1 text-sm text-foreground shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring md:text-sm"
                 />
               </div>
-
               <div className="space-y-2">
-                <Label>Allergies</Label>
-                <Textarea
+                <label className="font-semibold block mb-1 ">Allergies</label>
+                <textarea
                   value={formState.allergies}
                   placeholder="None"
-                  onChange={(e) => {
-                    setFormState({ ...formState, allergies: e.target.value });
-                    setError(null);
-                  }}
-                  className="w-full"
+                  onChange={(e) => setFormState({ ...formState, allergies: e.target.value })}
+                  className="h-9 w-full rounded-md border border-input px-3 py-1 text-sm text-foreground shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring md:text-sm"
                 />
               </div>
-
               <div className="space-y-2">
-                <Label>Diagnosis</Label>
-                <Input
+                <label className="font-semibold block mb-1 ">Diagnosis</label>
+                <input
                   placeholder="Malaria"
                   value={formState.diagnosis}
-                  onChange={(e) => {
-                    setFormState({ ...formState, diagnosis: e.target.value });
-                    setError(null);
-                  }}
-                  className="w-full"
+                  onChange={(e) => setFormState({ ...formState, diagnosis: e.target.value })}
+                  className="h-9 w-full rounded-md border border-input px-3 py-1 text-sm text-foreground shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring md:text-sm"
                 />
               </div>
-
               <div className="space-y-2">
-                <Label>Lab Tests</Label>
-                <div className="space-y-1">
-                  <Input
-                    value={formState.labTests}
-                    placeholder="MRI"
-                    onChange={(e) => {
-                      setFormState({ ...formState, labTests: e.target.value });
-                      setError(null);
-                    }}
-                    className="w-full"
-                  />
-                </div>
+                <label className="font-semibold block mb-1">Lab Tests</label>
+                <input
+                  value={formState.labTests}
+                  placeholder="MRI"
+                  onChange={(e) => setFormState({ ...formState, labTests: e.target.value })}
+                  className="h-9 w-full rounded-md border border-input px-3 py-1 text-sm text-foreground shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring md:text-sm"
+                />
               </div>
               <div className="space-y-2">
-                <Label>Lab Tests Result</Label>
-                <div className="space-y-2">
-                  <Input
-                    placeholder="No Magraine"
-                    value={formState.labTestResults}
-                    onChange={(e) => {
-                      setFormState({ ...formState, labTestResults: e.target.value });
-                      setError(null);
-                    }}
-                    className="w-full"
-                  />
-                </div>
+                <label className="font-semibold block mb-1">Lab Tests Result</label>
+                <input
+                  placeholder="No Magraine"
+                  value={formState.labTestResults}
+                  onChange={(e) => setFormState({ ...formState, labTestResults: e.target.value })}
+                  className="h-9 w-full rounded-md border border-input px-3 py-1 text-sm text-foreground shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring md:text-sm"
+                />
               </div>
-
               <div className="space-y-2">
-                <Label>Medications</Label>
+                <label className="font-semibold block mb-1">Medications</label>
                 <div className="space-y-2">
                   {formState.medications.map((medication, index) => (
                     <div key={index} className="grid grid-cols-4 gap-2">
-                      <Input
+                      <input
                         placeholder="Name"
                         value={medication.name}
                         onChange={(e) => handleMedicationChange(index, "name", e.target.value)}
+                        className="h-9 w-full rounded-md border border-input px-3 py-1 text-sm text-foreground shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring md:text-sm"
                       />
-                      <Input
+                      <input
                         placeholder="Dose"
                         value={medication.dosage}
                         onChange={(e) => handleMedicationChange(index, "dosage", e.target.value)}
+                        className="h-9 w-full rounded-md border border-input px-3 py-1 text-sm text-foreground shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring md:text-sm"
                       />
-                      <Input
+                      <input
                         placeholder="Frequency"
                         value={medication.frequency}
                         onChange={(e) => handleMedicationChange(index, "frequency", e.target.value)}
+                        className="h-9 w-full rounded-md border border-input px-3 py-1 text-sm text-foreground shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring md:text-sm"
                       />
                       <Button
-                        variant="ghost"
+                        variant="destructive"
+                        className="text-red-600 cursor-pointer"
                         onClick={() => handleRemoveMedication(index)}
-                        disabled={formState.medications.length === 1}>
+                        disabled={formState.medications.length === 1}
+                      >
                         Remove
                       </Button>
                     </div>
                   ))}
-                  <Button onClick={handleAddMedication} className="w-full">
+                  <Button
+                    variant="default"
+                    className=""
+                    onClick={handleAddMedication}
+                  >
                     Add Medication
                   </Button>
                 </div>
               </div>
-
               <div className="space-y-2">
-                <Label>Notes</Label>
-                <div className="space-y-2">
-                  <Textarea
-                    value={formState.doctorNotes}
-                    placeholder="Doctor's Note"
-                    onChange={(e) => {
-                      setFormState({ ...formState, doctorNotes: e.target.value });
-                      setError(null);
-                    }}
-                    className="w-full"
-                  />
-                </div>
+                <label className="font-semibold block mb-1">Notes</label>
+                <textarea
+                  value={formState.doctorNotes}
+                  placeholder="Doctor's Note"
+                  onChange={(e) => setFormState({ ...formState, doctorNotes: e.target.value })}
+                  className="h-9 w-full rounded-md border border-input px-3 py-1 text-sm text-foreground shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring md:text-sm"
+                />
               </div>
             </div>
           </div>
-        </ModalContent>
-      </ScrollArea>
-      <ModalFooter className="flex justify-end">
-        <Button variant="outline" onClick={props.onClose} disabled={isSubmitting} className="mr-4">
-          Cancel
-        </Button>
-        <Button onClick={handleUpdate} disabled={isSubmitting || !!error}>
-          Update Record
-        </Button>
-      </ModalFooter>
-    </Modal>
+        </div>
+        <div className="custom-modal-footer">
+          <Button
+            variant="outline"
+            className="mr-4"
+            onClick={props.onClose}
+            disabled={isSubmitting}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="default"
+            onClick={handleUpdate}
+            disabled={isSubmitting || !!error}
+          >
+            Update Record
+          </Button>
+        </div>
+      </div>
+      <style>{`
+        .custom-modal-overlay {
+          position: fixed;
+          inset: 0;
+          z-index: 1000;
+          background: rgba(0,0,0,0.4);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .custom-modal-container {
+          border-radius: 1rem;
+          box-shadow: 0 2px 16px rgba(0,0,0,0.15);
+          width: 100%;
+          max-width: 700px;
+          max-height: 90vh;
+          display: flex;
+          flex-direction: column;
+        }
+        .custom-modal-header {
+          padding: 1rem 1.5rem;
+          border-bottom: 1px solid #eee;
+          font-size: 1.25rem;
+          font-weight: 600;
+        }
+        .custom-modal-content {
+          flex: 1 1 0%;
+          min-height: 0;
+          overflow-y: auto;
+          padding: 1.5rem;
+        }
+        .custom-modal-footer {
+          padding: 1rem 1.5rem;
+          border-top: 1px solid #eee;
+          display: flex;
+          justify-content: flex-end;
+        }
+        @media (max-width: 768px) {
+          .custom-modal-container {
+            max-width: 98vw;
+            padding: 0;
+          }
+          .custom-modal-content {
+            padding: 1rem;
+          }
+          .custom-modal-header, .custom-modal-footer {
+            padding: 1rem;
+          }
+        }
+      `}</style>
+    </div>
   );
 };

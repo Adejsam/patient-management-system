@@ -27,11 +27,11 @@ const MedicalRecordPage = () => {
         breadcrumbLinkText="Home"
         breadcrumbLinkHref="/admin/dashboard"
       />
-      <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 sm:h-[100vh] md:h-[100vh] w-[97%] mx-auto">
-        <h1 className="text-3xl/9 font-bold mt-5 mb-2 pl-4">
+      <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 sm:h-[100vh] md:h-[100vh] w-[95%] mx-auto">
+        <h1 className="text-3xl/9 font-bold mt-5 mb-2 pl-5">
           Manage <span className="text-primary"> Medical Record</span>
         </h1>
-        <h2 className="text-lg placeholder-opacity-80 pl-4 tracking-tight ">
+        <h2 className="text-lg placeholder-opacity-80 pl-5 tracking-tight ">
           View, Add and Update Patient Medical Record
         </h2>
         <MedicalRecords />

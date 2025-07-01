@@ -89,47 +89,49 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
         />
 
         {/* Status Filter Dropdown */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="capitalize">
-              Filter by Status
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            {["pending", "confirmed", "rejected", "cancelled", "completed"].map((status) => (
-              <DropdownMenuItem
-                key={status}
-                onClick={() => updateStatusFilter(status)}
-                className="capitalize">
-                {status}
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <div className="flex gap-5">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="capitalize">
+                Filter by Status
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              {["pending", "confirmed", "rejected", "cancelled", "completed"].map((status) => (
+                <DropdownMenuItem
+                  key={status}
+                  onClick={() => updateStatusFilter(status)}
+                  className="capitalize">
+                  {status}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
 
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
-              Columns
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {table
-              .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) => column.toggleVisibility(!!value)}>
-                    {column.id}
-                  </DropdownMenuCheckboxItem>
-                );
-              })}
-          </DropdownMenuContent>
-        </DropdownMenu>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="ml-auto">
+                Columns
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {table
+                .getAllColumns()
+                .filter((column) => column.getCanHide())
+                .map((column) => {
+                  return (
+                    <DropdownMenuCheckboxItem
+                      key={column.id}
+                      className="capitalize"
+                      checked={column.getIsVisible()}
+                      onCheckedChange={(value) => column.toggleVisibility(!!value)}>
+                      {column.id}
+                    </DropdownMenuCheckboxItem>
+                  );
+                })}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
 
       <div className="rounded-md border overflow-x-auto m-4">
@@ -185,8 +187,10 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
       </div>
       {selectedAppointment && (
         <AppointmentDetailsModal
-          appointment={selectedAppointment}
+          isOpen={true}
+          onOpenChange={() => setSelectedAppointment(null)}
           onClose={() => setSelectedAppointment(null)}
+          appointment={selectedAppointment}
         />
       )}
     </div>

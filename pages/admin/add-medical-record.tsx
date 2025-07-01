@@ -375,7 +375,7 @@ export default function AddMedicalRecord() {
                     <Button
                       type="button"
                       variant="destructive"
-                      className="mt-2 w-fit"
+                      className="mt-2 w-fit bg-red-300 text-red-800"
                       onClick={() => {
                         const medications = form.getValues("medications");
                         medications.splice(index, 1);
@@ -387,7 +387,6 @@ export default function AddMedicalRecord() {
                 ))}
                 <Button
                   type="button"
-                  variant="outline"
                   onClick={() => {
                     const medications = form.getValues("medications") || [];
                     form.setValue("medications", [
