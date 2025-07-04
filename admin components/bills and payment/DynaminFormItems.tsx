@@ -143,9 +143,9 @@ export const DynamicFormItems = <
               variant="destructive"
               size="icon"
               onClick={() => handleRemoveItem(index)}
-              className="flex-shrink-0 "
+              className="flex-shrink-0 bg-red-300 "
               title="Remove item">
-              <Trash2 className="h-4 w-4" />
+              <Trash2 className="h-5 w-5 text-red-800" />
             </Button>
           )}
         </div>

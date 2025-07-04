@@ -15,11 +15,11 @@ import {
 import { useEffect, useState } from "react";
 import { AppointmentDetailsModal } from "./appointment-details-modal";
 import { RescheduleAppointmentModal } from "./RescheduleAppointmentModal";
-import { format } from "date-fns";
+import { format, parse } from "date-fns";
 
 export type Appointment = {
   appointment_id: string;
-  appointment_datetime: Date;
+  appointment_datetime: string;
   reason_for_visit: string;
   contact_email: string;
   status: string;
@@ -34,7 +34,7 @@ const ActionsCell = ({ appointment }: { appointment: Appointment }) => {
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
   const [rescheduleAppointment, setRescheduleAppointment] = useState<Appointment | null>(null);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
-    const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
 
   // Add this function to handle message clearing
   const clearMessage = () => {
@@ -278,7 +278,6 @@ const ActionsCell = ({ appointment }: { appointment: Appointment }) => {
             Reschedule
           </DropdownMenuItem>
         </DropdownMenuContent>
-
       </DropdownMenu>
       {selectedAppointment && (
         <AppointmentDetailsModal
@@ -303,7 +302,7 @@ const ActionsCell = ({ appointment }: { appointment: Appointment }) => {
           isOpen={true}
         />
       )}
-      
+
       {message && (
         <div
           className={`fixed bottom-4 right-4 p-3 rounded ${
@@ -351,6 +350,7 @@ export const columns: ColumnDef<Appointment>[] = [
     ),
   },
   {
+    id: "appointment_datetime",
     accessorKey: "appointment_datetime",
     header: ({ column }) => (
       <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
@@ -359,14 +359,33 @@ export const columns: ColumnDef<Appointment>[] = [
       </Button>
     ),
     cell: ({ row }) => {
-      const date = row.getValue<Date>("appointment_datetime");
-      if (!date) {
+      const raw = row.getValue("appointment_datetime");
+      let date: Date | null = null;
+
+      if (typeof raw === "string" && raw.trim() !== "") {
+        // Try native Date first (handles ISO and most SQL formats)
+        date = new Date(raw);
+        // If still invalid, try parsing as MySQL format
+        if (isNaN(date.getTime())) {
+          try {
+            // Only try parse if not ISO
+            date = parse(raw, "yyyy-MM-dd HH:mm:ss", new Date());
+          } catch {
+            date = null;
+          }
+        }
+      } else if (raw instanceof Date) {
+        date = raw;
+      }
+
+      if (!date || isNaN(date.getTime())) {
         return <div className="text-red-500">Invalid Date</div>;
       }
       return <div className="font-medium">{format(date, "MMMM d, yyyy")}</div>;
     },
   },
   {
+    id: "appointment_datetime",
     accessorKey: "appointment_datetime",
     header: ({ column }) => (
       <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
@@ -375,14 +394,32 @@ export const columns: ColumnDef<Appointment>[] = [
       </Button>
     ),
     cell: ({ row }) => {
-      const date = row.getValue<Date>("appointment_datetime");
-      if (!date) {
+      const raw = row.getValue("appointment_datetime");
+      let date: Date | null = null;
+      console.log("appointment_datetime raw value:", raw);
+
+      if (typeof raw === "string" && raw.trim() !== "") {
+        date = new Date(raw);
+        if (isNaN(date.getTime())) {
+          try {
+            date = parse(raw, "yyyy-MM-dd HH:mm:ss", new Date());
+          } catch {
+            date = null;
+          }
+        }
+      } else if (raw instanceof Date) {
+        date = raw;
+      }
+
+      if (!date || isNaN(date.getTime())) {
         return <div className="text-red-500">Invalid Time</div>;
       }
       return <div className="font-medium">{format(date, "HH:mm:ss")}</div>;
     },
   },
+  
   {
+    id: "status",
     accessorKey: "status",
     header: ({ column }) => (
       <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
