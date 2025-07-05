@@ -167,7 +167,7 @@ const AdminLoginForm = () => {
           role="button">
           {isLoading && (
             <div className="absolute inset-0 flex items-center justify-center">
-              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
+              <div className="animate-spin rounded-full border-b-2 h-9 px-4 py-2 border-white"></div>
             </div>
           )}
           {!isLoading && "Sign in"}

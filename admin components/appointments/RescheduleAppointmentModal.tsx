@@ -13,7 +13,7 @@ import { Appointment } from "./column";
 import { useTheme } from "next-themes";
 import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover";
 import { CalendarIcon } from "lucide-react";
-import { format, addDays, addHours, isAfter, isBefore, parseISO } from "date-fns";
+import { format, addDays, addHours, isAfter, isBefore, } from "date-fns";
 import { cn } from "../../lib/utils";
 
 interface RescheduleAppointmentModalProps {
@@ -219,7 +219,7 @@ export const RescheduleAppointmentModal: React.FC<RescheduleAppointmentModalProp
           // Create updated appointment object with all required fields
           const updatedAppointment: Appointment = {
             ...appointment,
-            appointment_datetime: parseISO(data.appointment.appointment_datetime),
+            appointment_datetime: data.appointment.appointment_datetime,
             status: data.appointment.status,
             // Ensure all required fields from the Appointment type are present
             reason_for_visit: data.appointment.reason_for_visit || appointment.reason_for_visit,
