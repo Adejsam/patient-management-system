@@ -16,6 +16,8 @@ import {
 } from "../../ui/dropdown-menu";
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "../sidebar";
 import { useEffect, useState } from "react";
+import { useTheme } from "next-themes";
+import React from "react";
 
 export function NavUser({}: {
   user: {
@@ -92,6 +94,17 @@ export function NavUser({}: {
     window.location.href = "/";
   };
 
+  useTheme();
+  const [isMounted, setIsMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isMounted) {
+    return null;
+  }
+
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -139,8 +152,8 @@ export function NavUser({}: {
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={logout}>
-                <LogOut />
-                Log out
+              <LogOut />
+              Log out
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

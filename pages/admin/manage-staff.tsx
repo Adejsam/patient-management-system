@@ -219,8 +219,8 @@ export default function ManageStaffPage() {
 
           <div className="flex items-center justify-end space-x-2 py-4 px-4">
             <Button
-              variant="secondary"
-              size="sm"
+              variant="outline"
+              size="default"
               onClick={() => table.previousPage()}
               disabled={!table.getCanPreviousPage()}>
               Previous

@@ -32,12 +32,6 @@ const data = {
       url: "/admin/dashboard",
       icon: LayoutDashboard,
       isActive: true,
-      items: [
-        {
-          title: "Overview",
-          url: "/admin/dashboard",
-        },
-      ],
     },
     {
       title: "Appointments",
@@ -45,7 +39,7 @@ const data = {
       icon: CalendarDays,
       items: [
         {
-          title: "Manage Appoointment",
+          title: "Manage Appointment",
           url: "/admin/appointment",
         },
       ],
@@ -128,9 +122,9 @@ export function AdminAppSidebar({ ...props }: React.ComponentProps<typeof Sideba
   const logoSrc = resolvedTheme === "dark" ? DarkfullLogo : LightfullLogo;
 
   return (
-    <Sidebar collapsible="offcanvas" className="bg-background" {...props}>
+    <Sidebar collapsible="offcanvas"  {...props}>
       <SidebarHeader>
-        <Link href="/admin/dashboard"><Image src={logoSrc} alt="logo" width={150} height={150} className="pt-2" /></Link>
+        <Link href="/admin/dashboard"><Image src={logoSrc} alt="logo" width={150} height={150} className="pt-2" priority/></Link>
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />

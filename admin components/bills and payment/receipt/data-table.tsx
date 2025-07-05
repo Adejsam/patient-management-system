@@ -137,7 +137,7 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
       <div className="flex items-center justify-end space-x-2 py-4">
         <Button
           variant="outline"
-          size="sm"
+          size="default"
           onClick={() => table.previousPage()}
           disabled={!table.getCanPreviousPage()}>
           Previous

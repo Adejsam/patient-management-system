@@ -12,6 +12,8 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "../sidebar";
+import { useTheme } from "next-themes";
+import React from "react";
 
 export function NavMain({
   items,
@@ -27,6 +29,17 @@ export function NavMain({
     }[];
   }[];
 }) {
+  useTheme();
+  const [isMounted, setIsMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isMounted) {
+    return null;
+  }
+
   return (
     <SidebarGroup>
       <SidebarMenu>
@@ -36,19 +49,23 @@ export function NavMain({
             asChild
             defaultOpen={item.isActive}
             className="group/collapsible">
-            <SidebarMenuItem >
+            <SidebarMenuItem>
               <CollapsibleTrigger asChild>
-                <SidebarMenuButton tooltip={item.title} >
-                  {item.icon && <item.icon />}
-                  <span>{item.title}</span>
-                  <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                <SidebarMenuButton tooltip={item.title}>
+                  {item.icon && <item.icon className="w-5 h-5" />}
+                  <a href={item.url}>
+                    <span>{item.title}</span>
+                  </a>
+                  <ChevronRight className="ml-auto w-5 h-5 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
                 </SidebarMenuButton>
               </CollapsibleTrigger>
               <CollapsibleContent>
                 <SidebarMenuSub>
                   {item.items?.map((subItem) => (
-                    <SidebarMenuSubItem key={subItem.title} >
-                      <SidebarMenuSubButton asChild >
+                    <SidebarMenuSubItem key={subItem.title} className="py-[3px]">
+                      <SidebarMenuSubButton
+                        asChild
+                        className="pl-10 hover:text-primary active:text-primary hover:bg-primary/95 active:bg-primary/95 hover:scale-[1.03] hover:shadow transition-all duration-200 ease-in-out">
                         <a href={subItem.url}>
                           <span>{subItem.title}</span>
                         </a>

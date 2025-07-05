@@ -109,7 +109,7 @@ export function PatientAppSidebar(props: React.ComponentProps<typeof Sidebar>) {
   const logoSrc = resolvedTheme === "dark" ? DarkfullLogo : LightfullLogo;
 
   return (
-    <Sidebar collapsible="offcanvas" className="bg-background"  {...props}>
+    <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
         <Link href="/patient/dashboard">
           {/* Only delay the logo until mounted to avoid hydration mismatch */}

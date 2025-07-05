@@ -145,14 +145,13 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
       
       <div className="flex items-center justify-end space-x-2 py-4">
         <Button
-          variant="secondary"
-          size="sm"
+          variant="outline"
+          size="default"
           onClick={() => table.previousPage()}
           disabled={!table.getCanPreviousPage()}>
           Previous
         </Button>
         <Button
-        variant="outline"
           size="sm"
           onClick={() => table.nextPage()}
           disabled={!table.getCanNextPage()}>

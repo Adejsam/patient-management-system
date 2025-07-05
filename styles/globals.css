@@ -1,14 +1,13 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100;400;700&family=Roboto+Mono:wght@100;400;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@100;400;700&family=Roboto+Mono:wght@100;400;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap");
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 body {
-  font-family: 'Roboto', Arial, Helvetica, sans-serif;
+  font-family: "Roboto", Arial, Helvetica, sans-serif;
 }
-
 
 @layer base {
   :root {
@@ -76,8 +75,8 @@ body {
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
+     --sidebar-accent: 220 13% 45%;
+    --sidebar-accent-foreground: 0 0% 100%;
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
@@ -106,7 +105,7 @@ input[type="number"] {
   -moz-appearance: textfield;
 }
 
-*{
+* {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -114,15 +113,14 @@ input[type="number"] {
 
 /* Existing global styles... */
 
-
 textarea {
-  @apply block ;
+  @apply block;
 }
-
 
 input[type="date"]::-webkit-calendar-picker-indicator {
   position: relative;
   left: 100%; /* Move it to the left */
+  top: 0;
   width: 20px;
   height: 20px;
   cursor: pointer;
@@ -132,8 +130,6 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   width: calc(100%-16rem);
 }
 
-
-
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -142,4 +138,3 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     @apply bg-background text-foreground;
   }
 }
-

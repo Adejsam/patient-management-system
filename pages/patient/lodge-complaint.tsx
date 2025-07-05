@@ -23,7 +23,7 @@ export default function LodgeComplaintPage() {
       <Seo title="Lodge a Complaint" />
       <Header title="Lodge a Complaint" breadcrumbLinkText="Home" breadcrumbLinkHref="/" />
 
-      <div className="h-[100vh] rounded-xl bg-muted/50 w-[97%] mx-auto mb-5 pb-10">
+      <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50  w-[97%] mx-auto sm:h-[100vh] md:h-[100vh] mb-5">
         <h1 className="text-3xl font-bold pt-7 mb-2 pl-6">
           Lodge a <span className="text-primary">Complaint</span>
         </h1>
@@ -31,7 +31,7 @@ export default function LodgeComplaintPage() {
           We value your feedback and take all complaints seriously
         </h2>
 
-        <div className="m-4 h-fit p-4 ">
+        <div className="m-4 p-4 ">
           <LodgeComplaintForm />
         </div>
       </div>

@@ -318,6 +318,36 @@ const ActionsCell = ({ appointment }: { appointment: Appointment }) => {
   );
 };
 
+function parseAppointmentDate(raw: unknown): Date | null {
+  if (typeof raw === "string" && raw.trim() !== "") {
+    // Try native Date first (handles ISO and most SQL formats)
+    const nativeDate = new Date(raw);
+    if (!isNaN(nativeDate.getTime())) {
+      return nativeDate;
+    }
+    // Try parsing as MySQL format
+    try {
+      const parsed = parse(raw, "yyyy-MM-dd HH:mm:ss", new Date());
+      if (!isNaN(parsed.getTime())) {
+        return parsed;
+      }
+    } catch {
+      // ignore
+    }
+  }
+  // Use Object.prototype.toString to check for Date instance
+  if (
+    typeof raw === "object" &&
+    raw !== null &&
+    Object.prototype.toString.call(raw) === "[object Date]" &&
+    !isNaN((raw as Date).getTime())
+  ) {
+    return raw as Date;
+  }
+  return null;
+}
+
+
 export const columns: ColumnDef<Appointment>[] = [
   {
     id: "select",
@@ -350,7 +380,7 @@ export const columns: ColumnDef<Appointment>[] = [
     ),
   },
   {
-    id: "appointment_datetime",
+    id: "appointment_date",
     accessorKey: "appointment_datetime",
     header: ({ column }) => (
       <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
@@ -359,33 +389,17 @@ export const columns: ColumnDef<Appointment>[] = [
       </Button>
     ),
     cell: ({ row }) => {
-      const raw = row.getValue("appointment_datetime");
-      let date: Date | null = null;
+      const raw = row.original.appointment_datetime;
+      const date = parseAppointmentDate(raw);
 
-      if (typeof raw === "string" && raw.trim() !== "") {
-        // Try native Date first (handles ISO and most SQL formats)
-        date = new Date(raw);
-        // If still invalid, try parsing as MySQL format
-        if (isNaN(date.getTime())) {
-          try {
-            // Only try parse if not ISO
-            date = parse(raw, "yyyy-MM-dd HH:mm:ss", new Date());
-          } catch {
-            date = null;
-          }
-        }
-      } else if (raw instanceof Date) {
-        date = raw;
-      }
-
-      if (!date || isNaN(date.getTime())) {
+      if (!date) {
         return <div className="text-red-500">Invalid Date</div>;
       }
       return <div className="font-medium">{format(date, "MMMM d, yyyy")}</div>;
     },
   },
   {
-    id: "appointment_datetime",
+    id: "appointment_time",
     accessorKey: "appointment_datetime",
     header: ({ column }) => (
       <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
@@ -394,30 +408,15 @@ export const columns: ColumnDef<Appointment>[] = [
       </Button>
     ),
     cell: ({ row }) => {
-      const raw = row.getValue("appointment_datetime");
-      let date: Date | null = null;
-      console.log("appointment_datetime raw value:", raw);
+      const raw = row.original.appointment_datetime;
+      const date = parseAppointmentDate(raw);
 
-      if (typeof raw === "string" && raw.trim() !== "") {
-        date = new Date(raw);
-        if (isNaN(date.getTime())) {
-          try {
-            date = parse(raw, "yyyy-MM-dd HH:mm:ss", new Date());
-          } catch {
-            date = null;
-          }
-        }
-      } else if (raw instanceof Date) {
-        date = raw;
-      }
-
-      if (!date || isNaN(date.getTime())) {
+      if (!date) {
         return <div className="text-red-500">Invalid Time</div>;
       }
       return <div className="font-medium">{format(date, "HH:mm:ss")}</div>;
     },
   },
-  
   {
     id: "status",
     accessorKey: "status",

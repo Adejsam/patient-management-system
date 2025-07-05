@@ -64,7 +64,13 @@ export default function Appointments() {
 
   return (
     <div className="p-5">
-      <DataTable columns={columns} data={data} />
+      <DataTable
+        columns={columns}
+        data={data.map((appointment) => ({
+          ...appointment,
+          appointment_datetime: appointment.appointment_datetime.toISOString(),
+        }))}
+      />
     </div>
   );
 }
